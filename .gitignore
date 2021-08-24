@@ -1,0 +1,8 @@
+.idea/
+/data/
+/network_datasets/
+/results/
+/processed/
+/test*/
+*test*.json
+
