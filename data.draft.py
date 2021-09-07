@@ -75,11 +75,12 @@ if __name__ == "__main__":
         with ThreadPoolExecutor(max_workers=4) as executor:
             futures = []
 
-            for source, member, override in cmip_sources:
+            for source_arg, member_arg, override_arg in cmip_sources:
                 future = executor.submit(cmip_retrieve,
-                                         source,
-                                         member,
-                                         override)
+                                         source_arg,
+                                         member_arg,
+                                         override_arg)
+                futures.append(future)
 
             for future in concurrent.futures.as_completed(futures):
                 try:
