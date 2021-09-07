@@ -52,8 +52,7 @@ if __name__ == "__main__":
                            "rsds",
                            "uas", "vas", "siconca"],
                 pressure_levels=[None, [500], None, None, [250, 500], [1000],
-                                 None,
-                                 None, None, None],
+                                 None, None, None, None, None],
                 dates=[None],
                 grid_override=override,
             )
