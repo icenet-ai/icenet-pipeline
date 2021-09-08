@@ -12,6 +12,8 @@ from icenet2.data.sic.osisaf import SICDownloader
 from icenet2.data.sic.mask import Masks
 
 logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger("cdsapi").setLevel(logging.INFO)
+logging.getLogger("requests").setLevel(logging.INFO)
 
 DATES = {
     "live": [pd.to_datetime(date).date() for date in
