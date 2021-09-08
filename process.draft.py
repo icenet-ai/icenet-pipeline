@@ -1,9 +1,22 @@
+import datetime as dt
+
+import pandas as pd
+
 from icenet2.data.processors.datasets \
     import IceNetERA5PreProcessor, IceNetOSIPreProcessor
 from icenet2.data.loader import IceNetDataLoader
 
 if __name__ == "__main__":
     # Processing
+    train_dates = [pd.to_datetime(date).date() for date in
+                   pd.date_range("1979-01-01",
+                                 "2013-12-31", freq="D")]
+    val_dates = [pd.to_datetime(date).date() for date in
+                 pd.date_range("2014-01-01",
+                               "2016-12-31", freq="D")]
+    test_dates = [pd.to_datetime(date).date() for date in
+                  pd.date_range("2017-01-01",
+                                "2020-12-31", freq="D")]
 
     pp = IceNetERA5PreProcessor(
         ["uas", "vas"],
