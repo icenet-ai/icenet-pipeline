@@ -6,6 +6,8 @@ from icenet2.data.processors.datasets \
     import IceNetERA5PreProcessor, IceNetOSIPreProcessor
 from icenet2.data.loader import IceNetDataLoader
 
+logging.getLogger().setLevel(logging.DEBUG)
+
 if __name__ == "__main__":
     # Processing
     train_dates = [pd.to_datetime(date).date() for date in
@@ -38,6 +40,7 @@ if __name__ == "__main__":
         train_dates,
         val_dates,
         test_dates,
+        # TODO: move circday/land to IceNetMetaPreProcessor
         include_circday=False,
         include_land=False,
         linear_trends=["siconca"],

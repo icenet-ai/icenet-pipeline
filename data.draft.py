@@ -1,6 +1,8 @@
+import argparse
 import concurrent.futures
 import datetime as dt
 import logging
+import re
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -11,23 +13,34 @@ from icenet2.data.interfaces.esgf import CMIP6Downloader
 from icenet2.data.sic.osisaf import SICDownloader
 from icenet2.data.sic.mask import Masks
 
-logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger("cdsapi").setLevel(logging.INFO)
-logging.getLogger("requests").setLevel(logging.INFO)
 
-DATES = {
-    "live": [pd.to_datetime(date).date() for date in
-             pd.date_range("1979-01-01", dt.datetime.now().date(), freq="D")],
-    "test": [pd.to_datetime(date).date() for date in
-             pd.date_range("1988-12-31", "1989-01-06", freq="D")],
-}
+def date_arg(string):
+    date_match = re.search(r"(\d{4})-(\d{1,2})-(\d{1,2})", string)
+    return dt.date(*[int(s) for s in date_match.groups()])
 
-cmip = True
-dates = DATES["live"]
 
-if __name__ == "__main__":
-    Masks(north=False, south=True).generate(save_polarhole_masks=False)
-    Masks(north=True, south=False).generate(save_polarhole_masks=True)
+def get_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("hemisphere", choices=("north", "south"))
+
+    ap.add_argument("start_date", type=date_arg)
+    ap.add_argument("end_date", type=date_arg)
+
+    ap.add_argument("-c", "--cmip", action="store_true", default=False)
+    ap.add_argument("-e", "--era", action="store_true", default=False)
+    ap.add_argument("-o", "--osisaf", action="store_true", default=False)
+
+    ap.add_argument("-v", "--verbose", action="store_true", default=False)
+    return ap.parse_args()
+
+
+def get_data(dates,
+             cmip=False,
+             era=False,
+             osasif=False,
+             north=True,
+             south=False):
+    Masks(north=north, south=south).generate(save_polarhole_masks=north)
 
     # PRE-TRAINING DATA
 
@@ -57,6 +70,8 @@ if __name__ == "__main__":
                                  None, None, None, None, None],
                 dates=[None],
                 grid_override=override,
+                north=north,
+                south=south
             )
             logging.info("CMIP downloading: {} {} {}".format(source,
                                                              member,
@@ -71,7 +86,6 @@ if __name__ == "__main__":
                                                           override))
             downloader.rotate_wind_data()
             return "CMIP done: {} {} {}".format(source, member, override)
-
 
         with ThreadPoolExecutor(max_workers=4) as executor:
             futures = []
@@ -92,19 +106,44 @@ if __name__ == "__main__":
                     logging.info(msg)
 
     # ERA5
-    era5 = ERA5Downloader(
-        var_names=["tas", "ta", "tos", "psl", "zg", "hus", "rlds", "rsds",
-                   "uas", "vas"],
-        pressure_levels=[None, [500], None, None, [250, 500], [1000], None,
-                         None, None, None],
-        dates=dates,
-    )
-    era5.download()
-    era5.regrid()
-    era5.rotate_wind_data()
+    if era:
+        era5 = ERA5Downloader(
+            var_names=["tas", "ta", "tos", "psl", "zg", "hus", "rlds", "rsds",
+                       "uas", "vas"],
+            pressure_levels=[None, [500], None, None, [250, 500], [1000], None,
+                             None, None, None],
+            dates=dates,
+            north=north,
+            south=south
+        )
+        era5.download()
+        era5.regrid()
+        era5.rotate_wind_data()
 
-    sic = SICDownloader(
-        dates=dates,
-    )
-    sic.download()
+    if osasif:
+        sic = SICDownloader(
+            dates=dates,
+            north=north,
+            south=south
+        )
+        sic.download()
+
+
+if __name__ == "__main__":
+    args = get_args()
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    logging.info("Data downloader")
+    get_data([pd.to_datetime(date).date() for date in
+              pd.date_range(args.start_date, args.end_date,
+                            freq="D")],
+             cmip=args.cmip,
+             era=args.era,
+             osasif=args.osisaf,
+             north=args.north,
+             south=args.south)
+
+
 
