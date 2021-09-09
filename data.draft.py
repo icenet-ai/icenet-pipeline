@@ -46,6 +46,7 @@ def get_data(dates,
 
     # CMIP
     if cmip:
+        logging.info("CMIP6 Data Downloading")
         cmip_sources = (
             ("MRI-ESM2-0", "r1i1p1f1", None),
             ("MRI-ESM2-0", "r2i1p1f1", None),
@@ -107,6 +108,7 @@ def get_data(dates,
 
     # ERA5
     if era:
+        logging.info("ERA5 Data Downloading")
         era5 = ERA5Downloader(
             var_names=["tas", "ta", "tos", "psl", "zg", "hus", "rlds", "rsds",
                        "uas", "vas"],
@@ -121,6 +123,7 @@ def get_data(dates,
         era5.rotate_wind_data()
 
     if osasif:
+        logging.info("OSASIF-SIC Data Downloading")
         sic = SICDownloader(
             dates=dates,
             north=north,
@@ -132,8 +135,7 @@ def get_data(dates,
 if __name__ == "__main__":
     args = get_args()
 
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
     logging.info("Data downloader")
     get_data([pd.to_datetime(date).date() for date in
@@ -142,8 +144,8 @@ if __name__ == "__main__":
              cmip=args.cmip,
              era=args.era,
              osasif=args.osisaf,
-             north=args.north,
-             south=args.south)
+             north=args.hemisphere == "north",
+             south=args.hemisphere == "south")
 
 
 
