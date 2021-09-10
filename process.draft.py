@@ -36,6 +36,11 @@ def get_args():
     ap.add_argument("-te", "--test-end", dest="test_end",
                     type=date_arg, required=False, default=None)
 
+    ap.add_argument("-se", "--skip-era", dest="skip_era",
+                    default=False, action="store_true")
+    ap.add_argument("-so", "--skip-osi", dest="skip_osi",
+                    default=False, action="store_true")
+
     return ap.parse_args()
 
 
@@ -45,7 +50,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
     # Processing
-    # -ts 2017-01-01 -te 2020-12-31 1979-01-01 2013-12-31 2014-01-01 2016-12-31
+    # python src/IceNet-Pipeline/process.draft.py -v -se -fn training -ts 2017-01-01 -te 2020-12-31 test1 north 1979-01-01 2013-12-31 2014-01-01 2016-12-31 2>&1 | tee process.training.out
     train_dates = [pd.to_datetime(date).date() for date in
                    pd.date_range(args.train_start,
                                  args.train_end, freq="D")]
@@ -60,34 +65,36 @@ if __name__ == "__main__":
                       pd.date_range(args.test_start,
                                     args.test_end, freq="D")]
 
-    pp = IceNetERA5PreProcessor(
-        ["uas", "vas"],
-        ["tas", "ta500", "tos", "psl", "zg500", "zg250", "rsds", "rlds",
-         "hus1000"],
-        args.name,
-        train_dates,
-        val_dates,
-        test_dates,
-        linear_trends=tuple(),
-    )
-    pp.init_source_data()
-    pp.process()
+    if not args.skip_era:
+        pp = IceNetERA5PreProcessor(
+            ["uas", "vas"],
+            ["tas", "ta500", "tos", "psl", "zg500", "zg250", "rsds", "rlds",
+             "hus1000"],
+            args.name,
+            train_dates,
+            val_dates,
+            test_dates,
+            linear_trends=tuple(),
+        )
+        pp.init_source_data()
+        pp.process()
 
-    osi = IceNetOSIPreProcessor(
-        ["siconca"],
-        [],
-        args.name,
-        train_dates,
-        val_dates,
-        test_dates,
-        # TODO: move circday/land to IceNetMetaPreProcessor
-        include_circday=False,
-        include_land=False,
-        linear_trends=["siconca"],
-        linear_trend_days=3,
-    )
-    osi.init_source_data()
-    osi.process()
+    if not args.skip_osi:
+        osi = IceNetOSIPreProcessor(
+            ["siconca"],
+            [],
+            args.name,
+            train_dates,
+            val_dates,
+            test_dates,
+            # TODO: move circday/land to IceNetMetaPreProcessor
+            include_circday=False,
+            include_land=False,
+            linear_trends=["siconca"],
+            linear_trend_days=3,
+        )
+        osi.init_source_data()
+        osi.process()
 
     dl = IceNetDataLoader("loader.{}.json".format(args.name),
                           args.forecast_name
