@@ -6,6 +6,8 @@ dependencies:
   - bokeh
   - cartopy
   - cfgrib
+  - cudatoolkit
+  - cudnn
   - dask
   - distributed
   - eccodes
@@ -19,7 +21,7 @@ dependencies:
   - python==3.8
   - setuptools
   - tensorboard
-  - tensorflow
+  - tensorflow-gpu
   - wheel
   - xarray
   - pip:
