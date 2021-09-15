@@ -6,4 +6,5 @@
 /processed/
 /test*/
 *test*.json
+*.nc
 

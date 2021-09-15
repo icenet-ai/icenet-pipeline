@@ -1,0 +1,25 @@
+ECMWF
+- ERA5
+
+t2m (K):        
+- 'tas': '2m_temperature',
+t (K):        
+- 'ta': 'temperature',  # 500
+sst (K):        
+- 'tos': 'sea_surface_temperature',
+sp (Pa):        
+- 'psl': 'surface_pressure',
+z (m**2 s**-2):        
+- 'zg': 'geopotential',  # 250 and 500
+q (kg kg**-1):        
+- 'hus': 'specific_humidity',  # 1000
+str (J m**-2):        
+- 'rlds': 'surface_thermal_radiation_downwards',
+ssrd (J m**-2):        surface_downwelling_shortwave_flux_in_air (?)
+- 'rsds': 'surface_solar_radiation_downwards',
+u10 (m s**-1):        
+- 'uas': '10m_u_component_of_wind',
+v10 (m s**-1):
+- 'vas': '10m_v_component_of_wind',
+
+siconc (0-1)

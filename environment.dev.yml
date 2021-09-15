@@ -1,0 +1,30 @@
+name: icenet2
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh
+  - cartopy
+  - cfgrib
+  - dask
+  - distributed
+  - eccodes
+  - h5py
+  - hdf4
+  - hdf5
+  - iris
+  - netcdf4
+  - plotly
+  - pip
+  - python==3.8
+  - setuptools
+  - tensorboard
+  - tensorflow
+  - wheel
+  - xarray
+  - pip:
+    - cdsapi
+    - dm-tree
+    - ecmwf-api-client
+    - git+ssh://git@github.com/JimCircadian/model-ensembler.git@0.5_work#egg=model_ensembler
+    - tensorflow-probability

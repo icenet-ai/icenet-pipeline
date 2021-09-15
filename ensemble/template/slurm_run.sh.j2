@@ -1,0 +1,34 @@
+#!/bin/bash
+#SBATCH --output={{ run.dir }}/job.%j.%N.out
+#SBATCH --error={{ run.dir }}/job.%j.%N.err
+#SBATCH --chdir={{ run.dir }}
+#SBATCH --mail-type=begin,end,fail,requeue
+#SBATCH --mail-user={{ run.email }}
+#SBATCH --time={{ run.length }}
+#SBATCH --job-name={{ run.id }}
+#SBATCH --nodes={{ run.nodes }}
+#SBATCH --gres=gpu:{{ run.gpus }}
+#SBATCH --partition={{ run.cluster }}
+#SBATCH --account={{ run.cluster }}
+#SBATCH --cpus-per-task={{ run.ntasks }}
+#SBATCH --mem={{ run.mem }}
+
+echo "Variable {{ run.name }} with seed {{ run.seed }}"
+
+# TODO: get rid of this hardcoding / sort out installation of commands
+. /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
+conda activate icenet2
+cd {{ run.dir }}
+
+[ ! -L train.draft.py ] && ln -s ../../../src/IceNet-Pipeline/train.draft.py
+[ ! -L loader.test1.json ] && ln -s ../../../loader.test1.json
+[ ! -L dataset_config.training.json ] && ln -s ../../../dataset_config.training.json
+[ ! -L network_datasets ] && ln -s ../../../network_datasets
+
+if [ ! -f out.log ]; then
+    python3 train.draft.py {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} \
+        -v
+        2>&1 | tee train.out.log
+else
+    echo "Already run: remove {{ run.dir }} if you want to run again"
+fi

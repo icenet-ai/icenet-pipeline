@@ -3,6 +3,8 @@ import logging
 import os
 import pickle
 
+import tensorflow as tf
+
 from icenet2.model.train import train_model
 
 
@@ -21,6 +23,9 @@ def get_args():
                     default=False)
     ap.add_argument("-n", "--n-filters-factor", type=float, default=1.)
     ap.add_argument("-p", "--preload", type=str)
+    ap.add_argument("-s", "--strategy", default="default",
+                    choices=("default", "mirrored", "central"))
+    ap.add_argument("--gpus", default=None)
     ap.add_argument("-w", "--workers", type=int, default=4)
 
     return ap.parse_args()
@@ -34,6 +39,12 @@ if __name__ == "__main__":
     dataset_config = \
         os.path.join(".", "dataset_config.{}.json".format(args.dataset))
 
+    strategy = tf.distribute.MirroredStrategy() \
+        if args.strategy == "mirrored" \
+        else tf.distribute.experimental.CentralStorageStrategy() \
+        if args.strategy == "central" \
+        else tf.distribute.get_strategy()
+
     trained_path, history = \
         train_model(dataset_config,
                     pre_load_network=args.preload is not None,
@@ -43,7 +54,8 @@ if __name__ == "__main__":
                     workers=args.workers,
                     use_multiprocessing=args.multiprocessing,
                     n_filters_factor=args.n_filters_factor,
-                    seed=args.seed)
+                    seed=args.seed,
+                    strategy=strategy)
 
 #    fig, ax = plt.subplots()
 #    ax.plot(history.history['val_loss'], label='val')
