@@ -23,6 +23,7 @@ def get_args():
                     default=False)
     ap.add_argument("-n", "--n-filters-factor", type=float, default=1.)
     ap.add_argument("-p", "--preload", type=str)
+    ap.add_argument("-qs", "--max-queue-size", default=10, type=int)
     ap.add_argument("-s", "--strategy", default="default",
                     choices=("default", "mirrored", "central"))
     ap.add_argument("--gpus", default=None)
@@ -55,7 +56,8 @@ if __name__ == "__main__":
                     use_multiprocessing=args.multiprocessing,
                     n_filters_factor=args.n_filters_factor,
                     seed=args.seed,
-                    strategy=strategy)
+                    strategy=strategy,
+                    max_queue_size=args.max_queue_size)
 
 #    fig, ax = plt.subplots()
 #    ax.plot(history.history['val_loss'], label='val')
