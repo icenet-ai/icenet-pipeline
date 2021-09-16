@@ -48,7 +48,8 @@ if __name__ == "__main__":
         else tf.distribute.get_strategy()
 
     trained_path, history = \
-        train_model(dataset_config,
+        train_model(args.run_name,
+                    dataset_config,
                     pre_load_network=args.preload is not None,
                     pre_load_path=args.preload,
                     batch_size=args.batch_size,
