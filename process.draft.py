@@ -41,6 +41,9 @@ def get_args():
     ap.add_argument("-so", "--skip-osi", dest="skip_osi",
                     default=False, action="store_true")
 
+    ap.add_argument("-ob", "--output-batch-size", dest="batch_size", type=int,
+                    default=8)
+
     return ap.parse_args()
 
 
@@ -101,5 +104,6 @@ if __name__ == "__main__":
                           if args.forecast_name else args.name,
                           args.lag,
                           north=args.hemisphere == "north",
-                          south=args.hemisphere == "south")
+                          south=args.hemisphere == "south",
+                          output_batch_size=args.batch_size)
     dl.generate()
