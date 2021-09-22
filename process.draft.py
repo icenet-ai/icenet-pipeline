@@ -43,6 +43,9 @@ def get_args():
 
     ap.add_argument("-ob", "--output-batch-size", dest="batch_size", type=int,
                     default=8)
+    ap.add_argument("-w", "--workers", help="Number of workers to use "
+                                            "generating sets",
+                    type=int, default=8)
 
     return ap.parse_args()
 
@@ -53,7 +56,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
     # Processing
-    # python src/IceNet-Pipeline/process.draft.py -v -se -fn training -ts 2017-01-01 -te 2020-12-31 test1 north 1979-01-01 2013-12-31 2014-01-01 2016-12-31 2>&1 | tee process.training.out
+    # python src/IceNet-Pipeline/process.draft.py -v -ob 2 -l 3 -fn small_proc2 -ts 2010-01-01 -te 2010-01-31 small north 2001-01-01 2002-12-31 2010-12-01 2010-12-31 2>&1 | tee logs/process.small_proc2.log
     train_dates = [pd.to_datetime(date).date() for date in
                    pd.date_range(args.train_start,
                                  args.train_end, freq="D")]
@@ -94,7 +97,7 @@ if __name__ == "__main__":
             include_circday=False,
             include_land=False,
             linear_trends=["siconca"],
-            linear_trend_days=3,
+            linear_trend_days=93,
         )
         osi.init_source_data()
         osi.process()
@@ -105,5 +108,6 @@ if __name__ == "__main__":
                           args.lag,
                           north=args.hemisphere == "north",
                           south=args.hemisphere == "south",
-                          output_batch_size=args.batch_size)
+                          output_batch_size=args.batch_size,
+                          generate_workers=args.workers)
     dl.generate()
