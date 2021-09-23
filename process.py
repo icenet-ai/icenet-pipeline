@@ -31,6 +31,8 @@ def get_args():
 
     ap.add_argument("-fn", "--forecast-name", dest="forecast_name",
                     default=None, type=str)
+    ap.add_argument("-fd", "--forecast-days", dest="forecast_days",
+                    default=93, type=int)
     ap.add_argument("-ts", "--test-start", dest="test_start",
                     type=date_arg, required=False, default=None)
     ap.add_argument("-te", "--test-end", dest="test_end",
@@ -82,7 +84,9 @@ if __name__ == "__main__":
             test_dates,
             linear_trends=tuple(),
         )
-        pp.init_source_data()
+        pp.init_source_data(
+            lag_days=args.lag,
+        )
         pp.process()
 
     if not args.skip_osi:
@@ -97,9 +101,12 @@ if __name__ == "__main__":
             include_circday=False,
             include_land=False,
             linear_trends=["siconca"],
-            linear_trend_days=93,
+            linear_trend_days=args.forecast_days,
         )
-        osi.init_source_data()
+        osi.init_source_data(
+            lag_days=args.lag,
+            lead_days=args.forecast_days,
+        )
         osi.process()
 
     dl = IceNetDataLoader("loader.{}.json".format(args.name),
