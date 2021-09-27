@@ -12,10 +12,20 @@
 #SBATCH --account={{ run.cluster }}
 #SBATCH --cpus-per-task={{ run.ntasks }}
 #SBATCH --mem={{ run.mem }}
+{% if run.nodelist %}
+#SBATCH --nodelist={{ run.nodelist }}
+{% endif %}
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
 {{ run.prep }}
 cd {{ run.dir }}
+
+{% for dest in run.symlinks %}
+ln -sf {{ dest }}
+{% endfor %}
+
+
+echo "START `date +%F`"
 
 python3 train.draft.py {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} \
     -v -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -s {{ run.arg_strategy }} \
@@ -23,3 +33,5 @@ python3 train.draft.py {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} \
     -p {{ run.arg_preload_path }} \
 {% endif %}
 2>&1 | tee train.out.log
+
+echo "FINISH `date +%F`"

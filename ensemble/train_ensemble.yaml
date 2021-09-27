@@ -1,40 +1,50 @@
 ---
 ensemble:
-  vars:     {}
+  vars:
+    arg_dataset:    training
+    arg_size:       4
+    arg_strategy:   default
+    arg_epoch:      10
+    prep: |
+      module load hpc/cuda/11.2
+      . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
+      conda activate $HOME/miniconda3/envs/icenet2
+    symlinks:
+      - ../../train.py
+      - ../../loader.laptop.json
+      - ../../dataset_config.laptop.json
+      - ../../network_datasets
+    gpus:         2
+    mem:          128gb
+
   pre_process: []
   post_process: []
 
   batch_config:
-    templatedir:  ../../../ensemble/template
+    templatedir:  ../template
     templates:
-    - slurm_run.sh.j2
+    - icenet_run.sh.j2
     email:        jambyr@bas.ac.uk
-    job_file:     slurm_run.sh
+    job_file:     icenet_run.sh
     cluster:      gpu
     nodes:        1
     ntasks:       4
     length:       02:00:00
     maxruns:      6
-    maxjobs:      6
-    pre_batch:    []
-    pre_run:      []
-    runs:
-      - seed: 42
-      - seed: 43
-      - seed: 44
-      - seed: 45
-      - seed: 46
-    post_run:     []
-    post_batch:   []
+    maxjobs:      2
 
   batches:
     - name:       draft
-      basedir: ./ensemble/baseline
+      basedir:    ./ensemble/draft
       pre_batch:  []
+      pre_run:    []
+      runs:
+        - seed:   42
+        - seed:   43
+        - seed:   44
+        - seed:   45
+        - seed:   46
+      post_run:   []
       post_batch: []
-      gpus:       1
-      mem:        96gb
-      arg_dataset:    training
-      arg_size:       4
-      arg_strategy:   default
-      arg_epoch:      10
+
+

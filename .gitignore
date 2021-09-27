@@ -1,10 +1,15 @@
 .idea/
 /cf/
 /data/
+/ensemble/draft/
+/logs/
 /network_datasets/
+/notebooks/
 /results/
 /processed/
 /test*/
 *test*.json
+dataset_config.*.json
+loader.*.json
 *.nc
-
+*.npy

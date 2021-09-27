@@ -20,10 +20,16 @@ def get_args():
     ap.add_argument("name", type=str)
     ap.add_argument("hemisphere", choices=("north", "south"))
 
+    # TODO: change this to a CSV based system: start,end,skip for each set
     ap.add_argument("train_start", type=date_arg)
     ap.add_argument("train_end", type=date_arg)
     ap.add_argument("val_start", type=date_arg)
     ap.add_argument("val_end", type=date_arg)
+
+    ap.add_argument("-ts", "--test-dates", dest="test_start",
+                    type=date_arg, required=False, default=None)
+    ap.add_argument("-te", "--test-end", dest="test_end",
+                    type=date_arg, required=False, default=None)
 
     ap.add_argument("-v", "--verbose", action="store_true", default=False)
 
@@ -33,10 +39,6 @@ def get_args():
                     default=None, type=str)
     ap.add_argument("-fd", "--forecast-days", dest="forecast_days",
                     default=93, type=int)
-    ap.add_argument("-ts", "--test-start", dest="test_start",
-                    type=date_arg, required=False, default=None)
-    ap.add_argument("-te", "--test-end", dest="test_end",
-                    type=date_arg, required=False, default=None)
 
     ap.add_argument("-se", "--skip-era", dest="skip_era",
                     default=False, action="store_true")
