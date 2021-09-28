@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --output={{ run.dir }}/job.%j.%N.out
-#SBATCH --error={{ run.dir }}/job.%j.%N.err
+#SBATCH --output={{ run.dir }}/train.%j.%N.{{ run.seed }}.out
+#SBATCH --error={{ run.dir }}/train.%j.%N.{{ run.seed }}.err
 #SBATCH --chdir={{ run.dir }}
 #SBATCH --mail-type=begin,end,fail,requeue
 #SBATCH --mail-user={{ run.email }}
@@ -12,26 +12,21 @@
 #SBATCH --account={{ run.cluster }}
 #SBATCH --cpus-per-task={{ run.ntasks }}
 #SBATCH --mem={{ run.mem }}
-{% if run.nodelist %}
-#SBATCH --nodelist={{ run.nodelist }}
-{% endif %}
+{% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
 {{ run.prep }}
 cd {{ run.dir }}
 
-{% for dest in run.symlinks %}
-ln -sf {{ dest }}
+{% for dest in run.symlinks %}ln -sf {{ dest }}
 {% endfor %}
-
 
 echo "START `date +%F`"
 
-python3 train.draft.py {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} \
-    -v -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -s {{ run.arg_strategy }} \
-{% if run.arg_preload %}
-    -p {{ run.arg_preload_path }} \
-{% endif %}
+python3 train.draft.py -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
+    -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -s {{ run.arg_strategy }} \{% if run.arg_preload %}
+    -p {{ run.arg_preload_path }} \{% endif %}{% if run.arg_filter_factor %}
+    -n {{ run.arg_filter_factor }} \{% endif %}
 2>&1 | tee train.out.log
 
 echo "FINISH `date +%F`"

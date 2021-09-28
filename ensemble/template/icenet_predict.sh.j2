@@ -1,0 +1,30 @@
+#!/bin/bash
+#SBATCH --output={{ run.dir }}/predict.%j.%N.{{ run.seed }}.out
+#SBATCH --error={{ run.dir }}/predict.%j.%N.{{ run.seed }}.err
+#SBATCH --chdir={{ run.dir }}
+#SBATCH --mail-type=begin,end,fail,requeue
+#SBATCH --mail-user={{ run.email }}
+#SBATCH --time={{ run.length }}
+#SBATCH --job-name={{ run.id }}
+#SBATCH --nodes={{ run.nodes }}
+#SBATCH --gres=gpu:{{ run.gpus }}
+#SBATCH --partition={{ run.cluster }}
+#SBATCH --account={{ run.cluster }}
+#SBATCH --cpus-per-task={{ run.ntasks }}
+#SBATCH --mem={{ run.mem }}
+{% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
+
+# BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
+{{ run.prep }}
+cd {{ run.dir }}
+
+{% for dest in run.symlinks %}ln -sf {{ dest }}
+{% endfor %}
+
+echo "START `date +%F`"
+
+python3 predict.py -v {{ run.arg_dataset }} \
+    {{ run.arg_date }} {{ run.name }}.{{ run.seed }} \
+    2>&1 | tee predict.out.log
+
+echo "FINISH `date +%F`"

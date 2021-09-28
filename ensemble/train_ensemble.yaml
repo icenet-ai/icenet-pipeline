@@ -2,28 +2,34 @@
 ensemble:
   vars:
     arg_dataset:    training
-    arg_size:       4
+    arg_batch:      4
+    arg_queue:      8
     arg_strategy:   default
-    arg_epoch:      10
+    arg_epochs:     10
+    arg_filter_factor:  0.25
     prep: |
       module load hpc/cuda/11.2
       . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
       conda activate $HOME/miniconda3/envs/icenet2
     symlinks:
-      - ../../train.py
-      - ../../loader.laptop.json
-      - ../../dataset_config.laptop.json
-      - ../../network_datasets
+      - ../../../train.py
+      - ../../../loader.laptop.json
+      - ../../../dataset_config.laptop.json
+      - ../../../network_datasets
+      - ../../../results
     gpus:         2
     mem:          128gb
 
-  pre_process: []
+  pre_process:
+    - name:   execute
+      args:
+        cmd:  mkdir -p ../results/networks
   post_process: []
 
   batch_config:
     templatedir:  ../template
     templates:
-    - icenet_run.sh.j2
+    - icenet_train.sh.j2
     email:        jambyr@bas.ac.uk
     job_file:     icenet_run.sh
     cluster:      gpu
