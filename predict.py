@@ -18,8 +18,12 @@ def get_args():
     # -b 1 -e 1 -w 1 -n 0.125
     ap = argparse.ArgumentParser()
     ap.add_argument("dataset", type=str)
-    ap.add_argument("date", type=date_arg)
+    ap.add_argument("network_name", type=str)
     ap.add_argument("output_name", type=str)
+    ap.add_argument("seed", type=int, default=42)
+    ap.add_argument("dates", type=date_arg, nargs="+")
+
+    ap.add_argument("-n", "--n-filters-factor", type=float, default=1.)
 
     ap.add_argument("-v", "--verbose", action="store_true", default=False)
 
@@ -33,10 +37,15 @@ if __name__ == "__main__":
 
     dataset_config = \
         os.path.join(".", "dataset_config.{}.json".format(args.dataset))
-    dates = [args.date]
-    output_dir = os.path.join(".", "results", args.output_name)
+    dates = [*args.dates]
+    output_dir = os.path.join(".", "results", "predict",
+                              args.output_name,
+                              "{}.{}".format(args.network_name, args.seed))
 
     forecasts = predict_forecast(dataset_config,
+                                 args.network_name,
+                                 n_filters_factor=args.n_filters_factor,
+                                 seed=args.seed,
                                  start_dates=dates)
 
     if os.path.exists(output_dir):

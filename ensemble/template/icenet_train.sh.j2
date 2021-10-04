@@ -23,7 +23,7 @@ cd {{ run.dir }}
 
 echo "START `date +%F`"
 
-python3 train.draft.py -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
+python3 train.py -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
     -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -s {{ run.arg_strategy }} \{% if run.arg_preload %}
     -p {{ run.arg_preload_path }} \{% endif %}{% if run.arg_filter_factor %}
     -n {{ run.arg_filter_factor }} \{% endif %}

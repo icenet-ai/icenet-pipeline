@@ -24,6 +24,7 @@ ensemble:
     - name:   execute
       args:
         cmd:  mkdir -p ../results/networks
+
   post_process: []
 
   batch_config:
@@ -51,6 +52,9 @@ ensemble:
         - seed:   45
         - seed:   46
       post_run:   []
-      post_batch: []
+      post_batch:
+        - name:   execute
+          args:
+            cmd:  python ../../postprocess.train.py
 
 

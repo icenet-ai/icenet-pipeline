@@ -23,8 +23,9 @@ cd {{ run.dir }}
 
 echo "START `date +%F`"
 
-python3 predict.py -v {{ run.arg_dataset }} \
-    {{ run.arg_date }} {{ run.name }}.{{ run.seed }} \
+python3 predict.py -v -n {{ run.arg_filter_factor }} \
+    {{ run.arg_dataset }} {{ run.arg_network }} {{ run.name }} \
+    {{ run.seed }} {{ run.arg_dates }} \
     2>&1 | tee predict.out.log
 
 echo "FINISH `date +%F`"

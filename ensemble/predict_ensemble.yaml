@@ -1,16 +1,21 @@
 ---
 ensemble:
   vars:
-    arg_dataset:    predict
+    arg_dataset:        laptop
+    arg_dates:          2010-01-28 2010-01-31
+    arg_filter_factor:  0.25
+    arg_network:        draft
     prep: |
       module load hpc/cuda/11.2
       . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
       conda activate $HOME/miniconda3/envs/icenet2
     symlinks:
+      - ../../../data
       - ../../../predict.py
-      - ../../../loader.predict.json
-      - ../../../dataset_config.predict.json
+      - ../../../loader.laptop.json
+      - ../../../dataset_config.laptop.json
       - ../../../network_datasets
+      - ../../../processed
       - ../../../results
     gpus:         1
     mem:          128gb
@@ -32,8 +37,7 @@ ensemble:
     maxjobs:      2
 
   batches:
-    - name:       draft
-      arg_date:   16/05/1983
+    - name:       test_forecast
       basedir:    ./ensemble/predict
       pre_batch:  []
       pre_run:    []
@@ -47,5 +51,5 @@ ensemble:
       post_batch:
         - name:   execute
           args:
-            cmd:  postprocess.py
+            cmd:  postprocess.predict.py test_forecast 2010-01-28 2010-01-31
 

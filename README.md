@@ -27,13 +27,62 @@ python
 python process.py -v -w 4 -ob 2 -fd 4 -l 2 -ts 2010-01-28 -te 2010-01-31 laptop north 2010-01-01 2010-01-22 2010-01-23 2010-01-27
 
 HPC:
-```python src/IceNet-Pipeline/process.py -v -w 32 -ob 8 -fd 14 -l 3 \
-    -ts 2010-01-01 -te 2010-01-31 \
-    small north 2001-01-01 2002-12-31 2010-12-01 2010-12-31 2>&1 | tee logs/process.small.log```
+
+* Small:  
+
+```bash
+    python src/IceNet-Pipeline/process.py -v -w 32 -ob 8 -fd 14 -l 3 \
+        -ts 2010-01-01 -te 2010-01-31 \
+        small north 2001-01-01 2002-12-31 2010-12-01 2010-12-31 2>&1 | tee logs/process.small.log
+```
+
+* Ensemble:
+
+```bash    
+    python src/IceNet-Pipeline/process.py -v -l 4 -fd 93 -ob 4 -w 32 \
+        -ts 2019-01-01 -te 2020-12-31 \   
+        ensemble_train north 1979-01-01 2016-12-31 2017-01-01 2018-12-31 2>&1 | tee process.ensemble.out
+```
 
 ### train
 
 model_ensemble -n -v -c -s ensemble/train_ensemble.yaml
 
+_Test a laptop run_
+
+```bash
+ln -sf ../../../train.py
+ln -sf ../../../loader.laptop.json
+ln -sf ../../../dataset_config.laptop.json
+ln -sf ../../../network_datasets
+ln -sf ../../../results
+mkdir -p ../../../results
+
+python3 train.py -v laptop draft.{{ seed }} {{ seed }} \
+    -b 4 -e 10 -m -qs 8 -s default \
+    -n 0.25 \
+2>&1 | tee train.out.log
+```
+
 ### predict
 
+model_ensemble -n -v -c -s ensemble/predict_ensemble.yaml
+
+
+_Test a laptop run_
+
+```bash
+ln -sf ../../../data
+ln -sf ../../../predict.py
+ln -sf ../../../loader.laptop.json
+ln -sf ../../../dataset_config.laptop.json
+ln -sf ../../../network_datasets
+ln -sf ../../../processed
+ln -sf ../../../results
+
+
+python3 predict.py -v -n 0.25 \
+    laptop draft test_forecast \
+    46 2010-01-28 2010-01-31 \
+    2>&1 | tee predict.out.log
+```
