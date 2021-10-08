@@ -78,3 +78,4 @@ if __name__ == "__main__":
     with open(history_path, 'wb') as fh:
         pickle.dump(history.history, fh)
 
+    # TODO: we don't run through the test dates...

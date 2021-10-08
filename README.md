@@ -40,7 +40,8 @@ HPC:
 
 ```bash    
     python src/IceNet-Pipeline/process.py -v -l 4 -fd 93 -ob 4 -w 32 \
-        -ts 2019-01-01 -te 2020-12-31 \   
+        -ts 2019-01-01 -te 2020-12-31 \
+        -d 0.1 \   
         ensemble_train north 1979-01-01 2016-12-31 2017-01-01 2018-12-31 2>&1 | tee process.ensemble.out
 ```
 
