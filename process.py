@@ -101,9 +101,9 @@ if __name__ == "__main__":
             ["tas", "ta500", "tos", "psl", "zg500", "zg250", "rsds", "rlds",
              "hus1000"],
             args.name,
-            train_dates,
-            val_dates,
-            test_dates,
+            dates["train"],
+            dates["val"],
+            dates["test"],
             linear_trends=tuple(),
         )
         pp.init_source_data(
@@ -116,9 +116,9 @@ if __name__ == "__main__":
             ["siconca"],
             [],
             args.name,
-            train_dates,
-            val_dates,
-            test_dates,
+            dates["train"],
+            dates["val"],
+            dates["test"],
             # TODO: move circday/land to IceNetMetaPreProcessor
             include_circday=False,
             include_land=False,
