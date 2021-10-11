@@ -24,7 +24,7 @@ dependencies:
   - python==3.8
   - setuptools
   - tensorboard
-  - tensorflow-gpu==2.4.1
+  - tensorflow=2.4.1=gpu_py38h8a7d6ce_0
   - wheel
   - xarray
   - pip:
