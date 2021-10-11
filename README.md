@@ -45,6 +45,19 @@ HPC:
         ensemble_train north 1979-01-01 2016-12-31 2017-01-01 2018-12-31 2>&1 | tee process.ensemble.out
 ```
 
+* Split dates:
+
+```bash    
+    python src/IceNet-Pipeline/process.py -v -l 4 -fd 93 -ob 4 -w 32 \
+        -d 0.4 -ts 2019-01-01 -te 2020-12-31 \
+        ensemble_split north \
+        1979-01-01,1985-01-01,1994-01-01,2005-01-01,2011-01-01 \
+        1981-12-31,1987-12-31,1996-12-31,2007-12-31,2015-12-31 \
+        2016-01-01 \
+        2018-12-31 \
+        2>&1 | tee process.split.out
+```
+
 ### train
 
 model_ensemble -n -v -c -s ensemble/train_ensemble.yaml
@@ -64,6 +77,10 @@ python3 train.py -v laptop draft.{{ seed }} {{ seed }} \
     -n 0.25 \
 2>&1 | tee train.out.log
 ```
+
+#### Production run
+
+model_ensemble -n -v -c -s ensemble/train_ensemble.production.yaml
 
 ### predict
 

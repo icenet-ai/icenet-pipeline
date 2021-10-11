@@ -1,21 +1,25 @@
 ---
 ensemble:
   vars:
-    arg_dataset:    training
+    arg_dataset:    ensemble_22
     arg_batch:      4
     arg_queue:      8
     arg_strategy:   default
-    arg_epochs:     10
-    arg_filter_factor:  0.25
-    prep:           ""
+    arg_epochs:     100
+    arg_filter_factor:  1
+    prep: |
+      module load hpc/cuda/11.2
+      . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
+      conda activate $HOME/miniconda3/envs/icenet2
     symlinks:
       - ../../../train.py
-      - ../../../loader.laptop.json
-      - ../../../dataset_config.laptop.json
+      - ../../../loader.ensemble_split.json
+      - ../../../dataset_config.ensemble_22.json
       - ../../../network_datasets
       - ../../../results
-    gpus:         2
-    mem:          128gb
+    gpus:         1
+    mem:          96gb
+    nodelist:     node022
 
   pre_process:
     - name:   execute
@@ -32,14 +36,14 @@ ensemble:
     job_file:     icenet_run.sh
     cluster:      gpu
     nodes:        1
-    ntasks:       4
-    length:       02:00:00
+    ntasks:       8
+    length:       7-00:00:00
     maxruns:      6
     maxjobs:      2
 
   batches:
-    - name:       draft
-      basedir:    ./ensemble/draft
+    - name:       green
+      basedir:    ./ensemble/green
       pre_batch:  []
       pre_run:    []
       runs:

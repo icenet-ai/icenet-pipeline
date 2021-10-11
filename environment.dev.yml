@@ -31,5 +31,5 @@ dependencies:
     - cdsapi
     - dm-tree
     - ecmwf-api-client
-    - git+ssh://git@github.com/JimCircadian/model-ensembler.git@0.5_work#egg=model_ensembler
+    - model-ensembler==0.5.0
     - tensorflow-probability
