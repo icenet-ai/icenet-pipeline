@@ -53,6 +53,8 @@ def get_args():
                     default=False, action="store_true")
     ap.add_argument("-so", "--skip-osi", dest="skip_osi",
                     default=False, action="store_true")
+    ap.add_argument("-sp", "--skip-process", dest="skip_process",
+                    default=False, action="store_true")
 
     ap.add_argument("-ob", "--output-batch-size", dest="batch_size", type=int,
                     default=8)
@@ -93,7 +95,7 @@ if __name__ == "__main__":
 
         logging.info("After reduction we have {} {} dates".
                      format(len(dataset_dates), dataset))
-        dates[dataset] = list(dataset_dates)
+        dates[dataset] = sorted(list(dataset_dates))
 
     if not args.skip_era:
         pp = IceNetERA5PreProcessor(
@@ -131,12 +133,13 @@ if __name__ == "__main__":
         )
         osi.process()
 
-    dl = IceNetDataLoader("loader.{}.json".format(args.name),
-                          args.forecast_name
-                          if args.forecast_name else args.name,
-                          args.lag,
-                          north=args.hemisphere == "north",
-                          south=args.hemisphere == "south",
-                          output_batch_size=args.batch_size,
-                          generate_workers=args.workers)
-    dl.generate()
+    if not args.skip_process:
+        dl = IceNetDataLoader("loader.{}.json".format(args.name),
+                              args.forecast_name
+                              if args.forecast_name else args.name,
+                              args.lag,
+                              north=args.hemisphere == "north",
+                              south=args.hemisphere == "south",
+                              output_batch_size=args.batch_size,
+                              generate_workers=args.workers)
+        dl.generate()
