@@ -2,7 +2,7 @@
 ensemble:
   vars:
     arg_dataset:    ensemble_22
-    arg_batch:      4
+    arg_batch:      2
     arg_queue:      8
     arg_strategy:   default
     arg_epochs:     100
@@ -33,13 +33,13 @@ ensemble:
     templates:
     - icenet_train.sh.j2
     email:        jambyr@bas.ac.uk
-    job_file:     icenet_run.sh
+    job_file:     icenet_train.sh
     cluster:      gpu
     nodes:        1
     ntasks:       8
     length:       7-00:00:00
     maxruns:      6
-    maxjobs:      2
+    maxjobs:      3
 
   batches:
     - name:       green
