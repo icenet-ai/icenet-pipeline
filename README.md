@@ -80,7 +80,26 @@ python3 train.py -v laptop draft.{{ seed }} {{ seed }} \
 
 #### Production run
 
+The development directory is a bit awry structurally, but basically this is 
+working with the principle of cloning the pipeline directory to 
+instantaneously get up and running. 
+
+`network_datasets` is useful, as it can be shared. This should highlight the 
+fact that it can be shared across instances, or localised if necessary. 
+`data` and `processed` are not required in the run directory for training, 
+but only for prediction (meaning that they can be run and created within the 
+pipeline directory to befit the requirements of the particular test.)
+
+```bash
+git clone git@github.com:antarctica/IceNet-Pipeline.git icenet.green
+# At present we have a development run directory with our datasets
+ln -s ../icenet2/network_datasets 
+ln -s ../icenet2/loader.ensemble_split.json 
+ln -s ../icenet2/dataset_config.ensemble_22.json
+
+conda activate icenet2
 model_ensemble -n -v -c -s ensemble/train_ensemble.production.yaml
+```
 
 ### predict
 

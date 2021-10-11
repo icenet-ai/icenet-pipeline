@@ -10,7 +10,7 @@ ensemble:
     prep: |
       module load hpc/cuda/11.2
       . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-      conda activate $HOME/miniconda3/envs/icenet2
+      conda activate /data/hpcdata/users/jambyr/miniconda3/envs/icenet2
     symlinks:
       - ../../../train.py
       - ../../../loader.ensemble_split.json
@@ -24,7 +24,7 @@ ensemble:
   pre_process:
     - name:   execute
       args:
-        cmd:  mkdir -p ../results/networks
+        cmd:  mkdir -p ./results/networks
 
   post_process: []
 
