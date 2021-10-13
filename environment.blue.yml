@@ -1,0 +1,35 @@
+name: icenet.blue
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh
+  - cartopy
+  - cfgrib
+  - cudatoolkit
+  - cudnn
+  - dask
+  - distributed
+  - eccodes
+  - h5py
+  - hdf4
+  - hdf5
+  - imageio
+  - imageio-ffmpeg
+  - ipykernel
+  - iris
+  - netcdf4
+  - plotly
+  - pip
+  - python==3.8
+  - setuptools
+  - tensorboard
+  - tensorflow=2.4.1=gpu_py38h8a7d6ce_0
+  - wheel
+  - xarray
+  - pip:
+    - cdsapi
+    - dm-tree
+    - ecmwf-api-client
+    - model-ensembler==0.5.0
+    - tensorflow-probability

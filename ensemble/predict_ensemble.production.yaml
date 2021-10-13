@@ -1,0 +1,56 @@
+---
+ensemble:
+  vars:
+    arg_dataset:        predict_test
+    arg_dates:          2010-01-28 2010-01-31
+    arg_filter_factor:  1
+    arg_network:        draft
+    prep: |
+      module load hpc/cuda/11.2
+      . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
+      conda activate /data/hpcdata/users/jambyr/miniconda3/envs/icenet2
+    symlinks:
+      - ../../../data
+      - ../../../predict.py
+      - ../../../loader.predict_test.json
+      - ../../../dataset_config.predict_test.json
+      - ../../../network_datasets
+      - ../../../processed
+      - ../../../results
+    gpus:         1
+    mem:          96gb
+    nodelist:     node022
+
+  pre_process: []
+  post_process: []
+
+  batch_config:
+    templatedir:  ../template
+    templates:
+    - icenet_predict.sh.j2
+    email:        jambyr@bas.ac.uk
+    job_file:     icenet_predict.sh
+    cluster:      gpu
+    nodes:        1
+    ntasks:       4
+    length:       02:00:00
+    maxruns:      6
+    maxjobs:      3
+
+  batches:
+    - name:       green_predict
+      basedir:    ./ensemble/green
+      pre_batch:  []
+      pre_run:    []
+      runs:
+        - seed:   42
+        - seed:   43
+        - seed:   44
+        - seed:   45
+        - seed:   46
+      post_run:   []
+      post_batch:
+        - name:   execute
+          args:
+            cmd:  postprocess.predict.py green_predict 2010-01-28 2010-01-31
+
