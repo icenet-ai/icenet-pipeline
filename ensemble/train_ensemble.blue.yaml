@@ -39,7 +39,7 @@ ensemble:
     ntasks:       8
     length:       2-00:00:00
     maxruns:      3
-    maxjobs:      3
+    maxjobs:      1
 
   batches:
     - name:       blue
