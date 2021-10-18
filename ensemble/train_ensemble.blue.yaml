@@ -17,8 +17,8 @@ ensemble:
       - ../../../dataset_config.ensemble_22.json
       - ../../../network_datasets
       - ../../../results
-    gpus:         2
-    mem:          192gb
+    gpus:         1
+    mem:          128gb
     nodelist:     node022
 
   pre_process:
@@ -38,8 +38,8 @@ ensemble:
     nodes:        1
     ntasks:       8
     length:       2-00:00:00
-    maxruns:      2
-    maxjobs:      1
+    maxruns:      3
+    maxjobs:      3
 
   batches:
     - name:       blue
