@@ -97,8 +97,9 @@ ln -s ../icenet2/network_datasets
 ln -s ../icenet2/loader.ensemble_split.json 
 ln -s ../icenet2/dataset_config.ensemble_22.json
 
+# Run it in screen, need to test as a daemon at some point 
 conda activate icenet2
-model_ensemble -n -v -c -s ensemble/train_ensemble.production.yaml
+model_ensemble -n ensemble/train_ensemble.production.yaml
 ```
 
 ### predict

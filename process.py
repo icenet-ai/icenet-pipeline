@@ -10,11 +10,14 @@ import sys
 import pandas as pd
 
 from icenet2.data.processors.datasets \
-    import IceNetERA5PreProcessor, IceNetOSIPreProcessor
+    import IceNetERA5PreProcessor, IceNetHRESPreProcessor, IceNetOSIPreProcessor
 from icenet2.data.loader import IceNetDataLoader
 
 
 def date_arg(string):
+    if string == "none":
+        return []
+
     date_match = re.findall(r"(\d{4})-(\d{1,2})-(\d{1,2})", string)
 
     if len(date_match) < 1:
@@ -54,6 +57,8 @@ def get_args():
     ap.add_argument("-so", "--skip-osi", dest="skip_osi",
                     default=False, action="store_true")
     ap.add_argument("-sp", "--skip-process", dest="skip_process",
+                    default=False, action="store_true")
+    ap.add_argument("-eh", "--enable-hres", dest="enable_hres",
                     default=False, action="store_true")
 
     ap.add_argument("-ob", "--output-batch-size", dest="batch_size", type=int,
@@ -132,6 +137,51 @@ if __name__ == "__main__":
             lead_days=args.forecast_days,
         )
         osi.process()
+
+    if args.enable_hres:
+        if not args.skip_era or not args.skip_osi:
+            raise RuntimeError("Don't try to produce datasets from HRES with "
+                               "OSI and ERA5, this won't be a problem when "
+                               "things are properly CLI oriented")
+
+        hres_clim = IceNetHRESPreProcessor(
+            ["uas", "vas"],
+            ["tas", "ta500", "tos", "psl", "zg500", "zg250", "rsds", "rlds",
+             "hus1000"],
+            args.name,
+            dates["train"],
+            dates["val"],
+            dates["test"],
+            include_circday=False,
+            include_land=False,
+            linear_trends=tuple(),
+        )
+        hres_clim.init_source_data(
+            lag_days=args.lag,
+        )
+        hres_clim.process()
+
+        hres_osi = IceNetHRESPreProcessor(
+            ["siconca"],
+            [],
+            args.name,
+            dates["train"],
+            dates["val"],
+            dates["test"],
+            # TODO: move circday/land to IceNetMetaPreProcessor
+            include_circday=False,
+            include_land=False,
+            linear_trends=["siconca"],
+            linear_trend_days=args.forecast_days,
+            # TODO: should reconsider the process for double usage (overrides?)
+            #  though this does work as is, which is nice
+            update_key="mars.siconca"
+        )
+        hres_osi.init_source_data(
+            lag_days=args.lag,
+            lead_days=args.forecast_days,
+        )
+        hres_osi.process()
 
     if not args.skip_process:
         dl = IceNetDataLoader("loader.{}.json".format(args.name),

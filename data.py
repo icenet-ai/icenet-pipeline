@@ -29,6 +29,8 @@ def get_args():
     ap.add_argument("-c", "--cmip", action="store_true", default=False)
     ap.add_argument("-e", "--era", action="store_true", default=False)
     ap.add_argument("-o", "--osisaf", action="store_true", default=False)
+    ap.add_argument("-m", "--ecmwf-hres", dest="ecmwf_hres",
+                    action="store_true", default=False)
 
     ap.add_argument("-v", "--verbose", action="store_true", default=False)
     return ap.parse_args()
@@ -38,6 +40,7 @@ def get_data(dates,
              cmip=False,
              era=False,
              osasif=False,
+             hres=False,
              north=True,
              south=False):
     Masks(north=north, south=south).generate(save_polarhole_masks=north)
@@ -131,6 +134,21 @@ def get_data(dates,
         )
         sic.download()
 
+    if hres:
+        logging.info("ERA5 HRES Data Downloading")
+        hres = HRESDownloader(
+            var_names=["tas", "ta", "tos", "psl", "zg", "hus", "rlds",
+                       "rsds", "uas", "vas", "siconca"],
+            pressure_levels=[None, [500], None, None, [250, 500], [1000],
+                             None, None, None, None, None],
+            dates=dates,
+            north=north,
+            south=south
+        )
+        hres.download()
+        hres.regrid()
+        hres.rotate_wind_data()
+
 
 if __name__ == "__main__":
     args = get_args()
@@ -144,6 +162,7 @@ if __name__ == "__main__":
              cmip=args.cmip,
              era=args.era,
              osasif=args.osisaf,
+             hres=args.ecmwf_hres,
              north=args.hemisphere == "north",
              south=args.hemisphere == "south")
 
