@@ -18,7 +18,7 @@ ensemble:
       - ../../../network_datasets
       - ../../../results
     gpus:         1
-    mem:          128gb
+    mem:          192gb
     nodelist:     node022
 
   pre_process:
