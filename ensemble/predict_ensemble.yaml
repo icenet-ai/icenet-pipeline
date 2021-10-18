@@ -3,12 +3,9 @@ ensemble:
   vars:
     arg_dataset:        laptop
     arg_dates:          2010-01-28 2010-01-31
-    arg_filter_factor:  0.25
-    arg_network:        draft
-    prep: |
-      module load hpc/cuda/11.2
-      . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-      conda activate $HOME/miniconda3/envs/icenet2
+    arg_filter_factor:  0.3
+    arg_network:        laptop
+    prep: ""
     symlinks:
       - ../../../data
       - ../../../predict.py
@@ -51,5 +48,5 @@ ensemble:
       post_batch:
         - name:   execute
           args:
-            cmd:  postprocess.predict.py test_forecast 2010-01-28 2010-01-31
+              cmd:  python ../../postprocess_predict.py -o ../../results/predict test_forecast 2010-01-28 2010-01-31
 

@@ -24,7 +24,6 @@ python
 
 ### process
 
-python process.py -v -w 4 -ob 2 -fd 4 -l 2 -ts 2010-01-28 -te 2010-01-31 laptop north 2010-01-01 2010-01-22 2010-01-23 2010-01-27
 
 HPC:
 
@@ -124,3 +123,6 @@ python3 predict.py -v -n 0.25 \
     46 2010-01-28 2010-01-31 \
     2>&1 | tee predict.out.log
 ```
+
+
+### Laptop runs

@@ -23,7 +23,8 @@ def get_args():
     ap.add_argument("name")
     ap.add_argument("dates", type=date_arg, nargs="+")
 
-    ap.add_argument("-h", "--hemisphere",
+    ap.add_argument("-o", "--output-dir", default=".")
+    ap.add_argument("-s", "--hemisphere",
                     choices=("north", "south"), default="north")
     ap.add_argument("-r", "--root", type=str, default="../..")
     ap.add_argument("-v", "--verbose", action="store_true", default=False)
@@ -156,36 +157,38 @@ if __name__ == "__main__":
         )
     )
 
-    xarr.time.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
-    xarr.yc.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
-    xarr.xc.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
-    xarr.leadtime.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
+    # FIXME: serializer doesn't like empty fields
+    #xarr.time.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
+    #xarr.yc.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
+    #xarr.xc.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
+    #xarr.leadtime.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
 
-    xarr.mean.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
-    xarr.stddev.attrs = dict(
-        long_name="",
-        short_name="",
-        units="",
-    )
+    #xarr.mean.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
+    #xarr.stddev.attrs = dict(
+    #    long_name="",
+    #    short_name="",
+    #    units="",
+    #)
 
-    xarr.to_netcdf("{}.nc".format(args.name))
+    # TODO: split into daily files
+    xarr.to_netcdf(os.path.join(args.output_dir, "{}.nc".format(args.name)))

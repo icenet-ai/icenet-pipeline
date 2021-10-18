@@ -1,9 +1,12 @@
 
 
-.phony: clean_data clean_train
+.phony: clean_data clean_train clean_results
 
 clean_data:
-	-rm -r processed/ network_datasets/ results/ loader.*.json dataset_config.*.json
+	-rm -r processed/ network_datasets/ loader.*.json dataset_config.*.json
 
 clean_train:
-	-rm -r ensemble/draft
+	-rm -r ensemble/laptop
+
+clean_results:
+	-rm -r results
