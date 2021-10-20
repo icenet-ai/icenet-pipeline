@@ -21,10 +21,11 @@ def get_args():
     ap.add_argument("network_name", type=str)
     ap.add_argument("output_name", type=str)
     ap.add_argument("seed", type=int, default=42)
-    ap.add_argument("dates", type=date_arg, nargs="+")
+    ap.add_argument("datefile", type=argparse.FileType("r"))
 
     ap.add_argument("-n", "--n-filters-factor", type=float, default=1.)
-
+    ap.add_argument("-o", "--skip-outputs", default=False, action="store_true")
+    ap.add_argument("-t", "--testset", default=False, action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true", default=False)
 
     return ap.parse_args()
@@ -37,16 +38,22 @@ if __name__ == "__main__":
 
     dataset_config = \
         os.path.join(".", "dataset_config.{}.json".format(args.dataset))
-    dates = [*args.dates]
+
+    dates = [dt.date(*[int(v) for v in s.split("-")])
+             for s in args.datefile.read().split()]
+    args.datefile.close()
+
     output_dir = os.path.join(".", "results", "predict",
                               args.output_name,
                               "{}.{}".format(args.network_name, args.seed))
 
-    forecasts = predict_forecast(dataset_config,
-                                 args.network_name,
-                                 n_filters_factor=args.n_filters_factor,
-                                 seed=args.seed,
-                                 start_dates=dates)
+    forecasts, gen_outputs = predict_forecast(dataset_config,
+                                              args.network_name,
+                                              n_filters_factor=
+                                              args.n_filters_factor,
+                                              seed=args.seed,
+                                              start_dates=dates,
+                                              testset=args.testset)
 
     if os.path.exists(output_dir):
         raise RuntimeError("{} output already exists".format(output_dir))
@@ -55,6 +62,19 @@ if __name__ == "__main__":
     for date, forecast in zip(dates, forecasts):
         output_path = os.path.join(output_dir, date.strftime("%Y_%m_%d.npy"))
 
-        logging.info("Saving {} - output {}".format(date, forecast.shape))
+        logging.info("Saving {} - forecast output {}".
+                     format(date, forecast.shape))
         np.save(output_path, forecast)
+
+    if not args.skip_outputs:
+        logging.info("Saving outputs generated for these inputs as well...")
+        gen_dir = os.path.join(output_dir, "gen_outputs")
+        os.makedirs(gen_dir)
+
+        for date, output in zip(dates, gen_outputs):
+            output_path = os.path.join(gen_dir, date.strftime("%Y_%m_%d.npy"))
+
+            logging.info("Saving {} - generated output {}".
+                         format(date, output.shape))
+            np.save(output_path, output)
 

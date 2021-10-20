@@ -1,24 +1,28 @@
 ---
 ensemble:
   vars:
-    arg_dataset:        laptop
-    arg_filter_factor:  0.3
-    arg_network:        laptop
+    arg_dataset:        ensemble_22
+    arg_filter_factor:  1
+    arg_network:        blue
     arg_testset:        true
-    prep: ""
+    prep: |
+      module load hpc/cuda/11.2
+      . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
+      conda activate /data/hpcdata/users/jambyr/miniconda3/envs/icenet2
     symlinks:
       - ../../../data
       - ../../../predict.py
-      - ../../../loader.laptop.json
-      - ../../../dataset_config.laptop.json
+      - ../../../loader.ensemble_split.json
+      - ../../../dataset_config.ensemble_22.json
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
     gpus:         1
     mem:          32gb
+    nodelist:     node022
 
-  pre_process: []
-  post_process: []
+  pre_process:    []
+  post_process:   []
 
   batch_config:
     templatedir:  ../template
@@ -31,11 +35,11 @@ ensemble:
     ntasks:       4
     length:       02:00:00
     maxruns:      6
-    maxjobs:      2
+    maxjobs:      3
 
   batches:
-    - name:       laptop_forecast
-      basedir:    ./ensemble/laptop_predict
+    - name:       blue_forecast
+      basedir:    ./ensemble/blue_predict
       pre_batch:  []
       pre_run:    []
       runs:
@@ -49,5 +53,5 @@ ensemble:
       post_batch:
         - name:   execute
           args:
-              cmd:  python ../../postprocess_predict.py -o ../../results/predict laptop_forecast predict_dates.csv
+            cmd:  python ../../postprocess_predict.py -o ../../results/predict blue_forecast predict_dates.csv
 

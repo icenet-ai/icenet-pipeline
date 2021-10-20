@@ -21,7 +21,7 @@ def date_arg(string):
 def get_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("name")
-    ap.add_argument("dates", type=date_arg, nargs="+")
+    ap.add_argument("datefile", type=argparse.FileType("r"))
 
     ap.add_argument("-o", "--output-dir", default=".")
     ap.add_argument("-s", "--hemisphere",
@@ -81,18 +81,22 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
+    dates = [dt.date(*[int(v) for v in s.split("-")])
+             for s in args.datefile.read().split()]
+    args.datefile.close()
+
     arr = np.array(
         [get_prediction_data(args.root, args.name, date)
-         for date in args.dates])
+         for date in dates])
 
     # TODO: Highly Recommended Variable Attributes
     xarr = xr.Dataset(
         data_vars=dict(
-            mean=(["time", "xc", "yc", "leadtime"], arr[..., 0]),
-            stddev=(["time", "xc", "yc", "leadtime"], arr[..., 1]),
+            sic_mean=(["time", "xc", "yc", "leadtime"], arr[..., 0]),
+            sic_stddev=(["time", "xc", "yc", "leadtime"], arr[..., 1]),
         ),
         coords=dict(
-            time=[pd.Timestamp(d) for d in args.dates],
+            time=[pd.Timestamp(d) for d in dates],
             leadtime=np.arange(1, arr.shape[3] + 1, 1),
             xc=np.linspace(-5387.5, 5387.5, 432),
             yc=np.linspace(-5387.5, 5387.5, 432),
@@ -191,4 +195,6 @@ if __name__ == "__main__":
     #)
 
     # TODO: split into daily files
-    xarr.to_netcdf(os.path.join(args.output_dir, "{}.nc".format(args.name)))
+    output_path = os.path.join(args.output_dir, "{}.nc".format(args.name))
+    logging.info("Saving to {}".format(output_path))
+    xarr.to_netcdf(output_path)
