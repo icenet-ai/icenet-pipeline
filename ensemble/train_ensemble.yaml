@@ -1,12 +1,12 @@
 ---
 ensemble:
   vars:
-    arg_dataset:    training
-    arg_batch:      4
-    arg_queue:      8
+    arg_dataset:    laptop
+    arg_batch:      1
+    arg_queue:      1
     arg_strategy:   default
     arg_epochs:     10
-    arg_filter_factor:  0.25
+    arg_filter_factor:  0.3
     prep:           ""
     symlinks:
       - ../../../train.py
@@ -14,13 +14,13 @@ ensemble:
       - ../../../dataset_config.laptop.json
       - ../../../network_datasets
       - ../../../results
-    gpus:         2
+    gpus:         1
     mem:          128gb
 
   pre_process:
     - name:   execute
       args:
-        cmd:  mkdir -p ../results/networks
+        cmd:  mkdir -p results/networks
 
   post_process: []
 
@@ -29,17 +29,17 @@ ensemble:
     templates:
     - icenet_train.sh.j2
     email:        jambyr@bas.ac.uk
-    job_file:     icenet_run.sh
+    job_file:     icenet_train.sh
     cluster:      gpu
     nodes:        1
     ntasks:       4
     length:       02:00:00
-    maxruns:      6
-    maxjobs:      2
+    maxruns:      2
+    maxjobs:      1
 
   batches:
-    - name:       draft
-      basedir:    ./ensemble/draft
+    - name:       laptop
+      basedir:    ./ensemble/laptop
       pre_batch:  []
       pre_run:    []
       runs:

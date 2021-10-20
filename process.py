@@ -9,8 +9,11 @@ import sys
 
 import pandas as pd
 
-from icenet2.data.processors.datasets \
-    import IceNetERA5PreProcessor, IceNetHRESPreProcessor, IceNetOSIPreProcessor
+from icenet2.data.processors.datasets import \
+    IceNetERA5PreProcessor, \
+    IceNetHRESPreProcessor, \
+    IceNetOSIPreProcessor
+from icenet2.data.processors.meta import IceNetMetaPreProcessor
 from icenet2.data.loader import IceNetDataLoader
 
 
@@ -57,6 +60,8 @@ def get_args():
     ap.add_argument("-so", "--skip-osi", dest="skip_osi",
                     default=False, action="store_true")
     ap.add_argument("-sp", "--skip-process", dest="skip_process",
+                    default=False, action="store_true")
+    ap.add_argument("-sm", "--skip-meta", dest="skip_meta",
                     default=False, action="store_true")
     ap.add_argument("-eh", "--enable-hres", dest="enable_hres",
                     default=False, action="store_true")
@@ -126,9 +131,6 @@ if __name__ == "__main__":
             dates["train"],
             dates["val"],
             dates["test"],
-            # TODO: move circday/land to IceNetMetaPreProcessor
-            include_circday=False,
-            include_land=False,
             linear_trends=["siconca"],
             linear_trend_days=args.forecast_days,
         )
@@ -152,8 +154,6 @@ if __name__ == "__main__":
             dates["train"],
             dates["val"],
             dates["test"],
-            include_circday=False,
-            include_land=False,
             linear_trends=tuple(),
         )
         hres_clim.init_source_data(
@@ -168,9 +168,6 @@ if __name__ == "__main__":
             dates["train"],
             dates["val"],
             dates["test"],
-            # TODO: move circday/land to IceNetMetaPreProcessor
-            include_circday=False,
-            include_land=False,
             linear_trends=["siconca"],
             linear_trend_days=args.forecast_days,
             # TODO: should reconsider the process for double usage (overrides?)
@@ -182,6 +179,11 @@ if __name__ == "__main__":
             lead_days=args.forecast_days,
         )
         hres_osi.process()
+
+    if not args.skip_meta:
+        IceNetMetaPreProcessor(
+            args.name,
+        ).process()
 
     if not args.skip_process:
         dl = IceNetDataLoader("loader.{}.json".format(args.name),

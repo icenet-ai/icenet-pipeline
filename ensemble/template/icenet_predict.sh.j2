@@ -18,7 +18,7 @@
 {{ run.prep }}
 cd {{ run.dir }}
 
-{% for dest in run.symlinks %}ln -s{{ dest }}
+{% for dest in run.symlinks %}ln -s {{ dest }}
 {% endfor %}
 
 echo "START `date +%F`"
