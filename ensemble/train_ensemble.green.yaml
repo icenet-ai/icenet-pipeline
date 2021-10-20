@@ -2,9 +2,9 @@
 ensemble:
   vars:
     arg_dataset:    ensemble_22
-    arg_batch:      2
-    arg_queue:      8
-    arg_strategy:   default
+    arg_batch:      4
+    arg_queue:      2
+    arg_strategy:   mirrored
     arg_epochs:     100
     arg_filter_factor:  1
     prep: |
@@ -18,7 +18,7 @@ ensemble:
       - ../../../network_datasets
       - ../../../results
     gpus:         1
-    mem:          96gb
+    mem:          176gb
     nodelist:     node022
 
   pre_process:
@@ -37,9 +37,9 @@ ensemble:
     cluster:      gpu
     nodes:        1
     ntasks:       8
-    length:       7-00:00:00
-    maxruns:      6
-    maxjobs:      3
+    length:       2-00:00:00
+    maxruns:      3
+    maxjobs:      2
 
   batches:
     - name:       green
