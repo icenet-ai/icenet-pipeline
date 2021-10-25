@@ -18,7 +18,7 @@ ensemble:
       - ../../../processed
       - ../../../results
     gpus:         1
-    mem:          32gb
+    mem:          192gb
     nodelist:     node022
 
   pre_process:    []
@@ -48,8 +48,7 @@ ensemble:
         - seed:   44
         - seed:   45
         - seed:   46
-      post_run:
-        - name:   remove
+      post_run: []
       post_batch:
         - name:   execute
           args:

@@ -38,17 +38,19 @@ if __name__ == "__main__":
 
     dataset_config = \
         os.path.join(".", "dataset_config.{}.json".format(args.dataset))
-
+    
+    date_content = args.datefile.read()
     dates = [dt.date(*[int(v) for v in s.split("-")])
-             for s in args.datefile.read().split()]
+             for s in date_content.split()]
     args.datefile.close()
 
     output_dir = os.path.join(".", "results", "predict",
                               args.output_name,
                               "{}.{}".format(args.network_name, args.seed))
-
+    
     forecasts, gen_outputs = predict_forecast(dataset_config,
                                               args.network_name,
+                                              dataset_name=args.dataset,
                                               n_filters_factor=
                                               args.n_filters_factor,
                                               seed=args.seed,
