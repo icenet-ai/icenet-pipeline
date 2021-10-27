@@ -28,3 +28,6 @@ model_ensemble -n -v ensemble/train_ensemble.yaml dummy
 
 model_ensemble -n -v ensemble/predict_ensemble.yaml dummy
 ```
+
+
+python process.py -v -w 1 -ob 2 -fd 4 -l 2 -so -se -sm -ts 2010-01-28 -te 2010-01-31 laptop north 2010-01-01 2010-01-22 2010-01-23 2010-01-27
