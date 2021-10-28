@@ -19,5 +19,6 @@ __pycache__/
 *test*.json
 dataset_config.*.json
 loader.*.json
+*.log
 *.nc
 *.npy

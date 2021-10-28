@@ -118,6 +118,7 @@ def get_data(dates,
             pressure_levels=[None, [500], None, None, [250, 500], [1000], None,
                              None, None, None],
             dates=dates,
+            max_threads=4,
             north=north,
             south=south
         )

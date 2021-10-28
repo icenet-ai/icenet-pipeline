@@ -30,6 +30,14 @@ def get_args():
     ap.add_argument("--gpus", default=None)
     ap.add_argument("-w", "--workers", type=int, default=4)
 
+    ap.add_argument("--lr", default=1e-4, type=float)
+    ap.add_argument("--lr_10e_decay_fac", default=1.0, type=float,
+                    help="Factor by which LR is multiplied by every 10 epochs "
+                         "using exponential decay. E.g. 1 -> no decay (default)"
+                         ", 0.5 -> halve every 10 epochs.")
+    ap.add_argument('--lr_decay_start', default=10, type=int)
+    ap.add_argument('--lr_decay_end', default=30, type=int)
+
     return ap.parse_args()
 
 
@@ -50,19 +58,23 @@ if __name__ == "__main__":
     trained_path, history = \
         train_model(args.run_name,
                     dataset_config,
+                    batch_size=args.batch_size,
+                    dataset_ratio=args.ratio,
+                    epochs=args.epochs,
+                    learning_rate=args.lr,
+                    lr_10e_decay_fac=args.lr_10e_decay_fac,
+                    lr_decay_start=args.lr_decay_start,
+                    lr_decay_end=args.lr_decay_end,
                     pre_load_network=args.preload is not None,
                     pre_load_path=args.preload,
-                    batch_size=args.batch_size,
-                    epochs=args.epochs,
-                    workers=args.workers,
-                    use_multiprocessing=args.multiprocessing,
+                    max_queue_size=args.max_queue_size,
                     n_filters_factor=args.n_filters_factor,
                     seed=args.seed,
                     strategy=strategy,
-                    max_queue_size=args.max_queue_size,
-                    dataset_ratio=args.ratio)
+                    use_multiprocessing=args.multiprocessing,
+                    workers=args.workers,)
 
-#    fig, ax = plt.subplots()
+    #    fig, ax = plt.subplots()
 #    ax.plot(history.history['val_loss'], label='val')
 #    ax.plot(history.history['loss'], label='train')
 #    ax.legend(loc='best')

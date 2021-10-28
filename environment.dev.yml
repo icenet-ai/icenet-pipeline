@@ -11,6 +11,7 @@ dependencies:
   - dask
   - distributed
   - eccodes
+  - gast==0.3.3
   - h5py
   - hdf4
   - hdf5
