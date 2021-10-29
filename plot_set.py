@@ -43,9 +43,10 @@ def main(args):
     for _ in range(0, args.index):
         data = next(it)
 
-    x, y = data
+    x, y, sample_weights = data
     logging.debug("x {}".format(x.shape))
     logging.debug("y {}".format(y.shape))
+    logging.debug("sample_weights {}".format(sample_weights.shape))
 
     output_dir = os.path.join(args.output, "plot_set")
     os.makedirs(output_dir, exist_ok=True)

@@ -4,7 +4,7 @@ ensemble:
     arg_dataset:    ensemble_22
     arg_batch:      4
     arg_queue:      2
-    arg_strategy:   mirrored
+    arg_strategy:   default
     arg_epochs:     100
     arg_filter_factor:  1
     prep: |

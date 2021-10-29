@@ -8,6 +8,7 @@ __pycache__/
 /ensemble/laptop*/
 /ensemble/green/
 /ensemble/predict/
+/ensemble/tiny/
 /ensemble/*_predict/
 /logs/
 /network_datasets
@@ -19,6 +20,8 @@ __pycache__/
 *test*.json
 dataset_config.*.json
 loader.*.json
+*.err
 *.log
 *.nc
 *.npy
+*.out

@@ -190,6 +190,7 @@ if __name__ == "__main__":
                               args.forecast_name
                               if args.forecast_name else args.name,
                               args.lag,
+                              n_forecast_days=args.forecast_days,
                               north=args.hemisphere == "north",
                               south=args.hemisphere == "south",
                               output_batch_size=args.batch_size,
