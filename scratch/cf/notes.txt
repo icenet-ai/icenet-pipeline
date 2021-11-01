@@ -1,0 +1,30 @@
+Compliance tool is available (CEDA) 
+nco for adding attributes: 
+- atted, retains underlying engine
+- ACDD-1.3 for global attrs
+ncdump the raw file
+ncgen for update
+
+data (BAS convention to align with CF/ACDD): 
+- units
+- long name
+- standard name
+ 
+global vars (ACDD with BAS):
+- title/summary could/should be generated
+- history can contain lineage of model
+- ack might be grant
+- license == OGLv3?
+
+CEDA do bring data (MF) for taking data 
+Produce via the PDC
+ORCID for creator_url
+
+time will be the variable
+calendar attribute will mark reference point (e.g. forecast_date)
+standard table is your friend - match where possible, do short, long and standard names
+bear in mind potential _FillValue/_missing_value (only attribute with underscores?)
+
+pbree/apres implementation of NetCDF application of attrs
+Long term PDC should ingest and output global vars from ML pipeline generally
+In short term I'll apply all to output data

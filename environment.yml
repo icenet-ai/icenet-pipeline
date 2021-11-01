@@ -1,4 +1,4 @@
-name: icenet.blue
+name: icenet2
 channels:
   - conda-forge
   - defaults
@@ -28,8 +28,10 @@ dependencies:
   - wheel
   - xarray
   - pip:
+    - azure-storage-blob
     - cdsapi
     - dm-tree
     - ecmwf-api-client
-    - model-ensembler==0.5.0
+    - gast==0.3.3
+    - model-ensembler
     - tensorflow-probability
