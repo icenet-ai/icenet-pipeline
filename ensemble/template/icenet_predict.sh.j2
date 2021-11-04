@@ -7,7 +7,7 @@
 #SBATCH --time={{ run.length }}
 #SBATCH --job-name={{ run.id }}
 #SBATCH --nodes={{ run.nodes }}
-#SBATCH --gres=gpu:{{ run.gpus }}
+{% if run.cluster == "gpu" %}#SBATCH --gres=gpu:{{ run.gpus }}{% endif %}
 #SBATCH --partition={{ run.cluster }}
 #SBATCH --account={{ run.cluster }}
 #SBATCH --cpus-per-task={{ run.ntasks }}
@@ -15,7 +15,7 @@
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
-{{ run.prep }}
+. {{ run.arg_prep }}
 cd {{ run.dir }}
 
 {% for dest in run.symlinks %}ln -s {{ dest }}
@@ -23,10 +23,15 @@ cd {{ run.dir }}
 
 echo "START `date +%F`"
 
-python3 predict.py -v -n {{ run.arg_filter_factor }} \{% if run.arg_testset %}
+cat <<EOF >cmd.sh
+icenet_predict -v -n {{ run.arg_filter_factor }} \{% if run.arg_testset %}
     -t \{% endif %}
     {{ run.arg_dataset }} {{ run.arg_network }} {{ run.name }} \
-    {{ run.seed }} ../predict_dates.csv \
-    2>&1 | tee predict.out.log
+    {{ run.seed }} ../predict_dates.csv
+
+EOF
+
+chmod +x cmd.sh
+./cmd.sh
 
 echo "FINISH `date +%F`"

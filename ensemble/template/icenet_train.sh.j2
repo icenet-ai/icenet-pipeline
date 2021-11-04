@@ -15,7 +15,7 @@
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
-{{ run.prep }}
+. {{ run.arg_prep }}
 cd {{ run.dir }}
 
 {% for dest in run.symlinks %}ln -s {{ dest }}
@@ -23,10 +23,15 @@ cd {{ run.dir }}
 
 echo "START `date +%F`"
 
-python3 train.py -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
+cat <<EOF >cmd.sh
+icenet_train -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
     -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -s {{ run.arg_strategy }} \{% if run.arg_preload %}
     -p {{ run.arg_preload_path }} \{% endif %}{% if run.arg_filter_factor %}
     -n {{ run.arg_filter_factor }} \{% endif %}
-2>&1
+
+EOF
+
+chmod +x cmd.sh
+./cmd.sh
 
 echo "FINISH `date +%F`"

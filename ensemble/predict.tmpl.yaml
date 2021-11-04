@@ -1,0 +1,52 @@
+---
+ensemble:
+  vars:
+    arg_dataset:        DATASET
+    arg_filter_factor:  1
+    arg_network:        NETWORK
+    arg_testset:        true
+    arg_prep:           ""
+    symlinks:
+      - ../../../data
+      - ../../../predict.py
+      - ../../../loader.LOADER.json
+      - ../../../dataset_config.DATASET.json
+      - ../../../network_datasets
+      - ../../../processed
+      - ../../../results
+    mem:          32gb
+
+  pre_process:          []
+  post_process:         []
+
+  batch_config:
+    templatedir:  ../template
+    templates:
+    - icenet_predict.sh.j2
+    email:        jambyr@bas.ac.uk
+    job_file:     icenet_predict.sh
+    cluster:      short
+    nodes:        1
+    ntasks:       8
+    length:       3-00:00:00
+    maxruns:      1
+    maxjobs:      1
+
+  batches:
+    - name:       NAME
+      basedir:    ./ensemble/NAME
+      pre_batch:  []
+      pre_run:    []
+      runs:
+        - seed:   42
+        - seed:   43
+        - seed:   44
+        - seed:   45
+        - seed:   46
+      post_run:
+        - name:   remove
+      post_batch:
+        - name:   execute
+          args:
+              cmd:  icenet_output -o ../../results/predict NAME predict_dates.csv
+

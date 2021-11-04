@@ -1,0 +1,59 @@
+---
+ensemble:
+  vars:
+    arg_batch:          4
+    arg_dataset:        DATASET
+    arg_epochs:         100
+    arg_filter_factor:  1
+    arg_queue:          2
+    arg_prep:           local.sh 
+    arg_strategy:       default
+    symlinks:
+      - ../../../data
+      - ../../../train.py
+      - ../../../loader.LOADER.json
+      - ../../../dataset_config.DATASET.json
+      - ../../../network_datasets
+      - ../../../processed
+      - ../../../results
+    gpus:         1
+    mem:          176gb
+
+  pre_process:
+    - name:   execute
+      args:
+        cmd:  mkdir -p ./results/networks
+
+  post_process: []
+
+  batch_config:
+    templatedir:  ../template
+    templates:
+    - icenet_train.sh.j2
+    email:        jambyr@bas.ac.uk
+    job_file:     icenet_train.sh
+    cluster:      gpu
+    nodes:        1
+    ntasks:       8
+    length:       3-00:00:00
+    maxruns:      1
+    maxjobs:      1
+
+  batches:
+    - name:       NAME
+      basedir:    ./ensemble/NAME
+      pre_batch:  []
+      pre_run:    []
+      runs:
+        - seed:   42
+        - seed:   43
+        - seed:   44
+        - seed:   45
+        - seed:   46
+      post_run:   []
+      post_batch:
+        - name:   execute
+          args:
+            cmd:  /usr/bin/echo "No postprocessing in place for training ensemble"
+
+
