@@ -8,7 +8,6 @@ ensemble:
     arg_prep:           ""
     symlinks:
       - ../../../data
-      - ../../../predict.py
       - ../../../loader.LOADER.json
       - ../../../dataset_config.DATASET.json
       - ../../../network_datasets
