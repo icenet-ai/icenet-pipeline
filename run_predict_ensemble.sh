@@ -18,7 +18,7 @@ while getopts ":b:df:i:lm:p:x" opt; do
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
-    i)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_ident=$OPTARG";;
+    i)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_ident=$OPTARG ";;
     l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_testset=false ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
