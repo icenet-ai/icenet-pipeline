@@ -10,14 +10,15 @@ echo "ARGS: $@"
 ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
+TRAIN_IDENT=""
 DO_NOT_EXECUTE=0
 
-while getopts ":b:df:m:p:x" opt; do
+while getopts ":b:df:lm:p:x" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
-    l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_test_set=False ";;
+    l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_testset=false ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
     x)  DO_NOT_EXECUTE=1
