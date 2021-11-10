@@ -25,7 +25,8 @@ echo "START `date +%F`"
 
 cat <<EOF >cmd.sh
 icenet_predict -v -n {{ run.arg_filter_factor }} \{% if run.arg_testset == "true" %}
-    -t \{% endif %}
+    -t \{% endif %}{% if run.arg_ident %}
+    -i {{ run.arg_ident }} \{% endif %}
     {{ run.arg_dataset }} {{ run.arg_network }} {{ run.name }} \
     {{ run.seed }} ../predict_dates.csv
 
