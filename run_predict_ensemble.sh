@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ $# -lt 3 ]]; then
-    echo "Usage $0 NETWORK DATASET NAME"
+if [[ $# -lt 4 ]]; then
+    echo "Usage $0 NETWORK DATASET NAME DATEFILE [LOADER]"
     exit 1
 fi
 
@@ -10,14 +10,17 @@ echo "ARGS: $@"
 ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
+DO_NOT_EXECUTE=0
 
-while getopts ":b:df:m:p:" opt; do
+while getopts ":b:df:m:p:x" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
+    l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_test_set=False ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
+    x)  DO_NOT_EXECUTE=1
   esac
 done
 
@@ -31,17 +34,33 @@ echo "ARGS = $ENSEMBLE_SWITCH $ENSEMBLE_ARGS, Leftovers: $@"
 NETWORK="$1"
 DATASET="$2"
 NAME="$3"
+DATEFILE="$4"
+LOADER="${5:-${DATASET}}"
+
+if [[ ! -f $DATEFILE ]]; then
+    echo "Missing $DATEFILE which must be a regular file of dates"
+    exit 1
+fi
+
+mkdir -p ensemble/${NAME}
+ln -s `realpath ${DATEFILE}` ensemble/${NAME}/predict_dates.csv
 
 PREDICT_CONFIG=`mktemp -p . --suffix ".predict"`
 
 sed -r \
     -e "s/NETWORK/${NETWORK}/g" \
     -e "s/DATASET/${DATASET}/g" \
+    -e "s/LOADER/${LOADER}/g" \
     -e "s/NAME/${NAME}/g" \
  ensemble/predict.tmpl.yaml >$PREDICT_CONFIG
 
 COMMAND="model_ensemble $PREDICT_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"
 echo "Running $COMMAND"
-$COMMAND
-echo "Removing temporary configuration $PREDICT_CONFIG"
-rm $PREDICT_CONFIG
+
+if [[ $DO_NOT_EXECUTE == 0 ]]; then
+    $COMMAND
+    echo "Removing temporary configuration $PREDICT_CONFIG"
+    rm $PREDICT_CONFIG
+else
+    echo "Configuration left in $PREDICT_CONFIG"
+fi

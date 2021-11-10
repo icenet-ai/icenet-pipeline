@@ -13,7 +13,7 @@ ensemble:
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
-    mem:          32gb
+    mem:          128gb
 
   pre_process:          []
   post_process:         []
@@ -27,9 +27,9 @@ ensemble:
     cluster:      short
     nodes:        1
     ntasks:       8
-    length:       3-00:00:00
-    maxruns:      1
-    maxjobs:      1
+    length:       00:30:00
+    maxruns:      6
+    maxjobs:      6
 
   batches:
     - name:       NAME
@@ -42,8 +42,8 @@ ensemble:
         - seed:   44
         - seed:   45
         - seed:   46
-      post_run:
-        - name:   remove
+      post_run:     
+        - name:     remove
       post_batch:
         - name:   execute
           args:
