@@ -42,8 +42,7 @@ ensemble:
         - seed:   44
         - seed:   45
         - seed:   46
-      post_run:     
-        - name:     remove
+      post_run:     []
       post_batch:
         - name:   execute
           args:

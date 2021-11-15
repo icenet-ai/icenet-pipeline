@@ -4,13 +4,9 @@ __pycache__/
 /_sicfile/
 /cf/
 /data
-/ensemble/draft/
-/ensemble/blue/
-/ensemble/laptop*/
-/ensemble/green/
-/ensemble/predict/
-/ensemble/tiny/
-/ensemble/*_predict/
+/ensemble/*
+!/ensemble/template/
+!/ensemble/*.tmpl.yaml
 /logs/
 /network_datasets
 /notebooks/
