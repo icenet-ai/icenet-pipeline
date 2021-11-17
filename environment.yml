@@ -34,3 +34,4 @@ dependencies:
     - gast==0.3.3
     - model-ensembler
     - tensorflow-probability
+    - wandb
