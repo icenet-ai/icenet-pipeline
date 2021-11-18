@@ -14,9 +14,11 @@ __pycache__/
 /plot/
 /processed
 /test*/
+/wandb/
 *test*.json
 dataset_config.*.json
 loader.*.json
+*.csv
 *.err
 *.log
 *.nc

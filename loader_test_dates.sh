@@ -6,7 +6,7 @@ if [ $# -ne 2 ]; then
 fi
 
 LOADER_NAME="loader.${1}.json"
-PREDICT_CSV="predict.${1}.json"
+PREDICT_CSV="predict.${1}.csv"
 PREDICT_PATH="ensemble/${2}/predict_dates.csv"
 
 if [ -f $PREDICT_CSV ]; then
