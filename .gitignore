@@ -3,6 +3,7 @@ __pycache__/
 .ipynb_checkpoints/
 /_sicfile/
 /cf/
+/dask-worker-space/
 /data
 /ensemble/*
 !/ensemble/template/
