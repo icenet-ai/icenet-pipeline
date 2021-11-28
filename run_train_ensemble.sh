@@ -10,6 +10,8 @@ echo "ARGS: $@"
 ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
+ENSEMBLE_JOBS=1
+ENSEMBLE_NTASKS=4
 
 while getopts ":b:c:de:f:g:m:n:p:q:s:" opt; do
   case "$opt" in
@@ -19,11 +21,13 @@ while getopts ":b:c:de:f:g:m:n:p:q:s:" opt; do
     e)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_epochs=$OPTARG ";;
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
     g)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}gpus=$OPTARG ";;
+    j)  ENSEMBLE_JOBS=$OPTARG ;;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     n)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodelist=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
     q)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_queue=$OPTARG ";;
     s)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_strategy=$OPTARG ";;
+    t)  ENSEMBLE_NTASKS=$OPTARG ;;
   esac
 done
 
@@ -44,6 +48,8 @@ sed -r \
     -e "s/NAME/${NAME}/g" \
     -e "s/LOADER/${LOADER}/g" \
     -e "s/DATASET/${DATASET}/g" \
+    -e "s/MAXJOBS/${ENSEMBLE_JOBS}/g" \
+    -e "s/NTASKS/${ENSEMBLE_NTASKS}/g" \
  ensemble/train.tmpl.yaml >$TRAIN_CONFIG
 
 COMMAND="model_ensemble $TRAIN_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"

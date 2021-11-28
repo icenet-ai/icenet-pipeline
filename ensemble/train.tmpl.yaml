@@ -16,7 +16,7 @@ ensemble:
       - ../../../processed
       - ../../../results
     gpus:         1
-    mem:          128gb
+    mem:          96gb
 
   pre_process:
     - name:   execute
@@ -33,10 +33,10 @@ ensemble:
     job_file:     icenet_train.sh
     cluster:      gpu
     nodes:        1
-    ntasks:       8
+    ntasks:       NTASKS
     length:       3-00:00:00
-    maxruns:      2
-    maxjobs:      2
+    maxruns:      5
+    maxjobs:      MAXJOBS
 
   batches:
     - name:       NAME
