@@ -46,5 +46,5 @@ ensemble:
       post_batch:
         - name:   execute
           args:
-              cmd:  icenet_output -o ../../results/predict NAME predict_dates.csv
+              cmd:  icenet_output -o ../../results/predict NAME DATASET predict_dates.csv
 
