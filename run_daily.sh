@@ -38,7 +38,7 @@ for HEMI in south north; do
     icenet_dataset_create -c -l $LAG -ob 1 -w 4 $PROC_NAME $HEMI \
         2>&1 | tee ${LOGDIR}/${PROC_NAME}.dataset.log        
         
-    ./loader_test_dates.sh $PROC_NAME | tail -n $DAYS_BEHIND >predict.${PROC_NAME}.csv
+    ./loader_test_dates.sh $PROC_NAME | tail -n `expr $DAYS_BEHIND + 1` >predict.${PROC_NAME}.csv
     
     echo rm -rv ensemble/${PROC_NAME}/
 

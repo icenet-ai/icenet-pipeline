@@ -8,11 +8,11 @@
 #SBATCH --job-name=icetest
 #SBATCH --nodes=1
 #SBATCH --nodelist=node022
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --partition=gpu
 #SBATCH --account=gpu
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128gb
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=96gb
 
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
@@ -24,8 +24,8 @@ mkdir -p results
 
 echo "START `date +%F`"
 
-icenet_train -v north_test22 north_test.42 42 \
-    -b 4 -e 2 -m -w 16 -qs 10 -s mirrored \
+icenet_train -v south_test22 south_test.42 42 \
+    -b 2 -e 20 -m -w 4 -qs 4 \
 2>&1 
 
 echo "FINISH `date +%F`"

@@ -21,6 +21,10 @@ module load hpc/cuda/11.2
 . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
 conda activate /data/hpcdata/users/jambyr/miniconda3/envs/icenet
 
+python -u scratch/tf_nans.py dataset_config.north_test22.json
+
+echo "SWITCH"
+
 python -u scratch/tf_nans.py dataset_config.south_test22.json
 
 echo "FINISH `date +%F`"
