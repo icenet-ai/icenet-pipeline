@@ -21,7 +21,7 @@ cd {{ run.dir }}
 {% for dest in run.symlinks %}ln -s {{ dest }}
 {% endfor %}
 
-echo "START `date +%F`"
+echo "START `date +%F\ %T`"
 
 cat <<EOF >cmd.sh
 icenet_train -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
@@ -35,4 +35,4 @@ EOF
 chmod +x cmd.sh
 ./cmd.sh
 
-echo "FINISH `date +%F`"
+echo "FINISH `date +%F\ %T`"

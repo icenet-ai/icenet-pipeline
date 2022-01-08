@@ -21,7 +21,7 @@ cd {{ run.dir }}
 {% for dest in run.symlinks %}ln -s {{ dest }}
 {% endfor %}
 
-echo "START `date +%F`"
+echo "START `date +%F\ %T`"
 
 cat <<EOF >cmd.sh
 icenet_predict -v -n {{ run.arg_filter_factor }} \{% if run.arg_testset == "true" %}
@@ -35,4 +35,4 @@ EOF
 chmod +x cmd.sh
 ./cmd.sh
 
-echo "FINISH `date +%F`"
+echo "FINISH `date +%F\ %T`"
