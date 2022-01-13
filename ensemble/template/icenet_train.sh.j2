@@ -24,7 +24,7 @@ cd {{ run.dir }}
 echo "START `date +%F\ %T`"
 
 cat <<EOF >cmd.sh
-icenet_train -v {{ run.arg_dataset }} {{ run.name }}.{{ run.seed }} {{ run.seed }} \
+icenet_train -v {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} \
     -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} \
     -w {{ run.ntasks }} -s {{ run.arg_strategy }} \{% if run.arg_preload %}
     -p {{ run.arg_preload_path }} \{% endif %}{% if run.arg_filter_factor %}
