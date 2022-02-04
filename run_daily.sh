@@ -11,8 +11,8 @@ while getopts ":b:l:n:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
     l)  LAG=$OPTARG ;;
-    n)  FORECAST_NAME="_${OPTARG}"
-    u)  UPLOAD=1
+    n)  FORECAST_NAME="_${OPTARG}" ;;
+    u)  UPLOAD=1 ;;
     x)  DO_NOT_EXECUTE=1 ;;
   esac
 done
@@ -79,7 +79,7 @@ for HEMI in south north; do
 
     if [[ ! -z "$COPY" ]]; then
         icenet_upload_local -v \
-            results/predict/${PROC_NAME}.nc $ICENET_END \
+            results/predict/${PROC_NAME}.nc /data/twins/common/icenet $ICENET_END \
                 2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_local.log
     fi
 done 
