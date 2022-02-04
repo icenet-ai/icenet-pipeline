@@ -1,13 +1,36 @@
 #!/usr/bin/env bash
 
-DAYS_BEHIND=${1:-0}
-LAG=${2:-3}
+# FIXME: We're doing a daily run but uploading only the most recent?
+DAYS_BEHIND=0
+FORECAST_NAME="_daily_forecast"
+LAG=3
+UPLOAD=0
+RUNNAME="$( basename `realpath .` )"
+
+while getopts ":b:l:n:ux" opt; do
+  case "$opt" in
+    b)  DAYS_BEHIND=$OPTARG ;;
+    l)  LAG=$OPTARG ;;
+    n)  FORECAST_NAME="_${OPTARG}"
+    u)  UPLOAD=1
+    x)  DO_NOT_EXECUTE=1 ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+COPY="${1:-}"
+
+echo "ARGS = $ENSEMBLE_ARGS, Leftovers: $@"
+
 ICENET_START=$( date --date="yesterday - `expr $LAG \+ $DAYS_BEHIND` days" +%F )
 ICENET_END=`date --date="yesterday" +%F`
 LOGDIR="logs/`date +%Y%m%d.%H%M`"
 
 for HEMI in south north; do
-    PROC_NAME="${HEMI}_daily_forecast"
+    PROC_NAME="${HEMI}${FORECAST_NAME}"
 
     if [ "$HEMI" == "north" ]; then
         HEMI_SHORT="nh"
@@ -48,8 +71,16 @@ for HEMI in south north; do
         ${HEMI}_hemi $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             
-    icenet_upload_azure -v \
-        results/predict/${PROC_NAME}.nc $ICENET_END \
-            2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload.log
+    if [[ $UPLOAD == 1 ]]; then
+        icenet_upload_azure -v \
+            results/predict/${PROC_NAME}.nc $ICENET_END \
+                2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_azure.log
+    fi
+
+    if [[ ! -z "$COPY" ]]; then
+        icenet_upload_local -v \
+            results/predict/${PROC_NAME}.nc $ICENET_END \
+                2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_local.log
+    fi
 done 
 
