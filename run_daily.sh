@@ -6,10 +6,12 @@ FORECAST_NAME="_daily_forecast"
 LAG=3
 UPLOAD=0
 RUNNAME="$( basename `realpath .` )"
+END_DATE="yesterday"
 
 while getopts ":b:l:n:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
+    e)  END_DATE=$OPTARG ;;
     l)  LAG=$OPTARG ;;
     n)  FORECAST_NAME="_${OPTARG}" ;;
     u)  UPLOAD=1 ;;
@@ -23,10 +25,16 @@ shift $((OPTIND-1))
 
 COPY="${1:-}"
 
-echo "ARGS = $ENSEMBLE_ARGS, Leftovers: $@"
+echo "Leftovers from getopt: $@"
 
-ICENET_START=$( date --date="yesterday - `expr $LAG \+ $DAYS_BEHIND` days" +%F )
-ICENET_END=`date --date="yesterday" +%F`
+if [[ "$END_DATE" != "yesterday" ]] \
+    && ! [[ "$END_DATE" =~ ^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$ ]]; then
+    echo "$END_DATE if specified, needs to be in the form yyyy-mm-dd"
+    exit 1
+fi
+
+ICENET_START=$( date --date="$END_DATE - `expr $LAG \+ $DAYS_BEHIND` days" +%F )
+ICENET_END=`date --date="$END_DATE" +%F`
 LOGDIR="logs/`date +%Y%m%d.%H%M`"
 
 for HEMI in south north; do
@@ -77,6 +85,7 @@ for HEMI in south north; do
                 2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_azure.log
     fi
 
+    # while read -rs DT; do echo "Processing $DT"; icenet_upload_local -v results/predict/north_daily_forecast.nc /data/twins/common/icenet $DT; done <predict.north_daily_forecast.csv
     if [[ ! -z "$COPY" ]]; then
         icenet_upload_local -v \
             results/predict/${PROC_NAME}.nc /data/twins/common/icenet $ICENET_END \
