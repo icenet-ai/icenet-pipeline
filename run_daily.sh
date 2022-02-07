@@ -74,6 +74,7 @@ for HEMI in south north; do
     echo rm -rv ensemble/${PROC_NAME}/
 
     # NOTE THE -l - we use the loader directly
+    # FIXME: we assume the network name here
     ./run_predict_ensemble.sh \
         -b 1 -f 1.2 -p bashpc.sh -l -i ${HEMI}_test22 \
         ${HEMI}_hemi $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
@@ -88,7 +89,7 @@ for HEMI in south north; do
     # while read -rs DT; do echo "Processing $DT"; icenet_upload_local -v results/predict/north_daily_forecast.nc /data/twins/common/icenet $DT; done <predict.north_daily_forecast.csv
     if [[ ! -z "$COPY" ]]; then
         icenet_upload_local -v \
-            results/predict/${PROC_NAME}.nc /data/twins/common/icenet $ICENET_END \
+            results/predict/${PROC_NAME}.nc $COPY $ICENET_END \
                 2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_local.log
     fi
 done 
