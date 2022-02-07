@@ -8,7 +8,7 @@ UPLOAD=0
 RUNNAME="$( basename `realpath .` )"
 END_DATE="yesterday"
 
-while getopts ":b:l:n:ux" opt; do
+while getopts ":b:e:l:n:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
     e)  END_DATE=$OPTARG ;;
@@ -31,11 +31,15 @@ if [[ "$END_DATE" != "yesterday" ]] \
     && ! [[ "$END_DATE" =~ ^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$ ]]; then
     echo "$END_DATE if specified, needs to be in the form yyyy-mm-dd"
     exit 1
+else
+    echo "Using end date $END_DATE"
 fi
 
 ICENET_START=$( date --date="$END_DATE - `expr $LAG \+ $DAYS_BEHIND` days" +%F )
 ICENET_END=`date --date="$END_DATE" +%F`
 LOGDIR="logs/`date +%Y%m%d.%H%M`"
+
+echo "Processing dates $ICENET_START to $ICENET_END"
 
 for HEMI in south north; do
     PROC_NAME="${HEMI}${FORECAST_NAME}"
