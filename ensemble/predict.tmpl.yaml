@@ -34,7 +34,10 @@ ensemble:
   batches:
     - name:       NAME
       basedir:    ./ensemble/NAME
-      pre_batch:  []
+      pre_batch:  
+        - name:   execute
+          args: 
+              cmd:  /usr/bin/ln -s ../../data
       pre_run:    []
       runs:
         - seed:   42
