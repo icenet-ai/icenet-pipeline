@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 
 # FIXME: We're doing a daily run but uploading only the most recent?
+DATASET="HEMI_10"
 DAYS_BEHIND=0
 FORECAST_NAME="_daily_forecast"
 LAG=3
 UPLOAD=0
 RUNNAME="$( basename `realpath .` )"
+RUNSUFFIX="hemi"
 END_DATE="yesterday"
 
-while getopts ":b:e:l:n:ux" opt; do
+while getopts ":b:d:e:l:n:r:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
-    e)  END_DATE=$OPTARG ;;
+    d)  DATASET="$OPTARG" ;;
+    e)  END_DATE="$OPTARG" ;;
     l)  LAG=$OPTARG ;;
     n)  FORECAST_NAME="_${OPTARG}" ;;
+    r)  RUNSUFFIX="$OPTARG" ;;
     u)  UPLOAD=1 ;;
     x)  DO_NOT_EXECUTE=1 ;;
   esac
@@ -43,6 +47,7 @@ echo "Processing dates $ICENET_START to $ICENET_END"
 
 for HEMI in south north; do
     PROC_NAME="${HEMI}${FORECAST_NAME}"
+    DATASET_NAME="${DATASET/HEMI/$HEMI}"
 
     if [ "$HEMI" == "north" ]; then
         HEMI_SHORT="nh"
@@ -66,7 +71,7 @@ for HEMI in south north; do
             
     icenet_process_hres -v ${PROC_NAME} $HEMI \
         -ts $ICENET_START -te $ICENET_END -l $LAG \
-        -r processed/${HEMI}_10/era5/${HEMI_SHORT} \
+        -r processed/${DATASET_NAME}/era5/${HEMI_SHORT} \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.proc.hres.log
     
     # NOTE THE -c - we only produce configuration here...
@@ -78,14 +83,14 @@ for HEMI in south north; do
     echo rm -rv ensemble/${PROC_NAME}/
 
     # NOTE THE -l - we use the loader directly
-    # FIXME: we assume the network name here
+    # FIXME: we assume the network name here is suffixed with 22 for BAS runs
     ./run_predict_ensemble.sh \
-        -b 1 -f 1.2 -p bashpc.sh -l -i ${HEMI}_test22 \
-        ${HEMI}_hemi $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
+        -b 1 -f 1.2 -p bashpc.sh -l -i ${DATASET_NAME}22 \
+        ${HEMI}_${RUNSUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             
     if [[ $UPLOAD == 1 ]]; then
-        icenet_upload_azure -v \
+        icenet_upload_azure -o -v \
             results/predict/${PROC_NAME}.nc $ICENET_END \
                 2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_azure.log
     fi
