@@ -11,12 +11,14 @@ UPLOAD=0
 RUNNAME="$( basename `realpath .` )"
 RUNSUFFIX="hemi"
 END_DATE="yesterday"
+FILTER_FACTOR=1.2
 
-while getopts ":b:d:e:l:n:o:r:ux" opt; do
+while getopts ":b:d:e:f:l:n:o:r:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
     d)  DATASET="$OPTARG" ;;
     e)  END_DATE="$OPTARG" ;;
+    f)  FILTER_FACTOR=$OPTARG ;;
     l)  LAG=$OPTARG ;;
     n)  FORECAST_NAME="_${OPTARG}" ;;
     o)  LOADER="${OPTARG}" ;;
@@ -90,7 +92,7 @@ for HEMI in south north; do
     # NOTE THE -l - we use the loader directly
     # FIXME: we assume the network name here is suffixed with 22 for BAS runs
     ./run_predict_ensemble.sh \
-        -b 1 -f 1.2 -p bashpc.sh -l -i ${DATASET_NAME}22 \
+        -b 1 -f ${FILTER_FACTOR} -p bashpc.sh -l -i ${DATASET_NAME}22 \
         ${HEMI}_${RUNSUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             
