@@ -12,7 +12,7 @@ RUNNAME="$( basename `realpath .` )"
 RUNSUFFIX="hemi"
 END_DATE="yesterday"
 
-while getopts ":b:d:e:l:n:r:ux" opt; do
+while getopts ":b:d:e:l:n:o:r:ux" opt; do
   case "$opt" in
     b)  DAYS_BEHIND=$OPTARG ;;
     d)  DATASET="$OPTARG" ;;
