@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 # FIXME: We're doing a daily run but uploading only the most recent?
+# FIXME: the parameters for this script are getting silly
 DATASET="HEMI_10"
 DAYS_BEHIND=0
 FORECAST_NAME="_daily_forecast"
 LAG=3
+LOADER=""
 UPLOAD=0
 RUNNAME="$( basename `realpath .` )"
 RUNSUFFIX="hemi"
@@ -17,6 +19,7 @@ while getopts ":b:d:e:l:n:r:ux" opt; do
     e)  END_DATE="$OPTARG" ;;
     l)  LAG=$OPTARG ;;
     n)  FORECAST_NAME="_${OPTARG}" ;;
+    o)  LOADER="${OPTARG}" ;;
     r)  RUNSUFFIX="$OPTARG" ;;
     u)  UPLOAD=1 ;;
     x)  DO_NOT_EXECUTE=1 ;;
@@ -48,6 +51,8 @@ echo "Processing dates $ICENET_START to $ICENET_END"
 for HEMI in south north; do
     PROC_NAME="${HEMI}${FORECAST_NAME}"
     DATASET_NAME="${DATASET/HEMI/$HEMI}"
+    LOADER="${LOADER:-$DATASET}"
+    LOADER_NAME="${LOADER/HEMI/$HEMI}"
 
     if [ "$HEMI" == "north" ]; then
         HEMI_SHORT="nh"
@@ -71,7 +76,7 @@ for HEMI in south north; do
             
     icenet_process_hres -v ${PROC_NAME} $HEMI \
         -ts $ICENET_START -te $ICENET_END -l $LAG \
-        -r processed/${DATASET_NAME}/era5/${HEMI_SHORT} \
+        -r processed/${LOADER_NAME}/era5/${HEMI_SHORT} \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.proc.hres.log
     
     # NOTE THE -c - we only produce configuration here...
