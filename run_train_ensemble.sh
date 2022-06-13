@@ -13,7 +13,7 @@ ENSEMBLE_ARGS=""
 ENSEMBLE_JOBS=1
 ENSEMBLE_NTASKS=4
 
-while getopts ":b:c:de:f:g:j:m:n:p:q:s:" opt; do
+while getopts ":b:c:de:f:g:j:l:m:n:p:q:s:" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     c)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}cluster=$OPTARG ";;
@@ -22,6 +22,7 @@ while getopts ":b:c:de:f:g:j:m:n:p:q:s:" opt; do
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
     g)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}gpus=$OPTARG ";;
     j)  ENSEMBLE_JOBS=$OPTARG ;;
+    l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_preload=$OPTARG ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     n)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodelist=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
