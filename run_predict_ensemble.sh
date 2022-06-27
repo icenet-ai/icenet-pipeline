@@ -57,7 +57,7 @@ sed -r \
     -e "s/NAME/${NAME}/g" \
  ensemble/predict.tmpl.yaml >$PREDICT_CONFIG
 
-COMMAND="model_ensemble $PREDICT_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"
+COMMAND="model_ensemble -ct 60 -rt 60 -st 60 -et 60 $PREDICT_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"
 echo "Running $COMMAND"
 
 if [[ $DO_NOT_EXECUTE == 0 ]]; then
