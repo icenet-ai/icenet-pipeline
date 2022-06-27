@@ -56,12 +56,6 @@ for HEMI in south north; do
     LOADER="${LOADER:-$DATASET}"
     LOADER_NAME="${LOADER/HEMI/$HEMI}"
 
-    if [ "$HEMI" == "north" ]; then
-        HEMI_SHORT="nh"
-    else
-        HEMI_SHORT="sh"
-    fi
-    
     mkdir $LOGDIR
     echo "Removing previous daily predictions"
     rm -rv results/predict/$PROC_NAME
@@ -78,7 +72,7 @@ for HEMI in south north; do
             
     icenet_process_hres -v ${PROC_NAME} $HEMI \
         -ts $ICENET_START -te $ICENET_END -l $LAG \
-        -r processed/${LOADER_NAME}/era5/${HEMI_SHORT} \
+        -r processed/${LOADER_NAME}/era5/${HEMI} \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.proc.hres.log
     
     # NOTE THE -c - we only produce configuration here...
@@ -92,7 +86,7 @@ for HEMI in south north; do
     # NOTE THE -l - we use the loader directly
     # FIXME: we assume the network name here is suffixed with 22 for BAS runs
     ./run_predict_ensemble.sh \
-        -b 1 -f ${FILTER_FACTOR} -p bashpc.sh -l -i ${DATASET_NAME}22 \
+        -b 1 -f ${FILTER_FACTOR} -p bashpc.sh -l -i ${DATASET_NAME}.22 \
         ${HEMI}_${RUNSUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             
