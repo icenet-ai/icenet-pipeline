@@ -16,7 +16,7 @@ ensemble:
       - ../../../processed
       - ../../../results
     gpus:         1
-    mem:          96gb
+    mem:          128gb
 
   pre_process:
     - name:   execute
