@@ -23,15 +23,15 @@ dependencies:
   - python==3.8
   - setuptools
   - tensorboard
-  - tensorflow=2.4.1=gpu_py38h8a7d6ce_0
   - wheel
   - xarray
+  - xgeo
   - pip:
     - azure-storage-blob
     - cdsapi
     - dm-tree
     - ecmwf-api-client
-    - gast==0.3.3
     - model-ensembler
+    - tensorflow
     - tensorflow-probability
     - wandb
