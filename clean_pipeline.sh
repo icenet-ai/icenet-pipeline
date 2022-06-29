@@ -2,7 +2,7 @@
 
 echo "Cleaning the environment"
 rm -v dataset_config.*.json
-find ensemble/ -maxdepth 1 -type d -a ! -name 'ensemble' -a ! -name 'template' -exec echo rm -rv {} \;
+find ensemble/ -maxdepth 1 -type d -a ! -name 'ensemble' -a ! -name 'template' -exec rm -rv {} \;
 rm -v loader.*.json
 rm -rv logs/*
 rm -rv network_datasets/*
