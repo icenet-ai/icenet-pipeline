@@ -18,6 +18,7 @@ __pycache__/
 *test*.json
 dataset_config.*.json
 loader.*.json
+FILTER_FACTOR
 *.csv
 *.err
 *.log
