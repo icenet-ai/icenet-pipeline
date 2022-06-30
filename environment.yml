@@ -4,6 +4,7 @@ channels:
 dependencies:
   - cudatoolkit
   - cudnn
+  - eccodes
   - hdf4
   - hdf5
   - ipykernel
