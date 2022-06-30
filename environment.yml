@@ -9,4 +9,3 @@ dependencies:
   - ipykernel
   - iris
   - python==3.8
-  - xgeo
