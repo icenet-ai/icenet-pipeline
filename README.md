@@ -48,6 +48,12 @@ icenet_data_sic $HEMI 1988-1-1 1991-12-31 -v
 icenet_data_hres $HEMI 2012-06-01 2012-06-30 -v
 icenet_data_sic $HEMI 2012-06-01 2012-06-30 -v
 
+icenet_process_cmip pretrain_loader $HEMI MRI-ESM2-0 r1i1p1f1 \
+    -ns 1988-1-1 -ne 1990-12-31 \
+    -vs 1991-2-1 -ve 1991-2-28 \
+    -ts 1991-6-1 -te 1991-6-30 -l $LAG 
+icenet_process_metadata pretrain_loader $HEMI
+
 icenet_process_era5 train_loader $HEMI \
     -ns 1988-1-1 -ne 1990-12-31 \
     -vs 1991-2-1 -ve 1991-2-28 \
@@ -58,8 +64,10 @@ icenet_process_sic train_loader $HEMI \
     -ts 1991-6-1 -te 1991-6-30 -l $LAG 
 icenet_process_metadata train_loader $HEMI
 
-icenet_process_hres -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
-icenet_process_sic -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
+icenet_process_era5 -r processed/train_loader/era5/$HEMI \
+  -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
+icenet_process_sic  -r processed/train_loader/osisaf/$HEMI \
+  -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
 icenet_process_metadata forecast_loader $HEMI
 
 icenet_dataset_create -l $LAG -ob 2 -w 4 train_loader $HEMI
@@ -69,9 +77,8 @@ icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
     -b 2 -e 20 -f $FILTER_FACTOR -p $PREP_SCRIPT -q 2 \
     train_loader train_loader the_model
 
-./loader_test_dates forecast_loader >forecast_dates.csv
-./run_predict_ensemble.sh \
-    -f $FILTER_FACTOR -p $PREP_SCRIPT \ 
+./loader_test_dates.sh forecast_loader >forecast_dates.csv
+./run_predict_ensemble.sh -f `cat FILTER_FACTOR | tr -d '\n'` -p bashpc.sh \
     the_model forecast a_forecast forecast_dates.csv
 ```
 
