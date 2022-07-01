@@ -92,9 +92,15 @@ icenet_video_data -w 32 -v osisaf
 icenet_video_data -w 4 -n -sy -p processed/north_10 -v era5,osisaf
 icenet_video_data -w 4 -n -sy -p processed/south_10 -v era5,osisaf
 ```
+<<<<<<< HEAD
 
 ## Credits
 
+=======
+
+## Credits
+
+>>>>>>> d491dc7f8346c5a68775fcf9055f7f1811e75eb5
 *Please see LICENSE for usage information*
 
 Tom Andersson
