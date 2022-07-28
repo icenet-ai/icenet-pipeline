@@ -70,6 +70,7 @@ icenet_process_sic  -r processed/train_loader/osisaf/$HEMI \
   -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
 icenet_process_metadata forecast_loader $HEMI
 
+icenet_dataset_create -l $LAG -ob 2 -w 4 pretrain_loader $HEMI
 icenet_dataset_create -l $LAG -ob 2 -w 4 train_loader $HEMI
 icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
 
