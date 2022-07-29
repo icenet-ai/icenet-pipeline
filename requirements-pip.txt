@@ -10,6 +10,7 @@ imageio-ffmpeg
 netcdf4
 plotly
 pip
+pydap
 setuptools
 tensorboard
 wheel
