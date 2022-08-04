@@ -40,6 +40,8 @@ LAG=3
 
 icenet_data_masks $HEMI -v
 # Training and val
+## icenet_data_oras5 -w 8 --vars uo,vo,so,thetao north 1993-1-1 2019-12-31
+
 icenet_data_cmip $HEMI MRI-ESM2-0 r1i1p1f1 \
   -d -sd 1988-1-1 -ed 1991-12-31 -w 4
 icenet_data_era5 $HEMI 1988-1-1 1991-12-31 -v
@@ -98,7 +100,8 @@ icenet_video_data -w 4 -n -sy -p processed/south_10 -v era5,osisaf
 
 *Please see LICENSE for usage information*
 
-Tom Andersson
-James Byrne
+Tom Andersson - Lead research
+James Byrne - Research Software Engineer
+Scott Hosking - PI
 
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
