@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+set -eu
+
 # FIXME: We're doing a daily run but uploading only the most recent?
 # FIXME: the parameters for this script are getting silly
 DATASET="HEMI_10"
@@ -58,11 +61,11 @@ for HEMI in south north; do
 
     mkdir $LOGDIR
     echo "Removing previous daily predictions"
-    rm -rv results/predict/$PROC_NAME
-    rm -v results/predict/${PROC_NAME}.nc
+    [ -d results/predict/$PROC_NAME ] && rm -rv results/predict/$PROC_NAME
+    [ -f results/predict/${PROC_NAME}.nc ] && rm -v results/predict/${PROC_NAME}.nc
 
     echo "Removing previous ensemble"
-    rm -rv ensemble/$PROC_NAME
+    [ -d ensemble/$PROC_NAME ] && rm -rv ensemble/$PROC_NAME
 
     icenet_data_hres -v $HEMI $ICENET_START $ICENET_END \
         2>&1 | tee ${LOGDIR}/${PROC_NAME}.data.hres.log
