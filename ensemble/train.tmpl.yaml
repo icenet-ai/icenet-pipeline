@@ -34,7 +34,7 @@ ensemble:
     cluster:      gpu
     nodes:        1
     ntasks:       NTASKS
-    length:       3-00:00:00
+    length:       10-00:00:00
     maxruns:      5
     maxjobs:      MAXJOBS
 
@@ -45,10 +45,12 @@ ensemble:
       pre_run:    []
       runs:
         - seed:   42
-        - seed:   43
-        - seed:   44
-        - seed:   45
         - seed:   46
+        - seed:   45
+        - seed:   76
+        - seed:   83
+        - seed:   71
+        - seed:   74
       post_run:   []
       post_batch:
         - name:   execute

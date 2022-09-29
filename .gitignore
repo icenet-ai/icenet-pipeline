@@ -8,6 +8,7 @@ __pycache__/
 /ensemble/*
 !/ensemble/template/
 !/ensemble/*.tmpl.yaml
+/ENVS
 /logs/
 /network_datasets
 /results/

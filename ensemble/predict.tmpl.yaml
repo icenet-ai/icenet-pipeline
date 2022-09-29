@@ -13,7 +13,7 @@ ensemble:
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
-    mem:          128gb
+    mem:          224gb
 
   pre_process:          []
   post_process:         []
@@ -41,10 +41,8 @@ ensemble:
       pre_run:    []
       runs:
         - seed:   42
-        - seed:   43
-        - seed:   44
-        - seed:   45
         - seed:   46
+        - seed:   45
       post_run:     []
       post_batch:
         - name:   execute
