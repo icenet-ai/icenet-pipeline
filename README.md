@@ -85,17 +85,6 @@ icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
     the_model forecast a_forecast forecast_dates.csv
 ```
 
-## Video analysis
-
-```bash
-icenet_video_data -w 32 -v era5
-icenet_video_data -w 8 -v mars.hres
-icenet_video_data -w 32 -v osisaf
-
-icenet_video_data -w 4 -n -sy -p processed/north_10 -v era5,osisaf
-icenet_video_data -w 4 -n -sy -p processed/south_10 -v era5,osisaf
-```
-
 ## Credits
 
 *Please see LICENSE for usage information*
