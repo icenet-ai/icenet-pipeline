@@ -26,7 +26,6 @@ chmod +x $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 Then install the python dependencies on top of this:
 
 ```bash
-pip install -r requirements-pip.txt
 pip install -e . # or wherever you've cloned icenet
 ```
 
@@ -130,10 +129,6 @@ pip install -e ../icenet.$TARGET
 ```
 
 That should be it! 
-```
-
-
-```
 
 ## Credits
 
