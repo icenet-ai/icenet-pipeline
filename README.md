@@ -85,6 +85,56 @@ icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
     the_model forecast a_forecast forecast_dates.csv
 ```
 
+## Changing environments
+
+You need to be in a location that contains your environments and sources, for 
+example: 
+
+```commandline
+cd hpc/icenet
+ls -d1 *
+blue
+data
+green
+icenet2.blue
+icenet2.green
+pipeline
+scratch
+test
+# pipeline -> green
+```
+
+Change the location of the pipeline from green to blue
+
+```commandline
+TARGET=blue
+
+ln -sfn $TARGET pipeline
+
+# If using a branch, go into icenet.blue and pull / checkout as required, e.g.
+cd icenet.blue
+git pull
+git checkout my-feature-branch
+cd ..
+
+# Next update the conda environment, which will be specific to your local disk
+ln -sfn $HOME/hpc/miniconda3/envs/icenet-$TARGET $HOME/hpc/miniconda3/envs/icenet
+cd pipeline
+git pull
+
+# Update the environment
+conda env update -n icenet -f environment.yml
+conda activate icenet
+pip install --upgrade -r requirements-pip.txt
+pip install -e ../icenet.$TARGET
+```
+
+That should be it! 
+```
+
+
+```
+
 ## Credits
 
 *Please see LICENSE for usage information*

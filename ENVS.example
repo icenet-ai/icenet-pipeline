@@ -1,0 +1,36 @@
+export ICENET_ENVIRONMENT=${ICENET_ENVIRONMENT:-"$( basename `realpath .` )"}
+
+export PROC_ARGS_ERA5="--abs uas,vas --anom tas,ta500,tos,psl,zg500,zg250"
+export PROC_ARGS_ORAS5=""
+export PROC_ARGS_SIC="--abs siconca --trends siconca --trend-lead 1,8,15,22,29,36,43,50,57,64,71,78,85,92"
+export LAG=1
+
+##
+# Training envs
+#
+
+
+##
+# Prediction envs
+#
+PREDICTION_START="2000-1-1"
+PREDICTION_END="2000-1-1"
+
+PREFIX="CURRENT"
+TRAIN_START_NAME="${PREFIX}_TRAIN_START"
+TRAIN_END_NAME="${PREFIX}_TRAIN_END"
+VAL_START_NAME="${PREFIX}_VAL_START"
+VAL_END_NAME="${PREFIX}_VAL_END"
+TEST_START_NAME="${PREFIX}_TEST_START"
+TEST_END_NAME="${PREFIX}_TEST_END"
+
+# What are we exporting
+
+export TRAIN_START=${!TRAIN_START_NAME}
+export TRAIN_END=${!TRAIN_END_NAME}
+export VAL_START=${!VAL_START_NAME}
+export VAL_END=${!VAL_END_NAME}
+export TEST_START=${!TEST_START_NAME}
+export TEST_END=${!TEST_END_NAME}
+export PRED_START="$PREDICTION_START"
+export PRED_END="$PREDICTION_END"
