@@ -27,17 +27,17 @@ if [ $DO_DATA == 1 ]; then
 fi
 
 [ ! -z "$PROC_ARGS_ERA5" ] && \
-    icenet_process_era5 -r processed/${PREFIX}_${HEMI}/era5/$HEMI \
+    icenet_process_era5 -r processed/${TRAIN_DATA_NAME}_${HEMI}/era5/$HEMI \
         $PROC_ARGS_ERA5 \
         -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
 
 [ ! -z "$PROC_ARGS_ORAS5" ] && \
-    icenet_process_oras5 -r processed/${PREFIX}_${HEMI}/oras5/$HEMI \
+    icenet_process_oras5 -r processed/${TRAIN_DATA_NAME}_${HEMI}/oras5/$HEMI \
         $PROC_ARGS_ORAS5 \
         -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
 
 [ ! -z "$PROC_ARGS_SIC" ] && \
-    icenet_process_sic  -r processed/${PREFIX}_${HEMI}/osisaf/$HEMI \
+    icenet_process_sic  -r processed/${TRAIN_DATA_NAME}_${HEMI}/osisaf/$HEMI \
         $PROC_ARGS_SIC \
         -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
 
@@ -46,7 +46,7 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 ./loader_test_dates.sh ${FORECAST}_${HEMI} >${FORECAST}_${HEMI}.csv
 # FIXME: ${HEMI}_hemi as network name needs to be easier to specify
 #  as it's $NAME in run_train_ensemble
-./run_predict_ensemble.sh -i ${PREFIX}_${HEMI}.22 -f $FILTER_FACTOR -p bashpc.sh \
+./run_predict_ensemble.sh -i ${TRAIN_DATA_NAME}_${HEMI}.22 -f $FILTER_FACTOR -p bashpc.sh \
     ${HEMI}1 ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
     #${HEMI}_hemi ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
 icenet_plot_sic_error -o plot/sic_error.${FORECAST}.${HEMI}.mp4 -v ${HEMI} results/predict/${FORECAST}_${HEMI}.nc `head -n 1 ${FORECAST}_${HEMI}.csv`

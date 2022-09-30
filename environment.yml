@@ -6,9 +6,6 @@ dependencies:
   - cudnn
   - eccodes
   - ffmpeg
-  - hdf4
-  - hdf5
   - ipykernel
-  - iris
   - openh264
-  - python==3.8
+  - python=3.8

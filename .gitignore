@@ -6,6 +6,7 @@ __pycache__/
 /cf/
 /dask-worker-space/
 /data
+/*test*/
 /ensemble/*
 !/ensemble/template/
 !/ensemble/*.tmpl.yaml
