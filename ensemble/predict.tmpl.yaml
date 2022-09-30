@@ -22,14 +22,14 @@ ensemble:
     templatedir:  ../template
     templates:
     - icenet_predict.sh.j2
-    email:        jambyr@bas.ac.uk
+    email:        someone@example.com
     job_file:     icenet_predict.sh
     cluster:      short
     nodes:        1
     ntasks:       8
     length:       00:30:00
-    maxruns:      6
-    maxjobs:      6
+    maxruns:      100
+    maxjobs:      10
 
   batches:
     - name:       NAME

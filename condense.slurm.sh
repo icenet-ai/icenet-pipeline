@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # Output directory
-#SBATCH --output=/data/hpcdata/users/jambyr/icenet/blue/logs/condense.%j.%N.out
-#SBATCH --chdir=/data/hpcdata/users/jambyr/icenet/blue
+#SBATCH --output=/data/hpcdata/users/jambyr/icenet/pipeline/logs/condense.%j.%N.out
+#SBATCH --chdir=/data/hpcdata/users/jambyr/icenet/pipeline
 #SBATCH --mail-type=begin,end,fail,requeue
 #SBATCH --mail-user=jambyr@bas.ac.uk
 #SBATCH --time=12:00:00
@@ -10,6 +10,8 @@
 #SBATCH --account=medium
 #SBATCH --nodes=1
 #SBATCH --job-name=condense
+
+. ENVS
 
 . /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
 conda activate /data/hpcdata/users/$USER/miniconda3/envs/icenet

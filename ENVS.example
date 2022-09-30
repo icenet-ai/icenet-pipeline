@@ -1,14 +1,30 @@
 export ICENET_ENVIRONMENT=${ICENET_ENVIRONMENT:-"$( basename `realpath .` )"}
 
-export PROC_ARGS_ERA5="--abs uas,vas --anom tas,ta500,tos,psl,zg500,zg250"
+export DATA_ARGS_ERA5="--vars uas,vas,tas,zg --levels ',,,500|250'"
+export DATA_ARGS_ORAS5=""
+
+export PROC_ARGS_ERA5="--abs uas,vas --anom tas,zg500,zg250"
 export PROC_ARGS_ORAS5=""
-export PROC_ARGS_SIC="--abs siconca --trends siconca --trend-lead 1,8,15,22,29,36,43,50,57,64,71,78,85,92"
-export LAG=1
+export PROC_ARGS_SIC="--abs siconca --trends siconca --trend-lead 93"
+
+export TRAIN_STATIC_ARGS=""
+export PREDICT_STATIC_ARGS=""
+
+export FILTER_FACTOR=0.4
+export FORECAST_DAYS=93
+export HEMI=north
+export LAG=3
+export PREP_SCRIPT=local.sh
 
 ##
 # Training envs
 #
-
+DEMO_PIPELINE_TRAIN_START="2022-1-1,2022-6-1"
+DEMO_PIPELINE_TRAIN_END="2022-1-31,2022-6-30"
+DEMO_PIPELINE_VAL_START="2022-2-1"
+DEMO_PIPELINE_VAL_END="2022-2-14"
+DEMO_PIPELINE_TEST_START="2022-2-15"
+DEMO_PIPELINE_TEST_END="2022-2-28"
 
 ##
 # Prediction envs
@@ -16,7 +32,7 @@ export LAG=1
 PREDICTION_START="2000-1-1"
 PREDICTION_END="2000-1-1"
 
-PREFIX="CURRENT"
+PREFIX="DEMO_PIPELINE"
 TRAIN_START_NAME="${PREFIX}_TRAIN_START"
 TRAIN_END_NAME="${PREFIX}_TRAIN_END"
 VAL_START_NAME="${PREFIX}_VAL_START"
@@ -34,3 +50,4 @@ export TEST_START=${!TEST_START_NAME}
 export TEST_END=${!TEST_END_NAME}
 export PRED_START="$PREDICTION_START"
 export PRED_END="$PREDICTION_END"
+

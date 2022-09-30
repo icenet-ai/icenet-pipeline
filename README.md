@@ -26,16 +26,13 @@ chmod +x $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 Then install the python dependencies on top of this:
 
 ```bash
-pip install -e . # or wherever you've cloned icenet
+pip install -e . # or wherever you've cloned icenetc
 ```
 
 ## Example run of the pipeline
 
 ```bash
-FILTER_FACTOR=0.4
-PREP_SCRIPT=local.sh
-HEMI=north
-LAG=3
+source ENVS
 
 icenet_data_masks $HEMI -v
 # Training and val

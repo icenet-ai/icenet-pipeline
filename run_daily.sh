@@ -3,18 +3,17 @@
 set -o pipefail
 set -eu
 
+. ENV
+
 # FIXME: We're doing a daily run but uploading only the most recent?
-# FIXME: the parameters for this script are getting silly
+# FIXME: the parameters for this script are a bit silly
 DATASET="HEMI_10"
 DAYS_BEHIND=0
-FORECAST_NAME="_daily_forecast"
-LAG=3
-LOADER=""
-UPLOAD=0
-RUNNAME="$( basename `realpath .` )"
-RUNSUFFIX="hemi"
 END_DATE="yesterday"
-FILTER_FACTOR=1.2
+FORECAST_NAME="_daily_forecast"
+LOADER=""
+RUN_SUFFIX="hemi"
+UPLOAD=0
 
 while getopts ":b:d:e:f:l:n:o:r:ux" opt; do
   case "$opt" in
@@ -25,7 +24,7 @@ while getopts ":b:d:e:f:l:n:o:r:ux" opt; do
     l)  LAG=$OPTARG ;;
     n)  FORECAST_NAME="_${OPTARG}" ;;
     o)  LOADER="${OPTARG}" ;;
-    r)  RUNSUFFIX="$OPTARG" ;;
+    r)  RUN_SUFFIX="$OPTARG" ;;
     u)  UPLOAD=1 ;;
     x)  DO_NOT_EXECUTE=1 ;;
   esac
@@ -88,9 +87,10 @@ for HEMI in south north; do
 
     # NOTE THE -l - we use the loader directly
     # FIXME: we assume the network name here is suffixed with 22 for BAS runs
+    #  due to the reliance on node022 for GPU runs
     ./run_predict_ensemble.sh \
         -b 1 -f ${FILTER_FACTOR} -p bashpc.sh -l -i ${DATASET_NAME}.22 \
-        ${HEMI}_${RUNSUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
+        ${HEMI}_${RUN_SUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             
     if [[ $UPLOAD == 1 ]]; then
@@ -99,7 +99,11 @@ for HEMI in south north; do
                 2>&1 | tee ${LOGDIR}/${PROC_NAME}.upload_azure.log
     fi
 
-    # while read -rs DT; do echo "Processing $DT"; icenet_upload_local -v results/predict/north_daily_forecast.nc /data/twins/common/icenet $DT; done <predict.north_daily_forecast.csv
+    # while read -rs DT; do echo "Processing $DT";
+    #   icenet_upload_local -v results/predict/north_daily_forecast.nc
+    #     /data/twins/common/icenet $DT;
+    # done <predict.north_daily_forecast.csv
+
     if [[ ! -z "$COPY" ]]; then
         icenet_upload_local -v \
             results/predict/${PROC_NAME}.nc $COPY $ICENET_END \

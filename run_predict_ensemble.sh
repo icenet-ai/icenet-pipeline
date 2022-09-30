@@ -5,19 +5,20 @@ if [[ $# -lt 4 ]]; then
     exit 1
 fi
 
+. ENVS
+
 echo "ARGS: $@"
 
+DO_NOT_EXECUTE=0
 ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
 TRAIN_IDENT=""
-DO_NOT_EXECUTE=0
 
 while getopts ":b:df:i:lm:p:x" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
-    f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
     i)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_ident=$OPTARG ";;
     l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_testset=false ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
@@ -56,6 +57,9 @@ sed -r \
     -e "s/LOADER/${LOADER}/g" \
     -e "s/NAME/${NAME}/g" \
  ensemble/predict.tmpl.yaml >$PREDICT_CONFIG
+
+# This now provided by ENVS
+ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$FILTER_FACTOR "
 
 COMMAND="model_ensemble -v  $PREDICT_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"
 echo "Running $COMMAND"

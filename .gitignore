@@ -2,13 +2,13 @@
 __pycache__/
 .ipynb_checkpoints/
 /_sicfile/
+/backups/
 /cf/
 /dask-worker-space/
 /data
 /ensemble/*
 !/ensemble/template/
 !/ensemble/*.tmpl.yaml
-/ENVS
 /logs/
 /network_datasets
 /results/
@@ -19,7 +19,6 @@ __pycache__/
 *test*.json
 dataset_config.*.json
 loader.*.json
-FILTER_FACTOR
 *.csv
 *.err
 *.log
@@ -27,3 +26,6 @@ FILTER_FACTOR
 *.npy
 *.out
 tmp.*
+
+!ENVS.example
+ENVS.*

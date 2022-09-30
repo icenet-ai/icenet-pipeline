@@ -2,8 +2,10 @@
 #SBATCH --output={{ run.dir }}/predict.%j.%N.{{ run.seed }}.out
 #SBATCH --error={{ run.dir }}/predict.%j.%N.{{ run.seed }}.err
 #SBATCH --chdir={{ run.dir }}
+{% if run.email != "someone@example.com" %}
 #SBATCH --mail-type=begin,end,fail,requeue
 #SBATCH --mail-user={{ run.email }}
+{% endif %}
 #SBATCH --time={{ run.length }}
 #SBATCH --job-name={{ run.id }}
 #SBATCH --nodes={{ run.nodes }}
@@ -13,6 +15,8 @@
 #SBATCH --cpus-per-task={{ run.ntasks }}
 #SBATCH --mem={{ run.mem }}
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
+
+. ENVS
 
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
 . {{ run.arg_prep }}
@@ -24,7 +28,7 @@ cd {{ run.dir }}
 echo "START `date +%F\ %T`"
 
 cat <<EOF >cmd.sh
-icenet_predict -v -n {{ run.arg_filter_factor }} \{% if run.arg_testset == "true" %}
+icenet_predict -v -n {{ run.arg_filter_factor }} $PREDICT_STATIC_ARGS \{% if run.arg_testset == "true" %}
     -t \{% endif %}{% if run.arg_ident %}
     -i {{ run.arg_ident }} \{% endif %}
     {{ run.arg_dataset }} {{ run.arg_network }} {{ run.name }} \

@@ -29,7 +29,7 @@ ensemble:
     templatedir:  ../template
     templates:
     - icenet_train.sh.j2
-    email:        jambyr@bas.ac.uk
+    email:        someone@example.com
     job_file:     icenet_train.sh
     cluster:      gpu
     nodes:        1
@@ -47,10 +47,6 @@ ensemble:
         - seed:   42
         - seed:   46
         - seed:   45
-        - seed:   76
-        - seed:   83
-        - seed:   71
-        - seed:   74
       post_run:   []
       post_batch:
         - name:   execute

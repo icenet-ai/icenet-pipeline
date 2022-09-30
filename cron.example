@@ -1,5 +1,5 @@
 SHELL=/bin/bash
 BASH_ENV=~/.bashrc_env
 
-9 0 * * * conda activate icenet; cd $HOME/hpc/icenet/pipeline && bash run_daily.sh >daily.log 2>&1; conda deactivate
+9 0 * * * conda activate icenet; cd $HOME/hpc/icenet/pipeline && bash run_daily.sh >logs/daily.`date +\%F`.log 2>&1; conda deactivate
 
