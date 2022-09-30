@@ -13,7 +13,6 @@ fi
 
 for BACK_FILE in $( ls dataset_config.*.json loader.*.json 2>/dev/null ); do
     mv -v $BACK_FILE $BACKUPDIR
-    rm -v $BACK_FILE
 done
 
 for ENSEMBLE_RUN in $( find ensemble/ \
@@ -23,7 +22,7 @@ for ENSEMBLE_RUN in $( find ensemble/ \
     ! -name 'template' \
     -print ); do 
     find $ENSEMBLE_RUN -type l -a \( -name 'loader.*.json' -o -name 'dataset_config.*.json' \) -delete
-    mv -v $ENSEMBLE_RUN $BACKUP_DIR
+    mv -v $ENSEMBLE_RUN $BACKUPDIR
 done
 
 mkdir -p $BACKUPDIR/plot/
@@ -36,9 +35,10 @@ for NORM_PARAMS in $( find processed/ -name 'normalisation.scale' -o -name 'para
     mv -v $NORM_PARAMS $BACKUPDIR/$PROC_PATH/
 done
 
+rm -v tmp.*.{predict,train}
 rm -rv logs/*
 rm -rv network_datasets/*
-rm predict.*.csv
+rm -v *.{csv,log}
 rm -rv processed/*
 rm -rv _sicfile/
 rm -rv wandb/
