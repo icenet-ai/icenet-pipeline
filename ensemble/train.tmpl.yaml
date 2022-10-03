@@ -10,6 +10,7 @@ ensemble:
     arg_strategy:       default
     symlinks:
       - ../../../data
+      - ../../../ENVS*
       - ../../../loader.LOADER.json
       - ../../../dataset_config.DATASET.json
       - ../../../network_datasets
@@ -34,7 +35,7 @@ ensemble:
     cluster:      gpu
     nodes:        1
     ntasks:       NTASKS
-    length:       10-00:00:00
+    length:       4-00:00:00
     maxruns:      5
     maxjobs:      MAXJOBS
 
@@ -47,6 +48,13 @@ ensemble:
         - seed:   42
         - seed:   46
         - seed:   45
+        - seed:   17
+        - seed:   24
+        - seed:   84
+        - seed:   83
+        - seed:   16
+        - seed:   5
+        - seed:   3
       post_run:   []
       post_batch:
         - name:   execute

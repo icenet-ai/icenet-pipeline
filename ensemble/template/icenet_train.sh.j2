@@ -16,27 +16,30 @@
 #SBATCH --mem={{ run.mem }}
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
 
-. ENVS
-
 # BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
 . {{ run.arg_prep }}
 cd {{ run.dir }}
 
-{% for dest in run.symlinks %}ln -s {{ dest }}
+{% for dest in run.symlinks %}
+    {%- if '*' in dest %}
+for FILE in $( ls {{ dest }} ); do
+    ln -s $FILE;
+done
+    {% else %}
+ln -s {{ dest }}
+    {% endif -%}
 {% endfor %}
+
+
 
 echo "START `date +%F\ %T`"
 
-cat <<EOF >cmd.sh
-icenet_train -v {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} $TRAIN_STATIC_ARGS \
-    -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} \
-    -w {{ run.ntasks }} -s {{ run.arg_strategy }} \{% if run.arg_preload %}
-    -p results/networks/{{ run.name }}/{{ run.name }}.network_{{ run.arg_preload }}.{{ run.seed }}.h5 \{% endif %}{% if run.arg_filter_factor %}
-    -n {{ run.arg_filter_factor }} \{% endif %}
+. ENVS
 
-EOF
+# TODO: run.arg_filter_factor comes from ENVS now
+COMMAND="icenet_train -v {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} $TRAIN_STATIC_ARGS -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -w {{ run.ntasks }} -s {{ run.arg_strategy }} {% if run.arg_preload %} -p results/networks/{{ run.name }}/{{ run.name }}.network_{{ run.arg_preload }}.{{ run.seed }}.h5 {% endif %}{% if run.arg_filter_factor %} -n {{ run.arg_filter_factor }}{% endif %}"
 
-chmod +x cmd.sh
-./cmd.sh
+echo "Running $COMMAND"
+eval $COMMAND
 
 echo "FINISH `date +%F\ %T`"

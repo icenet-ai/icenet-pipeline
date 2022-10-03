@@ -55,7 +55,7 @@ sed -r \
  ensemble/train.tmpl.yaml >$TRAIN_CONFIG
 
 # This now provided by ENVS
-ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$FILTER_FACTOR ";;
+ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$FILTER_FACTOR "
 
 COMMAND="model_ensemble $TRAIN_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"
 echo "Running $COMMAND"
