@@ -3,7 +3,7 @@
 set -o pipefail
 set -eu
 
-. ENV
+. ENVS
 
 # FIXME: We're doing a daily run but uploading only the most recent?
 # FIXME: the parameters for this script are a bit silly
