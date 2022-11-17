@@ -13,8 +13,8 @@
 #SBATCH --mem=8g
 #SBATCH --job-name=check
 
-. /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-conda activate /data/hpcdata/users/$USER/miniconda3/envs/icenet
+. ENVS
+conda activate $ICENET_CONDA
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 dataset_name"

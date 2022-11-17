@@ -2,8 +2,7 @@
 
 . ENVS
 
-. /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-conda activate /data/hpcdata/users/$USER/miniconda3/envs/icenet
+conda activate $ICENET_HOME
 
 FORECAST="$1"
 HEMI="${2:-$HEMI}"
@@ -42,11 +41,11 @@ fi
         -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
 
 icenet_process_metadata ${FORECAST}_${HEMI} $HEMI
+# HERE: caribou
 icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 ./loader_test_dates.sh ${FORECAST}_${HEMI} >${FORECAST}_${HEMI}.csv
 # FIXME: ${HEMI}_hemi as network name needs to be easier to specify
 #  as it's $NAME in run_train_ensemble
-./run_predict_ensemble.sh -i ${TRAIN_DATA_NAME}_${HEMI}.22 -f $FILTER_FACTOR -p bashpc.sh \
-    ${HEMI}1 ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
-    #${HEMI}_hemi ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
+./run_predict_ensemble.sh -i ${TRAIN_DATA_NAME}_${HEMI} -f $FILTER_FACTOR -p $PREP_SCRIPT \
+    ${HEMI}_hemi ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
 icenet_plot_sic_error -o plot/sic_error.${FORECAST}.${HEMI}.mp4 -v ${HEMI} results/predict/${FORECAST}_${HEMI}.nc `head -n 1 ${FORECAST}_${HEMI}.csv`

@@ -5,7 +5,6 @@ ensemble:
     arg_filter_factor:  1
     arg_network:        NETWORK
     arg_testset:        true
-    arg_prep:           ""
     symlinks:
       - ../../../data
       - ../../../loader.LOADER.json

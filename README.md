@@ -1,5 +1,6 @@
-# IceNet-Pipeline
-Tools for operational execution of the IceNet model
+# icenet-pipeline
+
+Pipelining tools for operational execution of the IceNet model
 
 ## Overview
 
@@ -7,29 +8,87 @@ The structure of this repository is to provide CLI commands that allow you to
  run the icenet model end-to-end, allowing you to make daily sea ice 
  predictions.
 
+## Get the repositories 
+
+```bash
+git clone git@github.com:icenet-ai/icenet-pipeline.git green
+git clone git@github.com:icenet-ai/icenet.git icenet.green
+ln -s green pipeline
+ln -s icenet.green icenet
+```
+
 ## Creating the environment
 
 In spite of using the latest conda, the following may not work due to ongoing 
 issues with the solver not failing / logging clearly. [1]
 
+### Using conda
+
+Conda can be used to manage system dependencies for HPC usage, we've tested on
+the BAS and JASMIN (NERC) HPCs. Obviously your dependencies for conda will 
+change based on what is in your system, so please treat this as illustrative:
+
 ```bash
+cd pipeline
 conda env create -n icenet -f environment.yml
 conda activate icenet
 
-### Additional linkage instructions
+# Environment specifics
+# BAS HPC just continue
+# For JASMIN you'll be missing some things
+module load jaspy/3.8
+conda install -c conda-forge geos proj
+
+### Additional linkage instructions for GPU usage
 mkdir -p $CONDA_PREFIX/etc/conda/activate.d
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/' > $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 chmod +x $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 . $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 ```
 
-Then install the python dependencies on top of this:
+### IceNet installation
+
+Then install IceNet into your environment as applicable. If using conda 
+obviously enable the environment first. We are not publishing to PyPI yet, at
+time of last update. Using `-e` is optional, based on whether you want to be
+able to hack at the source!
 
 ```bash
-pip install -e . # or wherever you've cloned icenetc
+cd ../icenet   # or wherever you've cloned icenet
+pip install -e . 
+```
+
+### Linking data folders
+
+The system is set up to process data in certain directories. With each pipeline
+installation you can share the source data if you like, so use symlinks for
+`data` if applicable, and intermediate folders `processed` and 
+`network_datasets` you might want to store on alternate storage as applicable.
+The following kind of illustrates this:
+
+```bash
+# An example from deployment on JASMIN, linking big folders to group storage
+ln -s /gws/nopw/j04/icenet/data
+mkdir /gws/nopw/j04/icenet/network_datasets
+mkdir /gws/nopw/j04/icenet/processed
+ln -s /gws/nopw/j04/icenet/network_datasets
+ln -s /gws/nopw/j04/icenet/processed
 ```
 
 ## Example run of the pipeline
+
+Quite often you might 
+```bash
+
+```
+
+
+
+
+
+
+
+
 
 ```bash
 source ENVS

@@ -18,8 +18,6 @@
 
 . ENVS
 
-# BAS HPC specific items are offloaded to the ensemble configuration so that there is a single point of config
-. {{ run.arg_prep }}
 cd {{ run.dir }}
 
 {% for dest in run.symlinks %}ln -s {{ dest }}

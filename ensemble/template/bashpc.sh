@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 [ -f /etc/bashrc ] && . /etc/bashrc
 
-module load hpc/cuda/11.2
-. /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-conda activate /data/hpcdata/users/$USER/miniconda3/envs/icenet
+. ENVS
+
+conda activate $ICENET_CONDA
 
 # Don't like this but unavoidable at present
 if [ -f /data/hpcdata/users/$USER/.wandb.env ]; then

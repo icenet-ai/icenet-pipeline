@@ -1,28 +1,16 @@
 #!/bin/bash
-#
-# Output directory
-#SBATCH --output=/data/hpcdata/users/jambyr/icenet/pipeline/logs/data.%j.%N.out
-#SBATCH --chdir=/data/hpcdata/users/jambyr/icenet/pipeline
-#SBATCH --mail-type=begin,end,fail,requeue
-#SBATCH --mail-user=jambyr@bas.ac.uk
-#SBATCH --time=48:00:00
-#SBATCH --partition=medium
-#SBATCH --account=medium
-#SBATCH --nodes=1
-#SBATCH --job-name=dataset_name
-
-##SBATCH --mem=192g
 
 . ENVS
 
-. /hpcpackages/python/miniconda3/etc/profile.d/conda.sh
-conda activate /data/hpcdata/users/$USER/miniconda3/envs/icenet
+conda activate $ICENET_CONDA
 
 set -o pipefail
 set -eu
 
 DATANAME="dataset_name"
 HEMI="${1:-$HEMI}"
+BATCH_SIZE=${2:-2}
+WORKERS=${3:-8}
 
 [ ! -z "$PROC_ARGS_ERA5" ] && icenet_process_era5 -v -l $LAG \
     $PROC_ARGS_ERA5 \
@@ -41,4 +29,4 @@ HEMI="${1:-$HEMI}"
 
 icenet_process_metadata ${DATANAME}_${HEMI} $HEMI
 
-icenet_dataset_create -v -p -ob 2 -w 12 -fd $FORECAST_DAYS -l $LAG ${DATANAME}_${HEMI} $HEMI
+icenet_dataset_create -v -p -ob $BATCH_SIZE -w $WORKERS -fd $FORECAST_DAYS -l $LAG ${DATANAME}_${HEMI} $HEMI

@@ -89,7 +89,7 @@ for HEMI in south north; do
     # FIXME: we assume the network name here is suffixed with 22 for BAS runs
     #  due to the reliance on node022 for GPU runs
     ./run_predict_ensemble.sh \
-        -b 1 -f ${FILTER_FACTOR} -p bashpc.sh -l -i ${DATASET_NAME}.22 \
+        -b 1 -f ${FILTER_FACTOR} -p $PREP_SCRIPT -l -i ${DATASET_NAME}.22 \
         ${HEMI}_${RUN_SUFFIX} $PROC_NAME $PROC_NAME predict.${PROC_NAME}.csv \
             2>&1 | tee ${LOGDIR}/${PROC_NAME}.ensemble.predict.log
             

@@ -6,7 +6,6 @@ ensemble:
     arg_epochs:         100
     arg_filter_factor:  1
     arg_queue:          2
-    arg_prep:           local.sh 
     arg_strategy:       default
     symlinks:
       - ../../../data

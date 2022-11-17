@@ -1,4 +1,6 @@
 export ICENET_ENVIRONMENT=${ICENET_ENVIRONMENT:-"$( basename `realpath .` )"}
+export ICENET_HOME=${ICENET_HOME:-${HOME}/icenet/${ICENET_ENVIRONMENT}}
+export ICENET_CONDA=${ICENET_CONDA:-${HOME}/miniconda3/envs/icenet}
 
 export DATA_ARGS_ERA5="--vars uas,vas,tas,zg --levels ',,,500|250'"
 export DATA_ARGS_ORAS5=""
