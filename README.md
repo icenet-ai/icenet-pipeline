@@ -77,60 +77,53 @@ ln -s /gws/nopw/j04/icenet/processed
 
 ## Example run of the pipeline
 
-Quite often you might 
-```bash
+### A note on HPCs
 
+The pipeline is often run on __SLURM__. Previously the SBATCH headers for 
+submission were included, but to avoid issues with portability these have now 
+been removed and the instructions now exemplify running against this type of 
+HPC with the setup passed on the command line rather than in hardcoded headers.
+
+If you're not using SLURM, just run the commands without sbatch. To use an 
+alternative just amend sbatch to whatever you need. 
+
+### Configuration
+
+This pipeline revolves around the ENVS file to provide the necessary 
+configuration items. This can easily be derived from the `ENVS.example` file 
+to a new file, then symbolically linked. Comments are available in 
+`ENVS.example` to assist you with the editing process. 
+
+```commandline
+cp ENVS.example ENVS.myconfig
+ln -sf ENVS.myconfig ENVS
+# Edit ENVS.myconfig to customise parameters for the pipeline
 ```
 
+These variables will then be picked up during the runs via the ENVS symlink.
 
+### Running the pipeline 
 
+_[This is a very high level overview, for a more detailed run-through please 
+review the icenet-notebooks repository.][2]_
 
+#### One off: preparing SIC masks
 
+As an additional dataset, IceNet relies on some masks being pre-prepared, so you
+only have to do this on first run against the data store. 
 
+```bash
+conda activate icenet
+icenet_data_masks north
+icenet_data_masks south
+```
 
-
+#### Running training and prediction commands 
 
 ```bash
 source ENVS
 
-icenet_data_masks $HEMI -v
-# Training and val
-## icenet_data_oras5 -w 8 --vars uo,vo,so,thetao north 1993-1-1 2019-12-31
-
-icenet_data_cmip $HEMI MRI-ESM2-0 r1i1p1f1 \
-  -d -sd 1988-1-1 -ed 1991-12-31 -w 4
-icenet_data_era5 $HEMI 1988-1-1 1991-12-31 -v
-icenet_data_sic $HEMI 1988-1-1 1991-12-31 -v
-# Test
-icenet_data_hres $HEMI 2012-06-01 2012-06-30 -v
-icenet_data_sic $HEMI 2012-06-01 2012-06-30 -v
-
-icenet_process_cmip pretrain_loader $HEMI MRI-ESM2-0 r1i1p1f1 \
-    -ns 1988-1-1 -ne 1990-12-31 \
-    -vs 1991-2-1 -ve 1991-2-28 \
-    -ts 1991-6-1 -te 1991-6-30 -l $LAG 
-icenet_process_metadata pretrain_loader $HEMI
-
-icenet_process_era5 train_loader $HEMI \
-    -ns 1988-1-1 -ne 1990-12-31 \
-    -vs 1991-2-1 -ve 1991-2-28 \
-    -ts 1991-6-1 -te 1991-6-30 -l $LAG 
-icenet_process_sic train_loader $HEMI \
-    -ns 1988-1-1 -ne 1990-12-31 \
-    -vs 1991-2-1 -ve 1991-2-28 \
-    -ts 1991-6-1 -te 1991-6-30 -l $LAG 
-icenet_process_metadata train_loader $HEMI
-
-icenet_process_era5 -r processed/train_loader/era5/$HEMI \
-  -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
-icenet_process_sic  -r processed/train_loader/osisaf/$HEMI \
-  -v -l $LAG -ts 2012-06-01 -te 2012-06-30 forecast_loader $HEMI
-icenet_process_metadata forecast_loader $HEMI
-
-icenet_dataset_create -l $LAG -ob 2 -w 4 pretrain_loader $HEMI
-icenet_dataset_create -l $LAG -ob 2 -w 4 train_loader $HEMI
-icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
-
+./run_data.sh north
 ./run_train_ensemble.sh \
     -b 2 -e 20 -f $FILTER_FACTOR -p $PREP_SCRIPT -q 2 \
     train_loader train_loader the_model
@@ -140,10 +133,12 @@ icenet_dataset_create -l $LAG -c -fn forecast forecast_loader $HEMI
     the_model forecast a_forecast forecast_dates.csv
 ```
 
-## Changing environments
+## Implementing and changing environments
 
-You need to be in a location that contains your environments and sources, for 
-example: 
+The point of having a repository like this is to facilitate easy integration 
+with workflow managers, as well as allow multiple pipelines to easily be 
+co-located in the filesystem. To achieve this have a location that contains 
+your environments and sources, for example: 
 
 ```commandline
 cd hpc/icenet
@@ -151,8 +146,8 @@ ls -d1 *
 blue
 data
 green
-icenet2.blue
-icenet2.green
+icenet2.blue        # Sources for blue for editable install
+icenet2.green       # Sources for green for editable install
 pipeline
 scratch
 test
@@ -184,8 +179,6 @@ pip install --upgrade -r requirements-pip.txt
 pip install -e ../icenet.$TARGET
 ```
 
-That should be it! 
-
 ## Credits
 
 *Please see LICENSE for usage information*
@@ -195,3 +188,4 @@ James Byrne - Research Software Engineer
 Scott Hosking - PI
 
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
+[2]: https://github.com/icenet-ai/icenet-notebooks/

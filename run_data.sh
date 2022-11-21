@@ -7,7 +7,7 @@ conda activate $ICENET_CONDA
 set -o pipefail
 set -eu
 
-DATANAME="dataset_name"
+DATANAME="$TRAIN_DATA_NAME"
 HEMI="${1:-$HEMI}"
 BATCH_SIZE=${2:-2}
 WORKERS=${3:-8}

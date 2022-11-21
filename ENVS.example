@@ -1,14 +1,31 @@
+##
+# The following variables set the environment, _HOME and _CONDA should be set to
+# a default location to save you having to continually set these in your shell.
+# _ENVIRONMENT can usually be left alone, it helps when running via symlinked
+# pipeline directories which is common when running several distinct
+# environments
+#
 export ICENET_ENVIRONMENT=${ICENET_ENVIRONMENT:-"$( basename `realpath .` )"}
 export ICENET_HOME=${ICENET_HOME:-${HOME}/icenet/${ICENET_ENVIRONMENT}}
 export ICENET_CONDA=${ICENET_CONDA:-${HOME}/miniconda3/envs/icenet}
 
+##
+# Setting the data download arguments for variables and pressures/depths
+#
 export DATA_ARGS_ERA5="--vars uas,vas,tas,zg --levels ',,,500|250'"
 export DATA_ARGS_ORAS5=""
 
+##
+# Linking the preprocessing arguments to the above downloads, as well as the
+# SIC ground truth for the model
+#
 export PROC_ARGS_ERA5="--abs uas,vas --anom tas,zg500,zg250"
 export PROC_ARGS_ORAS5=""
 export PROC_ARGS_SIC="--abs siconca --trends siconca --trend-lead 93"
 
+##
+# Training and prediction parameters
+#
 export TRAIN_STATIC_ARGS=""
 export PREDICT_STATIC_ARGS=""
 
@@ -19,7 +36,7 @@ export LAG=3
 export PREP_SCRIPT=local.sh
 
 ##
-# Training envs
+# Training date ranges
 #
 DEMO_PIPELINE_TRAIN_START="2022-1-1,2022-6-1"
 DEMO_PIPELINE_TRAIN_END="2022-1-31,2022-6-30"
@@ -29,12 +46,21 @@ DEMO_PIPELINE_TEST_START="2022-2-15"
 DEMO_PIPELINE_TEST_END="2022-2-28"
 
 ##
-# Prediction envs
+# Prediction ranges for initialisation (each day produces a forecast)
 #
 PREDICTION_START="2000-1-1"
 PREDICTION_END="2000-1-1"
 
+##
+# The prefix to use for date ranges
+#
 PREFIX="DEMO_PIPELINE"
+
+##
+# Mapping variables, these shouldn't need changing but link to the usage of the
+# variables in scripts, meaning you can alter the scripts simply by creating
+# extra ranges and changing PREFIX
+#
 TRAIN_DATA_NAME=${PREFIX,,}
 TRAIN_START_NAME="${PREFIX}_TRAIN_START"
 TRAIN_END_NAME="${PREFIX}_TRAIN_END"
