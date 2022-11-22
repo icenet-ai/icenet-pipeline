@@ -123,14 +123,18 @@ icenet_data_masks south
 ```bash
 source ENVS
 
-./run_data.sh north
-./run_train_ensemble.sh \
-    -b 2 -e 20 -f $FILTER_FACTOR -p $PREP_SCRIPT -q 2 \
-    train_loader train_loader the_model
+SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_DATA_PART"
+sbatch $SBATCH_ARGS run_data.sh north $BATCH_SIZE $WORKERS
 
-./loader_test_dates.sh forecast_loader >forecast_dates.csv
-./run_predict_ensemble.sh -f `cat FILTER_FACTOR | tr -d '\n'` -p bashpc.sh \
-    the_model forecast a_forecast forecast_dates.csv
+SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_RUN_PART"
+./run_train_ensemble.sh \
+    -b $BATCH_SIZE -e 200 -f $FILTER_FACTOR -p $PREP_SCRIPT -q 4 \
+    ${TRAIN_DATA_NAME}_north ${TRAIN_DATA_NAME}_north mydemo_north
+
+./loader_test_dates.sh ${TRAIN_DATA_NAME}_north >test_dates.north.csv
+
+./run_predict_ensemble.sh -f $FILTER_FACTOR -p $PREP_SCRIPT \
+    mydemo_north forecast a_forecast test_dates.north.csv
 ```
 
 ## Implementing and changing environments

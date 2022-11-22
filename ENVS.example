@@ -35,6 +35,23 @@ export HEMI=north
 export LAG=3
 export PREP_SCRIPT=local.sh
 
+export BATCH_SIZE=4
+export WORKERS=16
+
+##
+# HPC specifics - configure as appropriate for data (CPU) and training / prediction (GPU)
+#
+#    --partition=medium
+#    --account=medium
+#    --time=12:00:00
+#    --nodes=1
+#
+export PREP_SCRIPT=jasmin.sh
+export ICENET_SLURM_ARGS="--chdir=$ICENET_HOME \
+    --output=${ICENET_HOME}/logs/icenet.%j.%N.out"
+export ICENET_SLURM_DATA_PART="--partition cpu-example --time 48:00:00"
+export ICENET_SLURM_RUN_PART="--partition gpu-example --time 24:00:00"
+
 ##
 # Training date ranges
 #
