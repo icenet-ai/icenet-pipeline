@@ -25,6 +25,8 @@ cd {{ run.dir }}
 
 echo "START `date +%F\ %T`"
 
+source $PREP_SCRIPT
+
 cat <<EOF >cmd.sh
 icenet_predict -v -n {{ run.arg_filter_factor }} $PREDICT_STATIC_ARGS \{% if run.arg_testset == "true" %}
     -t \{% endif %}{% if run.arg_ident %}
