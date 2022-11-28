@@ -2,7 +2,7 @@
 
 . ENVS
 
-conda activate $ICENET_HOME
+conda activate $ICENET_CONDA
 
 FORECAST="$1"
 HEMI="${2:-$HEMI}"
