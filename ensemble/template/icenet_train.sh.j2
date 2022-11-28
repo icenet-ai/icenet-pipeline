@@ -33,6 +33,7 @@ ln -s {{ dest }}
 
 echo "START `date +%F\ %T`"
 
+conda activate $ICENET_CONDA
 source $PREP_SCRIPT
 
 # TODO: run.arg_filter_factor comes from ENVS now

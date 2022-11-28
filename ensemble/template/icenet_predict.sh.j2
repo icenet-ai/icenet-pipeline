@@ -25,6 +25,7 @@ cd {{ run.dir }}
 
 echo "START `date +%F\ %T`"
 
+conda activate $ICENET_CONDA
 source $PREP_SCRIPT
 
 cat <<EOF >cmd.sh
