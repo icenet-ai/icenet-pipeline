@@ -9,7 +9,7 @@
 #SBATCH --time={{ run.length }}
 #SBATCH --job-name={{ run.id }}
 #SBATCH --nodes={{ run.nodes }}
-{% if run.cluster == "gpu" %}#SBATCH --gres=gpu:{{ run.gpus }}{% endif %}
+{% if run.cluster == "gpu" %}#SBATCH --gres=gpu:1{% endif %}
 #SBATCH --partition={{ run.cluster }}
 #SBATCH --account={{ run.cluster }}
 #SBATCH --cpus-per-task={{ run.ntasks }}
@@ -25,8 +25,8 @@ cd {{ run.dir }}
 
 echo "START `date +%F\ %T`"
 
-conda activate $ICENET_CONDA
 source $PREP_SCRIPT
+conda activate $ICENET_CONDA
 
 cat <<EOF >cmd.sh
 icenet_predict -v -n {{ run.arg_filter_factor }} $PREDICT_STATIC_ARGS \{% if run.arg_testset == "true" %}
