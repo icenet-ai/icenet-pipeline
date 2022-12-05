@@ -16,8 +16,6 @@
 #SBATCH --mem={{ run.mem }}
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
 
-. ENVS
-
 cd {{ run.dir }}
 
 {% for dest in run.symlinks %}
@@ -29,6 +27,8 @@ done
 ln -s {{ dest }}
     {% endif -%}
 {% endfor %}
+
+. ENVS
 
 echo "START `date +%F\ %T`"
 
