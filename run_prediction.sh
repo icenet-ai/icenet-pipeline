@@ -48,4 +48,5 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 #  as it's $NAME in run_train_ensemble
 ./run_predict_ensemble.sh -i ${TRAIN_DATA_NAME}_${HEMI} -f $FILTER_FACTOR -p $PREP_SCRIPT \
     ${HEMI}_hemi ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
-icenet_plot_sic_error -o plot/sic_error.${FORECAST}.${HEMI}.mp4 -v ${HEMI} results/predict/${FORECAST}_${HEMI}.nc `head -n 1 ${FORECAST}_${HEMI}.csv`
+
+./run_forecast_plots.sh $FORECAST $HEMI
