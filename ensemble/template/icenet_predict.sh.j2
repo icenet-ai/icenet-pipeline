@@ -20,7 +20,14 @@
 
 cd {{ run.dir }}
 
-{% for dest in run.symlinks %}ln -s {{ dest }}
+{% for dest in run.symlinks %}
+    {%- if '*' in dest %}
+for FILE in $( ls {{ dest }} ); do
+    ln -s $FILE;
+done
+    {% else %}
+ln -s {{ dest }}
+    {% endif -%}
 {% endfor %}
 
 echo "START `date +%F\ %T`"
