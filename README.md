@@ -12,9 +12,7 @@ The structure of this repository is to provide CLI commands that allow you to
 
 ```bash
 git clone git@github.com:icenet-ai/icenet-pipeline.git green
-git clone git@github.com:icenet-ai/icenet.git icenet.green
 ln -s green pipeline
-ln -s icenet.green icenet
 ```
 
 ## Creating the environment
@@ -26,7 +24,7 @@ issues with the solver not failing / logging clearly. [1]
 
 Conda can be used to manage system dependencies for HPC usage, we've tested on
 the BAS and JASMIN (NERC) HPCs. Obviously your dependencies for conda will 
-change based on what is in your system, so please treat this as illustrative:
+change based on what is in your system, so please treat this as illustrative. 
 
 ```bash
 cd pipeline
@@ -38,8 +36,10 @@ conda activate icenet
 # For JASMIN you'll be missing some things
 module load jaspy/3.8
 conda install -c conda-forge geos proj
+# For your own HPC, who knows... the HPC specific instructions are very 
+# changeable even for those tested, so please adapt as required. ;) 
 
-### Additional linkage instructions for GPU usage
+### Additional linkage instructions for Tensorflow GPU usage BEFORE ICENET
 mkdir -p $CONDA_PREFIX/etc/conda/activate.d
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/' > $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 chmod +x $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
@@ -49,13 +49,28 @@ chmod +x $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 ### IceNet installation
 
 Then install IceNet into your environment as applicable. If using conda 
-obviously enable the environment first. We are not publishing to PyPI yet, at
-time of last update. Using `-e` is optional, based on whether you want to be
-able to hack at the source!
+obviously enable the environment first. 
+
+Bear in mind when installing `icenet` (and by dependency `tensorflow`) you 
+will need to be on a CUDA/GPU enabled machine for binary linkage. As per 
+current (end of 2022) `tensorflow` guidance do not install it via conda. 
+
+#### Developer installation
+
+Using `-e` is optional, based on whether you want to be able to hack at the 
+source!
 
 ```bash
 cd ../icenet   # or wherever you've cloned icenet
 pip install -e . 
+```
+
+#### PyPI installation
+
+__If you don't want the source locally, you can now install via PyPI...__
+
+```bash
+pip install icenet
 ```
 
 ### Linking data folders
@@ -120,16 +135,18 @@ icenet_data_masks south
 
 #### Running training and prediction commands 
 
+Change PREFIX to the setup you want to run through in ENVS
+
 ```bash
 source ENVS
 
 SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_DATA_PART"
-sbatch $SBATCH_ARGS run_data.sh north $BATCH_SIZE $WORKERS
+sbatch $SBATCH_ARGS run_data.sh $HEMI $BATCH_SIZE $WORKERS
 
 SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_RUN_PART"
 ./run_train_ensemble.sh \
     -b $BATCH_SIZE -e 200 -f $FILTER_FACTOR -p $PREP_SCRIPT -q 4 \
-    ${TRAIN_DATA_NAME}_north ${TRAIN_DATA_NAME}_north mydemo_north
+    ${TRAIN_DATA_NAME}_${HEMI} ${TRAIN_DATA_NAME}_${HEMI} mydemo_${HEMI}
 
 ./loader_test_dates.sh ${TRAIN_DATA_NAME}_north >test_dates.north.csv
 
