@@ -204,9 +204,9 @@ pip install -e ../icenet.$TARGET
 
 *Please see LICENSE for usage information*
 
-Tom Andersson - Lead research
-James Byrne - Research Software Engineer
-Scott Hosking - PI
+* Tom Andersson - Lead researcher
+* James Byrne - Research Software Engineer
+* Scott Hosking - PI
 
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
 [2]: https://github.com/icenet-ai/icenet-notebooks/
