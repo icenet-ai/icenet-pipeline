@@ -1,9 +1,0 @@
-# Link params/normalisation.scale to era5 run
-mkdir -p processed/laptop_predict/mars.hres/nh
-ln -s ../../../../processed/laptop_split/era5/nh/params processed/laptop_predict/mars.hres/nh/params
-ln -s ../../../../processed/laptop_split/era5/nh/normalisation.scale processed/laptop_predict/mars.hres/nh/normalisation.scale
-ln -s ../../../../processed/laptop_split/era5/nh/cos processed/laptop_predict/mars.hres/nh/cos
-ln -s ../../../../processed/laptop_split/era5/nh/sin processed/laptop_predict/mars.hres/nh/sin
-ln -s ../../../../processed/laptop_split/era5/nh/land processed/laptop_predict/mars.hres/nh/land
-
-python process.py -v -w 4 -ob 1 -fd 4 -l 2 -ts 2021-01-01 -te 2021-01-03 -so -se -eh laptop_predict north none none none none
