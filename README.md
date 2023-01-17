@@ -109,7 +109,7 @@ configuration items. This can easily be derived from the `ENVS.example` file
 to a new file, then symbolically linked. Comments are available in 
 `ENVS.example` to assist you with the editing process. 
 
-```commandline
+```bash
 cp ENVS.example ENVS.myconfig
 ln -sf ENVS.myconfig ENVS
 # Edit ENVS.myconfig to customise parameters for the pipeline
@@ -154,6 +154,23 @@ SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_RUN_PART"
     mydemo_north forecast a_forecast test_dates.north.csv
 ```
 
+### Other helper commands
+
+The following commands are illustrative of various workflows built on top of, 
+or alongside, the workflow described above. These are useful to use 
+independently or to base your own workflows on.
+
+#### run_forecast_plots.sh
+
+This leverages the IceNet plotting functionality to analyse the specified
+forecasts.
+
+#### run_prediction.sh
+
+This wraps up the preparation of data and running of predictions against 
+pre-trained networks. This contrasts to the use of the test set to run 
+predictions that was [demonstrated previously][3].
+
 ## Implementing and changing environments
 
 The point of having a repository like this is to facilitate easy integration 
@@ -161,23 +178,26 @@ with workflow managers, as well as allow multiple pipelines to easily be
 co-located in the filesystem. To achieve this have a location that contains 
 your environments and sources, for example: 
 
-```commandline
+```
 cd hpc/icenet
 ls -d1 *
 blue
 data
 green
-icenet2.blue        # Sources for blue for editable install
-icenet2.green       # Sources for green for editable install
 pipeline
 scratch
 test
+
 # pipeline -> green
+
+# Optionally you might have local sources for installs (e.g. not pip installed)
+icenet.blue    
+icenet.green    
 ```
 
 Change the location of the pipeline from green to blue
 
-```commandline
+```bash
 TARGET=blue
 
 ln -sfn $TARGET pipeline
@@ -212,3 +232,4 @@ pip install -e ../icenet.$TARGET
 
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
 [2]: https://github.com/icenet-ai/icenet-notebooks/
+[3]: #running-training-and-prediction-commands
