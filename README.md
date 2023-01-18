@@ -171,6 +171,18 @@ This wraps up the preparation of data and running of predictions against
 pre-trained networks. This contrasts to the use of the test set to run 
 predictions that was [demonstrated previously][3].
 
+This command makes assumptions that source data is available for the OSI-SAF, 
+ERA5 and ORAS5 datasets for the predictions you want to make. Use 
+`icenet_data_sic`, `icenet_data_era5` and `icenet_data_oras5` respectively. 
+This workflow is also easily adapted to other datasets, wink wink nudge nudge.
+
+If you're using a model from another pipeline you need to ensure normalisation 
+parameters are linked to under your `./processed` folder. For example:
+
+```bash
+ln -s /data/hpcdata/users/alice/icenet/pipeline/processed/traindata_north ./processed/traindata_north
+```
+
 ## Implementing and changing environments
 
 The point of having a repository like this is to facilitate easy integration 
