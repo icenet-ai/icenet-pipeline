@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-set -eu -o pipefail
+set -e -o pipefail
 
 . ENVS
 
@@ -18,7 +18,7 @@ DATE_VARS="${4:-$FORECAST}"
 DATA_PROC="${5:-${TRAIN_DATA_NAME}}_${HEMI}"
 
 # This assumes you're not retraining using the same model name, eek
-if [ ! -d results/networks/$MODEL ]; then
+if [ -d results/networks/$MODEL ]; then
   SAVEFILE=`ls results/networks/${MODEL}/${MODEL}.*.h5 | head -n 1`
   DATASET=`echo $SAVEFILE | perl -lpe's/.+\.network_(.+)\.[0-9]+\.h5/$1/'`
   echo "First model file: $SAVEFILE"
@@ -30,6 +30,7 @@ fi
 
 NAME_START="${DATE_VARS^^}_START"
 NAME_END="${DATE_VARS^^}_END"
+echo "Dates from ENVS: $NAME_START and $NAME_END"
 PREDICTION_START=${!NAME_START}
 PREDICTION_END=${!NAME_END}
 
