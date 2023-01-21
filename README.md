@@ -183,6 +183,16 @@ parameters are linked to under your `./processed` folder. For example:
 ln -s /data/hpcdata/users/alice/icenet/pipeline/processed/traindata_north ./processed/traindata_north
 ```
 
+The process for running predictions is then basically: 
+
+```bash
+export DEMO_TEST_START="2021-10-01"
+export DEMO_TEST_END="$DEMO_TEST_START"
+./run_prediction.sh demo_test model_name hemi demo_test train_data_name
+# Optionally, stick it into azure too, provided you're set up for it
+icenet_upload_azure -v -o results/predict/demo_test.nc $DEMO_TEST_START
+```
+
 ## Implementing and changing environments
 
 The point of having a repository like this is to facilitate easy integration 
