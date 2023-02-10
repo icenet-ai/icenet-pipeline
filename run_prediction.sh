@@ -45,17 +45,17 @@ fi
 [ ! -z "$PROC_ARGS_ERA5" ] && \
     icenet_process_era5 -r processed/$DATA_PROC/era5/$HEMI \
         $PROC_ARGS_ERA5 \
-        -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
+        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
 
 [ ! -z "$PROC_ARGS_ORAS5" ] && \
     icenet_process_oras5 -r processed/$DATA_PROC/oras5/$HEMI \
         $PROC_ARGS_ORAS5 \
-        -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
+        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
 
 [ ! -z "$PROC_ARGS_SIC" ] && \
     icenet_process_sic  -r processed/$DATA_PROC/osisaf/$HEMI \
         $PROC_ARGS_SIC \
-        -v -l $LAG -ts $PRED_START -te $PRED_END ${FORECAST}_${HEMI} $HEMI
+        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
 
 icenet_process_metadata ${FORECAST}_${HEMI} $HEMI
 icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
