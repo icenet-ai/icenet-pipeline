@@ -117,10 +117,72 @@ ln -sf ENVS.myconfig ENVS
 
 These variables will then be picked up during the runs via the ENVS symlink.
 
-### Running the pipeline 
+### Running the training pipeline 
 
 _[This is a very high level overview, for a more detailed run-through please 
 review the icenet-notebooks repository.][2]_
+
+### Running prediction commands from preprepared models
+
+**This might be the best starting use case if you want to build intuition about 
+the pipeline facilities using someone elses models!**
+
+***The shell you're using should be `bash`***
+
+```bash
+# Take a git clone of the pipeline
+$ git clone git@github.com:icenet-ai/icenet-pipeline.git anewenv
+$ cd anewenv
+$ conda activate icenet
+
+
+# We identify a pipeline we want to link to
+$ ls -d /data/hpcdata/users/jambyr/icenet/blue
+/data/hpcdata/users/jambyr/icenet/blue
+
+# Copy the environment variable file that was used for training
+$ cp -v /data/hpcdata/users/jambyr/icenet/blue/ENVS.jambyr.bas ./ENVS.dh23
+‘/data/hpcdata/users/jambyr/icenet/blue/ENVS.jambyr.bas’ -> ‘./ENVS.dh23’
+
+# Repoint your ENVS to the training ENVS file you want to predict against
+$ ln -sf ENVS.dh23 ENVS
+$ ls -l ENVS
+lrwxrwxrwx 1 [[REDACTED]] [[REDACTED]] 9 Feb 10 11:48 ENVS -> ENVS.dh23
+
+# These can also be modified in ENVS 
+$ export ICENET_CONDA=$CONDA_PREFIX
+$ export ICENET_HOME=`realpath .`
+
+# Edit the ENVS file to add your prediction dates
+$ vim ENVS
+```
+
+Under the section "Prediction envs" in the file (keeping ourselves organised) we add the dates we want thusly. In this case a two dates in February 2021 a week apart:
+
+```
+FEBTEST_START="2021-2-10,2021-2-17"
+# Set the strings the same for individual dates, END ahead of START would result in a range of dates
+FEBTEST_END="$FEBTEST_START"
+```
+
+Exit VIM and link the remaining elements of the pipeline to run your prediction against the model (in this case `dh23`) using the training set parameters (normalisation / climatologies) used to train it (in this case `current_north`)
+
+```bash
+# Links to my source data store
+ln -s /data/hpcdata/users/jambyr/icenet/blue/data
+
+# Ensures we have a data loader store directory for the pipeline 
+mkdir processed
+# Links to the training data loader store from the other pipeline
+ln -s /data/hpcdata/users/jambyr/icenet/blue/processed/current_north processed/
+
+# Make sure the networks directory exists
+mkdir -p results/networks
+# Links to the network trained in the other pipeline
+ln -s /data/hpcdata/users/jambyr/icenet/blue/results/networks/dh23 results/networks/
+```
+
+[And now you can look at running prediction commands against somebody elses networks][4]
 
 #### One off: preparing SIC masks
 
@@ -133,7 +195,7 @@ icenet_data_masks north
 icenet_data_masks south
 ```
 
-#### Running training and prediction commands 
+#### Running training and prediction commands afresh
 
 Change PREFIX to the setup you want to run through in ENVS
 
@@ -167,7 +229,7 @@ forecasts.
 
 #### run_prediction.sh
 
-This wraps up the preparation of data and running of predictions against 
+This command wraps up the preparation of data and running of predictions against 
 pre-trained networks. This contrasts to the use of the test set to run 
 predictions that was [demonstrated previously][3].
 
@@ -176,19 +238,15 @@ ERA5 and ORAS5 datasets for the predictions you want to make. Use
 `icenet_data_sic`, `icenet_data_era5` and `icenet_data_oras5` respectively. 
 This workflow is also easily adapted to other datasets, wink wink nudge nudge.
 
-If you're using a model from another pipeline you need to ensure normalisation 
-parameters are linked to under your `./processed` folder. For example:
-
-```bash
-ln -s /data/hpcdata/users/alice/icenet/pipeline/processed/traindata_north ./processed/traindata_north
-```
-
 The process for running predictions is then basically: 
 
 ```bash
+# These lines are required if not set within the ENVS file
 export DEMO_TEST_START="2021-10-01"
 export DEMO_TEST_END="$DEMO_TEST_START"
+
 ./run_prediction.sh demo_test model_name hemi demo_test train_data_name
+
 # Optionally, stick it into azure too, provided you're set up for it
 icenet_upload_azure -v -o results/predict/demo_test.nc $DEMO_TEST_START
 ```
@@ -255,3 +313,4 @@ pip install -e ../icenet.$TARGET
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
 [2]: https://github.com/icenet-ai/icenet-notebooks/
 [3]: #running-training-and-prediction-commands
+[4]: #run_prediction.sh
