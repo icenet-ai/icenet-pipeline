@@ -21,7 +21,7 @@ echo "Reading ${FORECAST_NAME}.csv"
 
 cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
     echo "Producing binary accuracy for $FORECAST_DATE";
-    icenet_plot_bin_accuracy -e -v \
+    icenet_plot_bin_accuracy -b -e -v \
         -o ${OUTPUT_DIR}/bin_accuracy.${FORECAST_DATE}.png \
         $HEMI $FORECAST_FILE $FORECAST_DATE >>$BINACC_LOG 2>&1
 
