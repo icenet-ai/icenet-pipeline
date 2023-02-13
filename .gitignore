@@ -12,6 +12,7 @@ __pycache__/
 !/ensemble/*.tmpl.yaml
 /logs/
 /network_datasets
+/notebooks/
 /results/
 /plot/
 /processed
