@@ -135,7 +135,6 @@ $ git clone git@github.com:icenet-ai/icenet-pipeline.git anewenv
 $ cd anewenv
 $ conda activate icenet
 
-
 # We identify a pipeline we want to link to
 $ ls -d /data/hpcdata/users/jambyr/icenet/blue
 /data/hpcdata/users/jambyr/icenet/blue
@@ -203,7 +202,7 @@ Change PREFIX to the setup you want to run through in ENVS
 source ENVS
 
 SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_DATA_PART"
-sbatch $SBATCH_ARGS run_data.sh $HEMI $BATCH_SIZE $WORKERS
+sbatch $SBATCH_ARGS run_data.sh north $BATCH_SIZE $WORKERS
 
 SBATCH_ARGS="$ICENET_SLURM_ARGS $ICENET_SLURM_RUN_PART"
 ./run_train_ensemble.sh \

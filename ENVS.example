@@ -31,7 +31,6 @@ export PREDICT_STATIC_ARGS=""
 
 export FILTER_FACTOR=0.4
 export FORECAST_DAYS=93
-export HEMI=north
 export LAG=3
 export PREP_SCRIPT=local.sh
 

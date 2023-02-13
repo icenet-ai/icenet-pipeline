@@ -6,14 +6,14 @@ set -e -o pipefail
 
 conda activate $ICENET_CONDA
 
-if [ $# -lt 2 ]; then
-  echo "$0 <forecast name> <model> [hemisphere] [date_vars]"
+if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
+  echo "$0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
   exit 1
 fi
 
 FORECAST="$1"
 MODEL="$2"
-HEMI="${3:-$HEMI}"
+HEMI="$3"
 DATE_VARS="${4:-$FORECAST}"
 DATA_PROC="${5:-${TRAIN_DATA_NAME}}_${HEMI}"
 

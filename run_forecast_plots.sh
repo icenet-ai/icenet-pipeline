@@ -2,8 +2,12 @@
 
 source ENVS
 
+if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
+    echo "Usage $0 <forecast_name> <hemisphere>"
+fi
+
 FORECAST="$1"
-HEMI="${2:-$HEMI}"
+HEMI="$2"
 
 FORECAST_NAME=${FORECAST}_${HEMI}
 FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"

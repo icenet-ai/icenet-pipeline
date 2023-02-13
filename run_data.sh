@@ -7,8 +7,12 @@ conda activate $ICENET_CONDA
 set -o pipefail
 set -eu
 
+if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
+    echo "Usage $0 <hemisphere> [batch_size] [workers]"
+fi
+
 DATANAME="$TRAIN_DATA_NAME"
-HEMI="${1:-$HEMI}"
+HEMI="$1"
 BATCH_SIZE=${2:-2}
 WORKERS=${3:-8}
 
