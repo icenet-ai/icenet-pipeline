@@ -29,6 +29,8 @@ loader.*.json
 *.npy
 *.out
 tmp.*
+*test*
 
 !ENVS.example
 ENVS.*
+

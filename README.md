@@ -307,6 +307,9 @@ pip install -e ../icenet.$TARGET
 
 ## License
 
+The template\_\* files are not to be considered with respect to the 
+icenet-pipeline repository, they're used in publishing forecasts! 
+
 *Please see LICENSE file for license information!*
 
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
