@@ -42,9 +42,9 @@ done
 echo "Making $OUTPUT_DIR"
 mkdir -p OUTPUT_DIR
 
-for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv | tail -n 1 ); do
+for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   DATE_DIR="$OUTPUT_DIR/$DATE_FORECAST"
-  echo "Making $DATE_DIR"
+  echo "Making $DATE_DIR for forecast date $DATE_FORECAST"
   mkdir -p $DATE_DIR
 
   echo "Producing single output file for date forecast"
@@ -58,10 +58,26 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv | tail -n 1 ); do
 
   echo "Producing stills for manual composition (with coastlines)"
   icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
 
-  produce_docs
+  produce_docs $DATE_DIR
+
+  echo "Producing binary accuracy plots"
+  icenet_plot_bin_accuracy $REGION -e -b \
+    -o $OUTPUT_DIR/bin_accuracy.png \
+    $HEMI $FORECAST_FILE $DATE_FORECAST
+
+  icenet_plot_metrics $REGION -e -b \
+    -o $OUTPUT_DIR \
+    $HEMI $FORECAST_FILE $DATE_FORECAST
+
+  icenet_plot_sic_error $REGION \
+    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sic_error.mp4 \
+    $HEMI $FORECAST_FILE $DATE_FORECAST
+
+  icenet_plot_sie_error $REGION -e -b \
+    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sie_error.25.mp4 \
+    $HEMI $FORECAST_FILE $DATE_FORECAST
 done
 
-#icenet_plot_bin_accuracy -v -b -e -r 125,190,170,235 -o test.png north results/predict/lanc23.2023-02-13_north.nc 2014-02-13
-
-}
+echo "Done, enjoy your forecasts in $OUTPUT_DIR"
