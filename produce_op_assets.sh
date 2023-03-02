@@ -98,7 +98,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_sie_error $REGION -e -b \
-    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sie_error.25.mp4 \
+    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sie_error.25.png \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   # Future uses - probably via another workflow:
