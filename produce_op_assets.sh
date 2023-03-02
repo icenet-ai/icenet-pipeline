@@ -60,6 +60,11 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
 
+  echo "Producing movie and stills of ensemble standard deviation in predictions"
+  icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.stddev.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
+
   produce_docs $DATE_DIR
 
   echo "Producing binary accuracy plots"
