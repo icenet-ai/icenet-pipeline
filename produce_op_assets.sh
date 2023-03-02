@@ -31,18 +31,29 @@ function produce_docs {
   cp template_README.md ${DIR}/README.md
 }
 
+function rename_gfx {
+  GFX_DIR="$1"
+  F_PREFIX="$2"
+  F_GLOB="$3"
+
+  for NOM in $( find $GFX_DIR -name "${F_PREFIX}${F_GLOB}" ); do
+    NOM_FILENAME=`basename $NOM`
+    mv -v $NOM ${GFX_DIR}/${NOM_FILENAME#${F_PREFIX}}
+  done
+}
+
 
 for WORKING_DIR in "$OUTPUT_DIR" "$LOG_DIR"; do
   if [ -d $WORKING_DIR ]; then
     echo "Output directory $WORKING_DIR already exists, removing"
-    echo rm -rv $OUTPUT_DIR
+    rm -rv $OUTPUT_DIR
   fi
 done
 
 echo "Making $OUTPUT_DIR"
-mkdir -p OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
 
-for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
+for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv | head -n 1 ); do
   DATE_DIR="$OUTPUT_DIR/$DATE_FORECAST"
   echo "Making $DATE_DIR for forecast date $DATE_FORECAST"
   mkdir -p $DATE_DIR
@@ -52,18 +63,24 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   echo "Producing geotiffs from that file"
   icenet_output_geotiff -o $DATE_DIR $FORECAST_FILE $DATE_FORECAST 1..93
+  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.tiff'
 
   echo "Producing movie file of raw video"
   icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
 
   echo "Producing stills for manual composition (with coastlines)"
   icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
+  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
 
   echo "Producing movie and stills of ensemble standard deviation in predictions"
   icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
+
   icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
-  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.stddev.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
+  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.stddev.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.stddev.mp4
+  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
   produce_docs $DATE_DIR
 
@@ -83,6 +100,10 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   icenet_plot_sie_error $REGION -e -b \
     -o ${OUTPUT_DIR}/${DATE_FORECAST}.sie_error.25.mp4 \
     $HEMI $FORECAST_FILE $DATE_FORECAST
+
+  # Future uses - probably via another workflow:
+  #  rsync to local destinations?
+  #  Azure blob storage upload using az
 done
 
 echo "Done, enjoy your forecasts in $OUTPUT_DIR"
