@@ -90,7 +90,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_metrics $REGION -e -b \
-    -o $OUTPUT_DIR \
+    -o $OUTPUT_DIR/metrics.png \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_sic_error $REGION \
