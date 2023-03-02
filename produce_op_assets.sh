@@ -84,21 +84,21 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   produce_docs $DATE_DIR
 
-  echo "Producing binary accuracy plots"
+  echo "Producing binary accuracy plots (these are meaningless forecasting into the future w.r.t the OSISAF data)"
   icenet_plot_bin_accuracy $REGION -e -b \
-    -o $OUTPUT_DIR/bin_accuracy.png \
+    -o ${DATE_DIR}/bin_accuracy.png \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_metrics $REGION -e -b \
-    -o $OUTPUT_DIR/metrics.png \
+    -o ${DATE_DIR}/metrics.png \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_sic_error $REGION \
-    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sic_error.mp4 \
+    -o ${DATE_DIR}/${DATE_FORECAST}.sic_error.mp4 \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   icenet_plot_sie_error $REGION -e -b \
-    -o ${OUTPUT_DIR}/${DATE_FORECAST}.sie_error.25.png \
+    -o ${DATE_DIR}/${DATE_FORECAST}.sie_error.25.png \
     $HEMI $FORECAST_FILE $DATE_FORECAST
 
   # Future uses - probably via another workflow:
