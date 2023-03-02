@@ -85,21 +85,32 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   produce_docs $DATE_DIR
 
   echo "Producing binary accuracy plots (these are meaningless forecasting into the future w.r.t the OSISAF data)"
-  icenet_plot_bin_accuracy $REGION -e -b \
-    -o ${DATE_DIR}/bin_accuracy.png \
-    $HEMI $FORECAST_FILE $DATE_FORECAST
 
-  icenet_plot_metrics $REGION -e -b \
-    -o ${DATE_DIR}/metrics.png \
-    $HEMI $FORECAST_FILE $DATE_FORECAST
+  SIC_FILENAME="./data/osisaf/${HEMI}/siconca/`date +%Y`.nc"
+  # Get the most recent day, sorry for ignoring all timezone information
+  SIC_LATEST=`python -c 'import xarray; print(str(xarray.open_dataset("'$SIC_FILENAME'").time.values[-1])[0:10])'`
 
-  icenet_plot_sic_error $REGION \
-    -o ${DATE_DIR}/${DATE_FORECAST}.sic_error.mp4 \
-    $HEMI $FORECAST_FILE $DATE_FORECAST
+  if [[ `date --date="$SIC_LATEST" +%s` -gt `date --date="$DATE_FORECAST + 1 day" +%s` ]]; then
+    echo "We have necessary SIC data ($SIC_LATEST) for forecast date $DATE_FORECAST"
+    icenet_plot_bin_accuracy $REGION -e -b \
+      -o ${DATE_DIR}/bin_accuracy.png \
+      $HEMI $FORECAST_FILE $DATE_FORECAST
 
-  icenet_plot_sie_error $REGION -e -b \
-    -o ${DATE_DIR}/${DATE_FORECAST}.sie_error.25.png \
-    $HEMI $FORECAST_FILE $DATE_FORECAST
+    icenet_plot_metrics $REGION -e -b \
+      -o ${DATE_DIR}/metrics.png \
+      $HEMI $FORECAST_FILE $DATE_FORECAST
+
+    icenet_plot_sic_error $REGION \
+      -o ${DATE_DIR}/${DATE_FORECAST}.sic_error.mp4 \
+      $HEMI $FORECAST_FILE $DATE_FORECAST
+
+    icenet_plot_sie_error $REGION -e -b \
+      -o ${DATE_DIR}/${DATE_FORECAST}.sie_error.25.png \
+      $HEMI $FORECAST_FILE $DATE_FORECAST
+  else
+    echo "We do not have observational SIC data ($SIC_LATEST) for plotting \
+    forecast date $DATE_FORECAST"
+  fi
 
   # Future uses - probably via another workflow:
   #  rsync to local destinations?
