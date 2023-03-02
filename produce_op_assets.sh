@@ -53,7 +53,7 @@ done
 echo "Making $OUTPUT_DIR"
 mkdir -p $OUTPUT_DIR
 
-for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv | head -n 1 ); do
+for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   DATE_DIR="$OUTPUT_DIR/$DATE_FORECAST"
   echo "Making $DATE_DIR for forecast date $DATE_FORECAST"
   mkdir -p $DATE_DIR
