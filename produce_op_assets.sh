@@ -92,12 +92,15 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   if [[ `date --date="$SIC_LATEST" +%s` -gt `date --date="$DATE_FORECAST + 1 day" +%s` ]]; then
     echo "We have necessary SIC data ($SIC_LATEST) for forecast date $DATE_FORECAST"
-    icenet_plot_bin_accuracy $REGION -e -b \
-      -o ${DATE_DIR}/bin_accuracy.png \
-      $HEMI $FORECAST_FILE $DATE_FORECAST
 
-    icenet_plot_metrics $REGION -e -b \
-      -o ${DATE_DIR}/metrics.png \
+    for THRESHOLD in 0.15 0.5 0.8 0.9; do
+      icenet_plot_bin_accuracy $REGION -e -b -t $THRESHOLD \
+        -o ${DATE_DIR}/bin_accuracy.${THRESHOLD}.png \
+        $HEMI $FORECAST_FILE $DATE_FORECAST
+    done
+
+    icenet_plot_metrics $REGION -e -b -s \
+      -o ${DATE_DIR}/ \
       $HEMI $FORECAST_FILE $DATE_FORECAST
 
     icenet_plot_sic_error $REGION \
