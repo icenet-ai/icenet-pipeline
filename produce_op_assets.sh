@@ -84,6 +84,9 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   produce_docs $DATE_DIR
 
+  # TODO: copy docs to root folder
+  # TODO: copy plot/ content for whole domain
+
   echo "Producing binary accuracy plots (these are meaningless forecasting into the future w.r.t the OSISAF data)"
 
   SIC_FILENAME="./data/osisaf/${HEMI}/siconca/`date +%Y`.nc"

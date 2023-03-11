@@ -62,15 +62,13 @@ DEMO_PIPELINE_TEST_START="2022-2-15"
 DEMO_PIPELINE_TEST_END="2022-2-28"
 
 ##
-# Prediction ranges for initialisation (each day produces a forecast)
-#
-DEMO_PREDICTION_START="2000-1-1"
-DEMO_PREDICTION_END="2000-1-1"
-
-##
-# The prefix to use for date ranges
+# The prefix to use for training date ranges
 #
 PREFIX="DEMO_PIPELINE"
+
+##
+# USER NOTE: you shouldn't need to configure anything further after this point!
+#
 
 ##
 # Mapping variables, these shouldn't need changing but link to the usage of the
