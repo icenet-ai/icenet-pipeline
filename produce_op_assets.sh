@@ -59,7 +59,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   mkdir -p $DATE_DIR
 
   echo "Producing single output file for date forecast"
-  python -c 'import xarray; xarray.open_dataset("'$FORECAST_FILE'").sel(time="'$DATE_FORECAST'").to_netcdf("'$DATE_DIR'/'$DATE_FORECAST'.nc")'
+  python -c 'import xarray; xarray.open_dataset("'$FORECAST_FILE'").sel(time=slice("'$DATE_FORECAST'", "'$DATE_FORECAST'")).to_netcdf("'$DATE_DIR'/'$DATE_FORECAST'.nc")'
 
   echo "Producing geotiffs from that file"
   icenet_output_geotiff -o $DATE_DIR $FORECAST_FILE $DATE_FORECAST 1..93
