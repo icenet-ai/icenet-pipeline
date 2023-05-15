@@ -7,7 +7,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ] ; then
 fi
 
 # default values for metrics to produce and to compare with ECMWF
-METRICS="binacc,sic-video"
+METRICS="binacc,sic"
 ECMWF="false"
 ROLLING="false"
 LEADTIME_AVG="false"
@@ -25,7 +25,7 @@ done
 METRICS=(${METRICS//,/ })
 
 # check if metric is valid
-VALID_METRICS=("binacc" "sie" "mae" "mse" "rmse" "sic-video")
+VALID_METRICS=("binacc" "sie" "mae" "mse" "rmse" "sic")
 for element in "${METRICS[@]}"
 do
     if [[ ! "${VALID_METRICS[*]}" =~ "${element}" ]] ; then
@@ -63,7 +63,7 @@ SIE_LOG="${LOG_PREFIX}_sie.log"
 MAE_LOG="${LOG_PREFIX}_mae.log"
 MSE_LOG="${LOG_PREFIX}_mse.log"
 RMSE_LOG="${LOG_PREFIX}_rmse.log"
-SICERR_LOG="${LOG_PREFIX}_sic_error.log"
+SICERR_LOG="${LOG_PREFIX}_sic.log"
 OUTPUT_DIR="plot/$FORECAST_NAME"
 
 if [ -d $OUTPUT_DIR ] ; then
@@ -99,7 +99,7 @@ cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
             echo "Producing RMSE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v -m "RMSE" -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $RMSE_LOG 2>&1
-        elif [ "${element}" == "sic-video" ] ; then
+        elif [ "${element}" == "sic" ] ; then
             OUTPUT="${OUTPUT_DIR}/${element}.${FORECAST_DATE}.mp4"
             echo "Producing SIC error video for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_sic_error -v -o OUTPUT \
