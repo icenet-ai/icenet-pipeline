@@ -114,7 +114,9 @@ if [[ "${LEADTIME_AVG}" == true ]]; then
     do
         if [ "${element}" == "sic" ] ; then
             continue
-        elif [ "${element}" == "binacc" ] ; then
+        fi
+        OUTPUT="${OUTPUT_DIR}/${element}_leadtime_avg.png"
+        if [ "${element}" == "binacc" ] ; then
             echo "Producing leadtime averaged binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
         elif [ "${element}" == "sie" ] ; then
@@ -130,7 +132,6 @@ if [[ "${LEADTIME_AVG}" == true ]]; then
             echo "Producing leadtime averaged RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
-        OUTPUT="${OUTPUT_DIR}/${element}_leadtime_avg.png"
         icenet_plot_leadtime_avg $HEMI $FORECAST_FILE \
             -m $element -ao "all" -s -sm 1 $E_FLAG \
             -o $OUTPUT >> $LOGFILE
@@ -143,7 +144,9 @@ if [[ "${ROLLING}" == true ]]; then
     do
         if [ "${element}" == "sic" ] ; then
             continue
-        elif [ "${element}" == "binacc" ] ; then
+        fi
+        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
+        if [ "${element}" == "binacc" ] ; then
             echo "Producing rolling binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
         elif [ "${element}" == "sie" ] ; then
@@ -159,8 +162,7 @@ if [[ "${ROLLING}" == true ]]; then
             echo "Producing rolling RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
-        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        # determine whether or not to stitch together the leadtime averaged plot
+        # determine whether or not to stitch the leadtime averaged plot
         if [[ "${LEADTIME_AVG}" == true ]]; then
             INPUTS="${OUTPUT_DIR}/${element}*.png"
         else
