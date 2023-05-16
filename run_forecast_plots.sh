@@ -3,21 +3,21 @@
 source ENVS
 
 if [ $# -lt 2 ] || [ "$1" == "-h" ] ; then
-    echo "Usage $0 [-m <metrics>] [-e] [-r] [-l] <forecast_name> <hemisphere>"
+    echo "Usage $0 [-m <metrics>] [-e] [-l] [-r] <forecast_name> <hemisphere>"
 fi
 
 # default values for metrics to produce and to compare with ECMWF
 METRICS="binacc,sic"
 ECMWF="false"
-ROLLING="false"
 LEADTIME_AVG="false"
+ROLLING="false"
 OPTIND=1
-while getopts "m:erl" opt; do
+while getopts "m:elr" opt; do
     case "$opt" in
         m)  METRICS=${OPTARG} ;;
         e)  ECMWF="true" ;;
-        r)  ROLLING="true" ;;
-        l)  LEADTIME_AVG="true"
+        l)  LEADTIME_AVG="true" ;;
+        r)  ROLLING="true"
     esac
 done
 
@@ -108,34 +108,6 @@ cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
     done
 done
 
-# stitch together metric plots if requested
-if [[ "${ROLLING}" == true ]]; then
-    for element in "${METRICS[@]}"
-    do
-        if [ "${element}" == "sic" ] ; then
-            continue
-        elif [ "${element}" == "binacc" ] ; then
-            echo "Producing rolling binary accuracy plot (${OUTPUT})"
-            LOGFILE="${BINACC_LOG}"
-        elif [ "${element}" == "sie" ] ; then
-            echo "Producing rolling sea ice extent error plot (${OUTPUT})"
-            LOGFILE="${SIE_LOG}"
-        elif [ "${element}" == "mae" ] ; then
-            echo "Producing rolling MAE plot (${OUTPUT})"
-            LOGFILE="${MAE_LOG}"
-        elif [ "${element}" == "mse" ] ; then
-            echo "Producing rolling MSE plot (${OUTPUT})"
-            LOGFILE="${MSE_LOG}"
-        elif [ "${element}" == "rmse" ] ; then
-            echo "Producing rolling RMSE plot (${OUTPUT})"
-            LOGFILE="${RMSE_LOG}"
-        fi
-        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}.*.png" \
-            -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
-    done
-fi
-
 # produce leadtime averaged plots
 if [[ "${LEADTIME_AVG}" == true ]]; then
     for element in "${METRICS[@]}"
@@ -162,5 +134,33 @@ if [[ "${LEADTIME_AVG}" == true ]]; then
         icenet_plot_leadtime_avg $HEMI $FORECAST_FILE \
             -m $element -ao "all" -s -sm 1 $E_FLAG \
             -o $OUTPUT >> $LOGFILE
+    done
+fi
+
+# stitch together metric plots if requested
+if [[ "${ROLLING}" == true ]]; then
+    for element in "${METRICS[@]}"
+    do
+        if [ "${element}" == "sic" ] ; then
+            continue
+        elif [ "${element}" == "binacc" ] ; then
+            echo "Producing rolling binary accuracy plot (${OUTPUT})"
+            LOGFILE="${BINACC_LOG}"
+        elif [ "${element}" == "sie" ] ; then
+            echo "Producing rolling sea ice extent error plot (${OUTPUT})"
+            LOGFILE="${SIE_LOG}"
+        elif [ "${element}" == "mae" ] ; then
+            echo "Producing rolling MAE plot (${OUTPUT})"
+            LOGFILE="${MAE_LOG}"
+        elif [ "${element}" == "mse" ] ; then
+            echo "Producing rolling MSE plot (${OUTPUT})"
+            LOGFILE="${MSE_LOG}"
+        elif [ "${element}" == "rmse" ] ; then
+            echo "Producing rolling RMSE plot (${OUTPUT})"
+            LOGFILE="${RMSE_LOG}"
+        fi
+        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
+        ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}.*.png" \
+            -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
     done
 fi
