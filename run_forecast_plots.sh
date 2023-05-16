@@ -102,7 +102,7 @@ cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
         elif [ "${element}" == "sic" ] ; then
             OUTPUT="${OUTPUT_DIR}/${element}.${FORECAST_DATE}.mp4"
             echo "Producing SIC error video for $FORECAST_DATE (${OUTPUT})"
-            icenet_plot_sic_error -v -o OUTPUT \
+            icenet_plot_sic_error -v -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $SICERR_LOG 2>&1
         fi
     done
@@ -112,8 +112,9 @@ done
 if [[ "${ROLLING}" == true ]]; then
     for element in "${METRICS[@]}"
     do
-        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        if [ "${element}" == "binacc" ] ; then
+        if [ "${element}" == "sic" ] ; then
+            continue
+        elif [ "${element}" == "binacc" ] ; then
             echo "Producing rolling binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
         elif [ "${element}" == "sie" ] ; then
@@ -129,6 +130,7 @@ if [[ "${ROLLING}" == true ]]; then
             echo "Producing rolling RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
+        OUTPUT="${OUTPUT_DIR}/${element}.mp4"
         ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}*.png" \
             -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
     done
@@ -138,8 +140,9 @@ fi
 if [[ "${LEADTIME_AVG}" == true ]]; then
     for element in "${METRICS[@]}"
     do
-        OUTPUT="${OUTPUT_DIR}/${element}_leadtime_avg.png"
-        if [ "${element}" == "binacc" ] ; then
+        if [ "${element}" == "sic" ] ; then
+            continue
+        elif [ "${element}" == "binacc" ] ; then
             echo "Producing leadtime averaged binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
         elif [ "${element}" == "sie" ] ; then
@@ -155,6 +158,7 @@ if [[ "${LEADTIME_AVG}" == true ]]; then
             echo "Producing leadtime averaged RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
+        OUTPUT="${OUTPUT_DIR}/${element}_leadtime_avg.png"
         icenet_plot_leadtime_avg $HEMI $FORECAST_FILE \
             -m $element -ao "all" -s -sm 1 $E_FLAG \
             -o $OUTPUT >> $LOGFILE
