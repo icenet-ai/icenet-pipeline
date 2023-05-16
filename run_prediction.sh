@@ -85,4 +85,4 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 ./run_predict_ensemble.sh -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
     $MODEL ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
 
-./run_forecast_plots.sh ${METRICS_FLAG} ${E_FLAG} ${R_FLAG} ${L_FLAG} $FORECAST $HEMI
+./run_forecast_plots.sh $METRICS_FLAG $E_FLAG $R_FLAG $L_FLAG $FORECAST $HEMI
