@@ -160,7 +160,13 @@ if [[ "${ROLLING}" == true ]]; then
             LOGFILE="${RMSE_LOG}"
         fi
         OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}.*.png" \
+        # determine whether or not to stitch together the leadtime averaged plot
+        if [[ "${LEADTIME_AVG}" == true ]]; then
+            INPUTS="${OUTPUT_DIR}/${element}*.png"
+        else
+            INPUTS="${OUTPUT_DIR}/${element}.*.png"
+        fi
+        ffmpeg -framerate 10 -y -pattern_type glob -i INPUTS \
             -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
     done
 fi
