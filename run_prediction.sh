@@ -7,9 +7,30 @@ set -e -o pipefail
 conda activate $ICENET_CONDA
 
 if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
-  echo "$0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
+  echo "$0 [-m <metrics>] [-e] [-l] [-r] <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
   exit 1
 fi
+
+# obtaining any arguments that should be passed onto run_forecast_plots.sh
+METRICS_FLAG=""
+E_FLAG=""
+L_FLAG=""
+R_FLAG=""
+OPTIND=1
+while getopts "m:erl" opt; do
+  case "$opt" in
+    m)  METRICS_FLAG="-m ${OPTARG}" ;;
+    e)  E_FLAG="-e" ;;
+    l)  L_FLAG="-l" ;;
+    r)  R_FLAG="-r"
+  esac
+done
+
+echo "Passing on the following argument to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG}"
+
+shift $((OPTIND-1))
+
+echo "Leftovers from getopt: $@"
 
 FORECAST="$1"
 MODEL="$2"
@@ -64,4 +85,4 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 ./run_predict_ensemble.sh -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
     $MODEL ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
 
-./run_forecast_plots.sh $FORECAST $HEMI
+./run_forecast_plots.sh $METRICS_FLAG $E_FLAG $L_FLAG $R_FLAG $FORECAST $HEMI
