@@ -131,7 +131,7 @@ if [[ "${ROLLING}" == true ]]; then
             LOGFILE="${RMSE_LOG}"
         fi
         OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}*.png" \
+        ffmpeg -framerate 10 -y -pattern_type glob -i "${OUTPUT_DIR}/${element}.*.png" \
             -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
     done
 fi
