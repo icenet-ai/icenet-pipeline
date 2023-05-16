@@ -7,7 +7,7 @@ set -e -o pipefail
 conda activate $ICENET_CONDA
 
 if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
-  echo "$0 [-m <metrics>] [-e] <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
+  echo "$0 [-m <metrics>] [-e] [-r] [-l] <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
   exit 1
 fi
 
