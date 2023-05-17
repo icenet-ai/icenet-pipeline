@@ -2,7 +2,7 @@
 
 source ENVS
 
-if [ $# -lt 2 ] || [ "$1" == "-h" ] ; then
+if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "Usage $0 [-m <metrics>] [-e] [-l] [-r] <forecast_name> <hemisphere>"
 fi
 
@@ -28,7 +28,7 @@ METRICS=(${METRICS//,/ })
 VALID_METRICS=("binacc" "sie" "mae" "mse" "rmse" "sic")
 for element in "${METRICS[@]}"
 do
-    if [[ ! "${VALID_METRICS[*]}" =~ "${element}" ]] ; then
+    if [[ ! "${VALID_METRICS[*]}" =~ "${element}" ]]; then
         # element is not in VALID_METRICS 
         echo "'${element}' is not a valid metric"
         exit 1
@@ -66,7 +66,7 @@ RMSE_LOG="${LOG_PREFIX}_rmse.log"
 SICERR_LOG="${LOG_PREFIX}_sic.log"
 OUTPUT_DIR="plot/$FORECAST_NAME"
 
-if [ -d $OUTPUT_DIR ] ; then
+if [ -d $OUTPUT_DIR ]; then
     # remove existing log files if they exist
     rm -v -f $BINACC_LOG $SIE_LOG $MAE_LOG $MSE_LOG $RMSE_LOG $SICERR_LOG
 fi
@@ -79,27 +79,27 @@ cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
     for element in "${METRICS[@]}"
     do
         OUTPUT="${OUTPUT_DIR}/${element}.${FORECAST_DATE}.png"
-        if [ "${element}" == "binacc" ] ; then
+        if [ "${element}" == "binacc" ]; then
             echo "Producing binary accuracy plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_bin_accuracy -b $E_FLAG -v -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $BINACC_LOG 2>&1
-        elif [ "${element}" == "sie" ] ; then
+        elif [ "${element}" == "sie" ]; then
             echo "Producing sea ice extent error plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_sie_error -b $E_FLAG -v -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $SIE_LOG 2>&1
-        elif [ "${element}" == "mae" ] ; then
+        elif [ "${element}" == "mae" ]; then
             echo "Producing MAE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v -m "MAE" -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $MAE_LOG 2>&1
-        elif [ "${element}" == "mse" ] ; then
+        elif [ "${element}" == "mse" ]; then
             echo "Producing MSE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v -m "MSE" -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $MSE_LOG 2>&1
-        elif [ "${element}" == "rmse" ] ; then
+        elif [ "${element}" == "rmse" ]; then
             echo "Producing RMSE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v -m "RMSE" -o $OUTPUT \
                 $HEMI $FORECAST_FILE $FORECAST_DATE >> $RMSE_LOG 2>&1
-        elif [ "${element}" == "sic" ] ; then
+        elif [ "${element}" == "sic" ]; then
             OUTPUT="${OUTPUT_DIR}/${element}.${FORECAST_DATE}.mp4"
             echo "Producing SIC error video for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_sic_error -v -o $OUTPUT \
@@ -112,23 +112,23 @@ done
 if [[ "${LEADTIME_AVG}" == true ]]; then
     for element in "${METRICS[@]}"
     do
-        if [ "${element}" == "sic" ] ; then
+        if [ "${element}" == "sic" ]; then
             continue
         fi
         OUTPUT="${OUTPUT_DIR}/${element}_leadtime_avg.png"
-        if [ "${element}" == "binacc" ] ; then
+        if [ "${element}" == "binacc" ]; then
             echo "Producing leadtime averaged binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
-        elif [ "${element}" == "sie" ] ; then
+        elif [ "${element}" == "sie" ]; then
             echo "Producing leadtime averaged sea ice extent error plot (${OUTPUT})"
             LOGFILE="${SIE_LOG}"
-        elif [ "${element}" == "mae" ] ; then
+        elif [ "${element}" == "mae" ]; then
             echo "Producing leadtime averaged MAE plot (${OUTPUT})"
             LOGFILE="${MAE_LOG}"
-        elif [ "${element}" == "mse" ] ; then
+        elif [ "${element}" == "mse" ]; then
             echo "Producing leadtime averaged MSE plot (${OUTPUT})"
             LOGFILE="${MSE_LOG}"
-        elif [ "${element}" == "rmse" ] ; then
+        elif [ "${element}" == "rmse" ]; then
             echo "Producing leadtime averaged RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
@@ -142,23 +142,23 @@ fi
 if [[ "${ROLLING}" == true ]]; then
     for element in "${METRICS[@]}"
     do
-        if [ "${element}" == "sic" ] ; then
+        if [ "${element}" == "sic" ]; then
             continue
         fi
         OUTPUT="${OUTPUT_DIR}/${element}.mp4"
-        if [ "${element}" == "binacc" ] ; then
+        if [ "${element}" == "binacc" ]; then
             echo "Producing rolling binary accuracy plot (${OUTPUT})"
             LOGFILE="${BINACC_LOG}"
-        elif [ "${element}" == "sie" ] ; then
+        elif [ "${element}" == "sie" ]; then
             echo "Producing rolling sea ice extent error plot (${OUTPUT})"
             LOGFILE="${SIE_LOG}"
-        elif [ "${element}" == "mae" ] ; then
+        elif [ "${element}" == "mae" ]; then
             echo "Producing rolling MAE plot (${OUTPUT})"
             LOGFILE="${MAE_LOG}"
-        elif [ "${element}" == "mse" ] ; then
+        elif [ "${element}" == "mse" ]; then
             echo "Producing rolling MSE plot (${OUTPUT})"
             LOGFILE="${MSE_LOG}"
-        elif [ "${element}" == "rmse" ] ; then
+        elif [ "${element}" == "rmse" ]; then
             echo "Producing rolling RMSE plot (${OUTPUT})"
             LOGFILE="${RMSE_LOG}"
         fi
@@ -168,7 +168,7 @@ if [[ "${ROLLING}" == true ]]; then
         else
             INPUTS="${OUTPUT_DIR}/${element}.*.png"
         fi
-        ffmpeg -framerate 10 -y -pattern_type glob -i INPUTS \
+        ffmpeg -framerate 10 -y -pattern_type glob -i "${INPUTS}" \
             -vcodec libx264 -pix_fmt yuv420p $OUTPUT >> $LOGFILE
     done
 fi
