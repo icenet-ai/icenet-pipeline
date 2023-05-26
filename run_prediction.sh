@@ -7,26 +7,36 @@ set -e -o pipefail
 conda activate $ICENET_CONDA
 
 if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
-  echo "$0 [-m <metrics>] [-e] [-l] [-r] <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
-  exit 1
+    echo "$0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
+    echo "<forecast_name>   name of forecast"
+    echo "<model>           model name"
+    echo "<hemisphere>      hemisphere to use"
+    echo "[date_vars]       variables for defining start and end dates to forecast"
+    echo "[train_data_name] name of data used to train the model"
+    echo "Options"
+    echo "-m <metrics>      pass in a string of metrics separated by commas (to pass into ./run_forecast_plots.sh), by default \"\""
+    echo "-e                compare forecast performance with ECMWF"
+    echo "-l                produce leadtime averaged plots"
+    echo "-v                produce video using the individual metric plots by stitching them together with ffmpeg"
+    exit 1
 fi
 
 # obtaining any arguments that should be passed onto run_forecast_plots.sh
 METRICS_FLAG=""
 E_FLAG=""
+V_FLAG=""
 L_FLAG=""
-R_FLAG=""
 OPTIND=1
-while getopts "m:erl" opt; do
-  case "$opt" in
-    m)  METRICS_FLAG="-m ${OPTARG}" ;;
-    e)  E_FLAG="-e" ;;
-    l)  L_FLAG="-l" ;;
-    r)  R_FLAG="-r"
-  esac
+while getopts "m:elv" opt; do
+    case "$opt" in
+        m)  METRICS_FLAG="-m ${OPTARG}" ;;
+        e)  E_FLAG="-e" ;;
+        l)  L_FLAG="-l" ;;
+        v)  V_FLAG="-v"
+    esac
 done
 
-echo "Passing on the following argument to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG}"
+echo "Passing on the following arguments to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG} ${V_FLAG} ${L_FLAG}"
 
 shift $((OPTIND-1))
 
@@ -40,13 +50,13 @@ DATA_PROC="${5:-${TRAIN_DATA_NAME}}_${HEMI}"
 
 # This assumes you're not retraining using the same model name, eek
 if [ -d results/networks/$MODEL ]; then
-  SAVEFILE=`ls results/networks/${MODEL}/${MODEL}.*.h5 | head -n 1`
-  DATASET=`echo $SAVEFILE | perl -lpe's/.+\.network_(.+)\.[0-9]+\.h5/$1/'`
-  echo "First model file: $SAVEFILE"
-  echo "Dataset model was trained on: $DATASET"
+    SAVEFILE=`ls results/networks/${MODEL}/${MODEL}.*.h5 | head -n 1`
+    DATASET=`echo $SAVEFILE | perl -lpe's/.+\.network_(.+)\.[0-9]+\.h5/$1/'`
+    echo "First model file: $SAVEFILE"
+    echo "Dataset model was trained on: $DATASET"
 else
-  echo "Model $MODEL doesn't exist"
-  exit 1
+    echo "Model $MODEL doesn't exist"
+    exit 1
 fi
 
 NAME_START="${DATE_VARS^^}_START"
@@ -56,11 +66,11 @@ PREDICTION_START=${!NAME_START}
 PREDICTION_END=${!NAME_END}
 
 if [ -z $PREDICTION_START ] || [ -z $PREDICTION_END ]; then
-  echo "Prediction date args not set correctly: \"$PREDICTION_START\" to \"$PREDICTION_END\""
-  exit 1
+    echo "Prediction date args not set correctly: \"$PREDICTION_START\" to \"$PREDICTION_END\""
+    exit 1
 else
-  echo "Prediction start arg: $PREDICTION_START"
-  echo "Prediction end arg: $PREDICTION_END"
+    echo "Prediction start arg: $PREDICTION_START"
+    echo "Prediction end arg: $PREDICTION_END"
 fi
 
 [ ! -z "$PROC_ARGS_ERA5" ] && \
@@ -85,4 +95,4 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 ./run_predict_ensemble.sh -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
     $MODEL ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
 
-./run_forecast_plots.sh $METRICS_FLAG $E_FLAG $L_FLAG $R_FLAG $FORECAST $HEMI
+./run_forecast_plots.sh ${METRICS_FLAG} ${E_FLAG} ${V_FLAG} ${L_FLAG} $FORECAST $HEMI
