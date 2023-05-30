@@ -7,7 +7,7 @@ set -e -o pipefail
 conda activate $ICENET_CONDA
 
 if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
-    echo "$0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
+    echo "Usage $0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
     echo "<forecast_name>   name of forecast"
     echo "<model>           model name"
     echo "<hemisphere>      hemisphere to use"
@@ -36,11 +36,11 @@ while getopts "m:elv" opt; do
     esac
 done
 
-echo "Passing on the following arguments to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG} ${V_FLAG} ${L_FLAG}"
+echo "Passing on the following arguments to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG} ${L_FLAG} ${V_FLAG}"
 
 shift $((OPTIND-1))
 
-echo "Leftovers from getopt: $@"
+# echo "Leftovers from getopt: $@"
 
 FORECAST="$1"
 MODEL="$2"
