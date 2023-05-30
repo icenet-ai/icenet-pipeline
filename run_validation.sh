@@ -103,4 +103,3 @@ for element in "${METRICS[@]}"
             -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
     fi
 done
-

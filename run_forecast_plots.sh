@@ -125,10 +125,10 @@ else
     OUTPUT_DIR=${REQUESTED_OUTPUT_DIR}
 fi
 
-if [ -d $OUTPUT_DIR ]; then
-    # remove existing log files if they exist
-    rm -v -f $BINACC_LOG $SIE_LOG $MAE_LOG $MSE_LOG $RMSE_LOG $SICERR_LOG
-fi
+# if [ -d $OUTPUT_DIR ]; then
+#     # remove existing log files if they exist
+#     rm -v -f $BINACC_LOG $SIE_LOG $MAE_LOG $MSE_LOG $RMSE_LOG $SICERR_LOG
+# fi
 mkdir -p $OUTPUT_DIR
 
 echo "Saving plots in ${OUTPUT_DIR}"
