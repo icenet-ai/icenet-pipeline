@@ -30,6 +30,7 @@ loader.*.json
 *.out
 tmp.*
 *test*
+*.png
 
 !ENVS.example
 ENVS.*
