@@ -10,6 +10,9 @@ The structure of this repository is to provide CLI commands that allow you to
 
 ## Get the repositories 
 
+**Please note this repository is tagged to corresponding icenet versions: if 
+you want to get a particular tag add `--branch vM.M.R` to the clone command.**
+
 ```bash
 git clone git@github.com:icenet-ai/icenet-pipeline.git green
 ln -s green pipeline
