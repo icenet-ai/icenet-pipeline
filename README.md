@@ -82,10 +82,18 @@ The system is set up to process data in certain directories. With each pipeline
 installation you can share the source data if you like, so use symlinks for
 `data` if applicable, and intermediate folders `processed` and 
 `network_datasets` you might want to store on alternate storage as applicable.
-The following kind of illustrates this:
+
+In my normal setup, I run several pipelines each with one source data store:
 
 ```bash
-# An example from deployment on JASMIN, linking big folders to group storage
+# From inside the icenet-pipeline cloned directory, assuming target exists!
+ln -s ../data
+```
+
+The following kind of illustrates this for linking big stuff to different storage:
+
+```bash
+# An example from deployment on JASMIN
 ln -s /gws/nopw/j04/icenet/data
 mkdir /gws/nopw/j04/icenet/network_datasets
 mkdir /gws/nopw/j04/icenet/processed
@@ -155,21 +163,6 @@ lrwxrwxrwx 1 [[REDACTED]] [[REDACTED]] 9 Feb 10 11:48 ENVS -> ENVS.dh23
 $ export ICENET_CONDA=$CONDA_PREFIX
 $ export ICENET_HOME=`realpath .`
 
-# Edit the ENVS file to add your prediction dates
-$ vim ENVS
-```
-
-Under the section "Prediction envs" in the file (keeping ourselves organised) we add the dates we want thusly. In this case a two dates in February 2021 a week apart:
-
-```
-FEBTEST_START="2021-2-10,2021-2-17"
-# Set the strings the same for individual dates, END ahead of START would result in a range of dates
-FEBTEST_END="$FEBTEST_START"
-```
-
-Exit VIM and link the remaining elements of the pipeline to run your prediction against the model (in this case `dh23`) using the training set parameters (normalisation / climatologies) used to train it (in this case `current_north`)
-
-```bash
 # Links to my source data store
 ln -s /data/hpcdata/users/jambyr/icenet/blue/data
 
@@ -318,4 +311,4 @@ icenet-pipeline repository, they're used in publishing forecasts!
 [1]: https://github.com/conda/conda/issues?q=is%3Aissue+is%3Aopen+solving
 [2]: https://github.com/icenet-ai/icenet-notebooks/
 [3]: #running-training-and-prediction-commands
-[4]: #run_prediction.sh
+[4]: #run_predictionsh
