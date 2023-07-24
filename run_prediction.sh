@@ -13,34 +13,20 @@ if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
     echo "<hemisphere>      hemisphere to use"
     echo "[date_vars]       variables for defining start and end dates to forecast"
     echo "[train_data_name] name of data used to train the model"
-    echo "Options"
-    echo "-m <metrics>      pass in a string of metrics separated by commas (to pass into ./run_forecast_plots.sh), by default \"\""
-    echo "-e                compare forecast performance with ECMWF"
-    echo "-l                produce leadtime averaged plots"
-    echo "-v                produce video using the individual metric plots by stitching them together with ffmpeg"
+    echo "Options: none"
     exit 1
 fi
 
 # obtaining any arguments that should be passed onto run_forecast_plots.sh
-METRICS_FLAG=""
-E_FLAG=""
-V_FLAG=""
-L_FLAG=""
 OPTIND=1
-while getopts "m:elv" opt; do
+while getopts "" opt; do
     case "$opt" in
-        m)  METRICS_FLAG="-m ${OPTARG}" ;;
-        e)  E_FLAG="-e" ;;
-        l)  L_FLAG="-l" ;;
-        v)  V_FLAG="-v"
     esac
 done
 
-echo "Passing on the following arguments to run_forecast_plots.sh: ${METRICS_FLAG} ${E_FLAG} ${L_FLAG} ${V_FLAG}"
-
 shift $((OPTIND-1))
 
-# echo "Leftovers from getopt: $@"
+echo "Leftovers from getopt: $@"
 
 FORECAST="$1"
 MODEL="$2"
@@ -94,5 +80,3 @@ icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
 
 ./run_predict_ensemble.sh -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
     $MODEL ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
-
-./run_forecast_plots.sh ${METRICS_FLAG} ${E_FLAG} ${V_FLAG} ${L_FLAG} $FORECAST $HEMI
