@@ -3,11 +3,11 @@
 source ENVS
 
 if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
-    echo "Usage $0 <forecast_name> <hemisphere>"
-    echo "\nArguments"
+    echo -e "\nUsage $0 <forecast_name> <hemisphere>"
+    echo -e "\nArguments"
     echo "<forecast_name>     name of forecast"
     echo "<hemisphere>        hemisphere to use"
-    echo "\nOptions"
+    echo -e "\nOptions"
     echo "-m <metrics>        string of metrics separated by commas, by default \"binacc,sie,mae,rmse,sic\". Options: \"binacc\", \"sie\", \"mae\", \"mse\", \"rmse\", \"sic\""
     echo "-r <region>         region arguments, by default uses full hemisphere"
     echo "-e                  compare forecast performance with ECMWF"
@@ -16,7 +16,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "-t <threshold>      SIC threshold to use (must be between 0 and 1), by default 0.15"
     echo "-g <grid_area_size> grid area resolution to use - i.e. the length of the sides in km, by default 25 (i.e. 25km^2)"
     echo "-o <output_dir>     output directory path to store plots, by default \"plot/<forecast_name>\""
-    echo "\nList of outputs generated"
+    echo -e "\nList of outputs generated"
     echo "* If \"binacc\" is included in the requested metrics, will generate all binary accuracy plots for dates in <forecast_name>_<hemisphere>.csv"
     echo "- these will be saved in the format \"<output_dir>/binacc.t_<threshold>.<date>.png\""
     echo "If \"-l\" is passed, leadtime averaged plots for binary accuracy will be generated too:"
