@@ -3,17 +3,17 @@
 source ENVS
 
 if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
-    echo "Usage $0 <forecast_name> <hemisphere>"
-    echo "\nArguments"
+    echo -e "\nUsage $0 <forecast_name> <hemisphere>"
+    echo -e "\nArguments"
     echo "<forecast_name>     name of forecast"
     echo "<hemisphere>        hemisphere to use"
-    echo "\nOptions"
+    echo -e "\nOptions"
     echo "-m <metrics>        string of metrics separated by commas, by default \"binacc,sie,mae,rmse,sic\""
     echo "-r <region>         region arguments, by default uses full hemisphere"
     echo "-t <thresholds>     string of SIC thresholds separated by (each must be between 0 and 1), by default \"0.15,0.8\""
     echo "-g <grid_area_size> grid area resolution to use - i.e. the length of the sides in km, by default 25 (i.e. 25km^2)"
     echo "-o <output_dir>     output directory path to store plots, by default \"plot/validation/<forecast_name>\""
-    echo "\nThe script will generate several plots which can be used to validate the forecast (and also to compare with ECMWF)"
+    echo -e "\nThe script will generate several plots which can be used to validate the forecast (and also to compare with ECMWF)"
     echo "The plots to analyse the performance of the forecasts will be saved to <output_dir>"
     echo "and the plots to compare performance with ECMWF will be saved to <output_dir>/ECMWF_comp"
     echo "Run \"run_forecast_plots.sh -h\" for more details of what the plots generated are"
