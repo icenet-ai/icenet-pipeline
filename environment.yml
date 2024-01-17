@@ -3,13 +3,11 @@ channels:
   - defaults
 dependencies:
   - cartopy
-  - cudatoolkit=11.2
-  - cudnn=8.1.0
   - eccodes
   - ffmpeg
   - hdf5
   - ipykernel
   - netcdf4
   - openh264
-  - python=3.8
+  - python=3.11
   - xarray
