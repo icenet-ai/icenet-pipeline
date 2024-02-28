@@ -44,16 +44,7 @@ ensemble:
       pre_batch:  []
       pre_run:    []
       runs:
-        - seed:   42
-        - seed:   46
-        - seed:   45
-        - seed:   17
-        - seed:   24
-        - seed:   84
-        - seed:   83
-        - seed:   16
-        - seed:   5
-        - seed:   3
+        - seed:   SEEDS
       post_run:   []
       post_batch:
         - name:   execute

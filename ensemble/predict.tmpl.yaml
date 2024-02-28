@@ -40,9 +40,7 @@ ensemble:
               cmd:  /usr/bin/ln -s ../../data
       pre_run:    []
       runs:
-        - seed:   42
-        - seed:   46
-        - seed:   45
+        - seed:   SEEDS
       post_run:     []
       post_batch:
         - name:   execute
