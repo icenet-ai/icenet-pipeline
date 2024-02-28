@@ -29,6 +29,7 @@ loader.*.json
 *.npy
 *.out
 tmp.*
+*.swp
 *test*
 *.png
 
