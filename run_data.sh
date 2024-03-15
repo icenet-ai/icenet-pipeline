@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ENVS
+source ENVS
 
 conda activate $ICENET_CONDA
 
