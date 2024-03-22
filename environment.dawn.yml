@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - cartopy
+  - eccodes
+  - ffmpeg
+  - hdf5
+  - netcdf4
+  - openh264
+  - xarray
