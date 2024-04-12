@@ -9,7 +9,7 @@ dependencies:
   - ffmpeg
   - hdf5
   - ipykernel
-  - netcdf4
+  - netcdf4<1.6.1
   - openh264
   - python=3.8
   - xarray
