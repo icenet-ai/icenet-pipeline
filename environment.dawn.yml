@@ -9,3 +9,5 @@ dependencies:
   - netcdf4
   - openh264
   - xarray
+  pip:
+    - model-ensembler

@@ -14,5 +14,4 @@ dependencies:
   - python=3.8
   - xarray
   pip:
-    - icenet==0.2.7
     - model-ensembler
