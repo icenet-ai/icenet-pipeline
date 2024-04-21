@@ -52,7 +52,7 @@ model_history = network.fit(
         #strategy.experimental_distribute_dataset(train_ds),
         train_ds,
         epochs=5,
-        steps_per_epoch=128,
+        steps_per_epoch=731,
         verbose=1,
         callbacks=[],
         validation_data=val_ds)
