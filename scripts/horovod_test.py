@@ -22,20 +22,19 @@ import icenet.model.losses as losses
 import icenet.model.metrics as metrics
 import icenet.model.models as models
 
-
-dataset = IceNetDataSet("dataset_config.exp23_north.json", batch_size=8, shuffling=False)
+batch_size = 4
+dataset = IceNetDataSet("dataset_config.exp23_north.json", batch_size=batch_size, shuffling=True)
 input_shape = (*dataset.shape, dataset.num_channels)
 
 loss = losses.WeightedMSE()
 metrics_list = [
-        # metrics.weighted_MAE,
-        #metrics.WeightedBinaryAccuracy(),
-        #metrics.WeightedMAE(),
-        #metrics.WeightedRMSE(),
+    metrics.WeightedBinaryAccuracy(),
+    metrics.WeightedMAE(),
+    metrics.WeightedRMSE(),
     losses.WeightedMSE()
 ]
 network = models.unet_batchnorm(
-    custom_optimizer=hvd.DistributedOptimizer(Adam(1e5)),
+    custom_optimizer=hvd.DistributedOptimizer(Adam(1e4)),
     experimental_run_tf_function=False,
     input_shape=input_shape,
     loss=loss,
@@ -52,7 +51,7 @@ model_history = network.fit(
         #strategy.experimental_distribute_dataset(train_ds),
         train_ds,
         epochs=5,
-        steps_per_epoch=731 // hvd.size(),
+        steps_per_epoch=dataset.counts["train"] / batch_size // hvd.size(),
         verbose=1 if hvd.rank() == 0 else 0,
         callbacks=[
             hvd.callbacks.BroadcastGlobalVariablesCallback(0),    
