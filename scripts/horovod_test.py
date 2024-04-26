@@ -22,7 +22,7 @@ import icenet.model.losses as losses
 import icenet.model.metrics as metrics
 import icenet.model.models as models
 
-batch_size = 4
+batch_size = 2
 dataset = IceNetDataSet("dataset_config.exp23_north.json", batch_size=batch_size, shuffling=True)
 input_shape = (*dataset.shape, dataset.num_channels)
 
@@ -34,7 +34,7 @@ metrics_list = [
     losses.WeightedMSE()
 ]
 network = models.unet_batchnorm(
-    custom_optimizer=hvd.DistributedOptimizer(Adam(1e4)),
+    custom_optimizer=hvd.DistributedOptimizer(Adam(0.025)),
     experimental_run_tf_function=False,
     input_shape=input_shape,
     loss=loss,
