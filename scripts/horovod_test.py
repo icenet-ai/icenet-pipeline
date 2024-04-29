@@ -34,7 +34,7 @@ metrics_list = [
     losses.WeightedMSE()
 ]
 network = models.unet_batchnorm(
-    custom_optimizer=hvd.DistributedOptimizer(Adam(0.025)),
+    custom_optimizer=hvd.DistributedOptimizer(Adam(0.001)),
     experimental_run_tf_function=False,
     input_shape=input_shape,
     loss=loss,
@@ -50,8 +50,8 @@ train_ds, val_ds, test_ds = dataset.get_split_datasets(ratio=1.0)
 model_history = network.fit(
         #strategy.experimental_distribute_dataset(train_ds),
         train_ds,
-        epochs=5,
-        steps_per_epoch=dataset.counts["train"] / batch_size // hvd.size(),
+        epochs=100,
+        steps_per_epoch=dataset.counts["train"] // (batch_size * hvd.size()),
         verbose=1 if hvd.rank() == 0 else 0,
         callbacks=[
             hvd.callbacks.BroadcastGlobalVariablesCallback(0),    
