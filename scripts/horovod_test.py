@@ -20,10 +20,10 @@ if gpus:
 from icenet.data.dataset import IceNetDataSet
 import icenet.model.losses as losses
 import icenet.model.metrics as metrics
-import icenet.model.models as models
+import icenet.model.networks.tensorflow as models
 
-batch_size = 2
-dataset = IceNetDataSet("dataset_config.exp23_north.json", batch_size=batch_size, shuffling=True)
+batch_size = 1
+dataset = IceNetDataSet("dataset_config.full_train_north.json", batch_size=batch_size, shuffling=True)
 input_shape = (*dataset.shape, dataset.num_channels)
 
 loss = losses.WeightedMSE()

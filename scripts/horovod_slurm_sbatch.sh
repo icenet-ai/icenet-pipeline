@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=icy_test
 #SBATCH --partition=pvc
-#SBATCH --ntasks=16
+#SBATCH --ntasks=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=24          # split from 96 cores
@@ -17,4 +17,4 @@ module load dawn-env/2024-04-15 intel-oneapi-ccl intel-oneapi-compilers intel-on
 
 conda activate icenet
 
-mpirun -np 16 python scripts/horovod_test.py
+mpirun -np 8 python scripts/horovod_test.py
