@@ -30,9 +30,8 @@ loader.*.json
 *.out
 tmp.*
 *.swp
-*test*
 *.png
 
 !ENVS.example
 ENVS.*
-
+/tensorboard
