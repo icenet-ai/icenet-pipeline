@@ -1,6 +1,76 @@
 #!/usr/bin/env bash
 
+display_help() {
+  echo "Usage: $0 <forecast [options] name w/hemi> [region]"
+  echo
+  echo "Generate forecast outputs from netCDF prediction file (Outputs: geotiff, png, mp4)"
+  echo
+  echo "Positional arguments:"
+  echo "  name			Name of the prediction netCDF file, with hemisphere postfix ('_south'), e.g. 'forecastfile_south'."
+  echo "  region		Region to clip. If prefixed with 'l', will use lat/lon, else, pixel bounds."
+  echo "			Specify via 'x_min,y_min,x_max,y_max' if using pixel bounds."
+  echo "			Specify via 'llat_min,lon_min,lat_max,lon_max' if using lat/lon bounds (Notice the prefix 'l', see example below)."
+  echo "Optional arguments:"
+  echo "  -h    Show this help message and exit."
+  echo "  -v    Enable verbose mode - debugging print of commands."
+  echo "  -n	Whether to reproject plots to be north-facing."
+  echo
+  echo "Examples:"
+  echo "  $0 -v"
+  echo "    Runs script in verbose mode, in this case, just prints help."
+  echo
+  echo "  $0 fc.2024-05-21_north 70,155,145,240"
+  echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
+  echo "    and crop to only the pixel region of x_min=70, y_min=155, x_max=145, y_max=240."
+  echo
+  echo "  $0 fc.2024-05-21_north l-100,55,-70,75"
+  echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
+  echo "    and crop to lat/lon region of lat_min=55, lon_min=-100, lat_max=75, lon_max=-70."
+  echo
+  echo "  $0 -n fc.2024-05-21_north l-100,55,-70,75"
+  echo "    Same as above, but outputs north-facing plots instead of polar equal area."
+  echo
+
+}
+
+# Debugging mode
 set -e -o pipefail
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  display_help
+  exit 0
+fi
+
+echo "ARGS: $@"
+
+# Defaults if not specified
+SCRIPT_ARGS=""
+VERBOSE=""
+
+while getopts "nv" opt; do
+  case "$opt" in
+    n) SCRIPT_ARGS="${SCRIPT_ARGS}--north-facing ";;
+    v) VERBOSE="-v";;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+if [ $# -lt 1 ]; then
+  display_help
+  exit 1
+fi
+
+[ -n "$VERBOSE" ] && SCRIPT_ARGS="${SCRIPT_ARGS}-v"
+
+echo "ARGS = $SCRIPT_ARGS, Leftovers: $@"
+
+if [ -n "$VERBOSE" ]; then
+  echo "~~Verbosity enabled~~"
+  set -x
+fi
 
 FORECAST_NAME="$1"
 REGION="$2"
@@ -11,12 +81,14 @@ LOG_DIR="log/forecasts/$FORECAST_NAME"
 FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
 HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
 
-if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
-  echo "$0 <forecast name w/hemi> [region]"
-  exit 1
+if [ -n "$REGION" ]; then
+    if [[ "$REGION" == l* ]]; then
+        REGION="-z=${REGION:1}"
+        printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lat/lon based region bounds!\033[0m'
+    else
+        REGION="-r $REGION"
+    fi
 fi
-
-[ ! -z $REGION ] && REGION="-r $REGION"
 
 if ! [[ $HEMI =~ ^(north|south)$ ]]; then
   echo "Hemisphere from $FORECAST_NAME not available, raise an issue"
@@ -66,19 +138,19 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.tiff'
 
   echo "Producing movie file of raw video"
-  icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
 
   echo "Producing stills for manual composition (with coastlines)"
-  icenet_plot_forecast $REGION -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
 
   echo "Producing movie and stills of ensemble standard deviation in predictions"
-  icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
 
-  icenet_plot_forecast $REGION -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.stddev.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.stddev.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
