@@ -146,7 +146,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   echo "Producing stills for manual composition (with coastlines)"
   icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
-  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.mp4
+  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 -pix_fmt yuv420p ${DATE_DIR}/${FORECAST_NAME}.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
 
   echo "Producing movie and stills of ensemble standard deviation in predictions"
@@ -154,7 +154,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
 
   icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
-  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.stddev.png' -c:v libx264 ${DATE_DIR}/${FORECAST_NAME}.stddev.mp4
+  ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.stddev.png' -c:v libx264 -pix_fmt yuv420p ${DATE_DIR}/${FORECAST_NAME}.stddev.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
   produce_docs $DATE_DIR
