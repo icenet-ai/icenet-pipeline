@@ -48,6 +48,7 @@ echo "ARGS: $@"
 # Defaults if not specified
 SCRIPT_ARGS=""
 VERBOSE=""
+SKIP_METRICS=false
 
 while getopts "nv" opt; do
   case "$opt" in
@@ -85,6 +86,7 @@ HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
 
 if [ -n "$REGION" ]; then
     if [[ "$REGION" == l* ]]; then
+        SKIP_METRICS=true
         REGION="-z=${REGION:1}"
         printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lat/lon based region bounds!\033[0m'
         echo
@@ -158,6 +160,11 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
   produce_docs $DATE_DIR
+
+
+  if [[ "$SKIP_METRICS" = true ]]; then
+    continue
+  fi
 
   # TODO: copy docs to root folder
   # TODO: copy plot/ content for whole domain
