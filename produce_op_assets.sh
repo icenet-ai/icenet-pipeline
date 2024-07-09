@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 display_help() {
-  echo "Usage: $0 <forecast [options] name w/hemi> [region]"
+  echo "Usage: $0 [options] <forecast name w/hemi> [region]"
   echo
   echo "Generate forecast outputs from netCDF prediction file (Outputs: geotiff, png, mp4)"
+  echo "Outputs to 'results/forecast/<forecast name w/hemi>'"
   echo
   echo "Positional arguments:"
   echo "  name			Name of the prediction netCDF file, with hemisphere postfix ('_south'), e.g. 'forecastfile_south'."
@@ -33,7 +34,8 @@ display_help() {
 
 }
 
-# Debugging mode
+start=$(date +%s)
+
 set -e -o pipefail
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
@@ -85,6 +87,7 @@ if [ -n "$REGION" ]; then
     if [[ "$REGION" == l* ]]; then
         REGION="-z=${REGION:1}"
         printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lat/lon based region bounds!\033[0m'
+        echo
     else
         REGION="-r $REGION"
     fi
@@ -196,3 +199,6 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 done
 
 echo "Done, enjoy your forecasts in $OUTPUT_DIR"
+
+end=$(date +%s)
+echo "Elapsed Time: $(($end-$start)) seconds"
