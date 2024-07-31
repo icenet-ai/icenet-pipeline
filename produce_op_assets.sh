@@ -14,22 +14,26 @@ display_help() {
   echo "Optional arguments:"
   echo "  -h    Show this help message and exit."
   echo "  -v    Enable verbose mode - debugging print of commands."
-  echo "  -n	Whether to reproject plots to be north-facing."
+  echo "  -n    To not clip data when specifying lat/lon region with -c, else, depending on CRS, may plot may have missing regions."
+  echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo
   echo "Examples:"
-  echo "  $0 -v"
+  echo "  1) $0 -v"
   echo "    Runs script in verbose mode, in this case, just prints help."
   echo
-  echo "  $0 fc.2024-05-21_north 70,155,145,240"
+  echo "  2) $0 fc.2024-05-21_north 70,155,145,240"
   echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
   echo "    and crop to only the pixel region of x_min=70, y_min=155, x_max=145, y_max=240."
   echo
-  echo "  $0 fc.2024-05-21_north l-100,55,-70,75"
+  echo "  3) $0 fc.2024-05-21_north l-100,55,-70,75"
   echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
   echo "    and crop to lat/lon region of lat_min=55, lon_min=-100, lat_max=75, lon_max=-70."
   echo
-  echo "  $0 -n fc.2024-05-21_north l-100,55,-70,75"
-  echo "    Same as above, but outputs north-facing plots instead of polar equal area."
+  echo "  4) $0 -n fc.2024-05-21_north l-100,55,-70,75"
+  echo "    Same as 4), but outputs north-facing plots instead of polar equal area."
+  echo
+  echo "  5) $0 -c Mercator.GOOGLE fc.2024-05-21_north l-100,55,-70,75"
+  echo "    Same as 4), but outputs using Web Mercator for plots instead of polar equal area."
   echo
 
 }
@@ -50,9 +54,10 @@ SCRIPT_ARGS=""
 VERBOSE=""
 SKIP_METRICS=false
 
-while getopts "nv" opt; do
+while getopts "c:v" opt; do
   case "$opt" in
-    n) SCRIPT_ARGS="${SCRIPT_ARGS}--north-facing ";;
+    n) SCRIPT_ARGS="${SCRIPT_ARGS}--no-clip-region ";;
+    c) SCRIPT_ARGS="${SCRIPT_ARGS}--crs ${OPTARG} ";;
     v) VERBOSE="-v";;
   esac
 done
@@ -146,7 +151,7 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
 
-  echo "Producing stills for manual composition (with coastlines)"
+  #echo "Producing stills for manual composition (with coastlines)"
   icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 -pix_fmt yuv420p ${DATE_DIR}/${FORECAST_NAME}.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
