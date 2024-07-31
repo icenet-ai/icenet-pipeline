@@ -14,6 +14,7 @@ display_help() {
   echo "Optional arguments:"
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo "  -h    Show this help message and exit."
+  echo "  -l    Integer defining max leadtime to generate outputs for."
   echo "  -n    To not clip data when specifying lat/lon region with -c, else, depending on CRS, may plot may have missing regions."
   echo "  -v    Enable verbose mode - debugging print of commands."
   echo
@@ -51,12 +52,14 @@ echo "ARGS: $@"
 
 # Defaults if not specified
 SCRIPT_ARGS=""
+MAX_LEADTIME="93"
 VERBOSE=""
 SKIP_METRICS=false
 
-while getopts "c:nv" opt; do
+while getopts "c:l:nv" opt; do
   case "$opt" in
     c) SCRIPT_ARGS="${SCRIPT_ARGS}--crs ${OPTARG} ";;
+    l) MAX_LEADTIME="${OPTARG}";;
     n) SCRIPT_ARGS="${SCRIPT_ARGS}--no-clip-region ";;
     v) VERBOSE="-v";;
   esac
@@ -144,23 +147,23 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   python -c 'import xarray; xarray.open_dataset("'$FORECAST_FILE'").sel(time=slice("'$DATE_FORECAST'", "'$DATE_FORECAST'")).to_netcdf("'$DATE_DIR'/'$DATE_FORECAST'.nc")'
 
   echo "Producing geotiffs from that file"
-  icenet_output_geotiff -o $DATE_DIR $FORECAST_FILE $DATE_FORECAST 1..93
+  icenet_output_geotiff -o $DATE_DIR $FORECAST_FILE $DATE_FORECAST 1..${MAX_LEADTIME}
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.tiff'
 
   echo "Producing movie file of raw video"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
 
-  #echo "Producing stills for manual composition (with coastlines)"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  echo "Producing stills for manual composition (with coastlines)"
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.png' -c:v libx264 -pix_fmt yuv420p ${DATE_DIR}/${FORECAST_NAME}.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
 
   echo "Producing movie and stills of ensemble standard deviation in predictions"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..93 -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
 
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..93 $HEMI $FORECAST_FILE $DATE_FORECAST
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
   ffmpeg -framerate 5 -pattern_type glob -i ${DATE_DIR}'/'${FORECAST_NAME}'.*.stddev.png' -c:v libx264 -pix_fmt yuv420p ${DATE_DIR}/${FORECAST_NAME}.stddev.mp4
   rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
