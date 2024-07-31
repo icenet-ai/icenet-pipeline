@@ -12,10 +12,10 @@ display_help() {
   echo "			Specify via 'x_min,y_min,x_max,y_max' if using pixel bounds."
   echo "			Specify via 'llat_min,lon_min,lat_max,lon_max' if using lat/lon bounds (Notice the prefix 'l', see example below)."
   echo "Optional arguments:"
-  echo "  -h    Show this help message and exit."
-  echo "  -v    Enable verbose mode - debugging print of commands."
-  echo "  -n    To not clip data when specifying lat/lon region with -c, else, depending on CRS, may plot may have missing regions."
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
+  echo "  -h    Show this help message and exit."
+  echo "  -n    To not clip data when specifying lat/lon region with -c, else, depending on CRS, may plot may have missing regions."
+  echo "  -v    Enable verbose mode - debugging print of commands."
   echo
   echo "Examples:"
   echo "  1) $0 -v"
@@ -54,10 +54,10 @@ SCRIPT_ARGS=""
 VERBOSE=""
 SKIP_METRICS=false
 
-while getopts "c:v" opt; do
+while getopts "c:nv" opt; do
   case "$opt" in
-    n) SCRIPT_ARGS="${SCRIPT_ARGS}--no-clip-region ";;
     c) SCRIPT_ARGS="${SCRIPT_ARGS}--crs ${OPTARG} ";;
+    n) SCRIPT_ARGS="${SCRIPT_ARGS}--no-clip-region ";;
     v) VERBOSE="-v";;
   esac
 done
