@@ -141,32 +141,38 @@ mkdir -p $OUTPUT_DIR
 for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
   DATE_DIR="$OUTPUT_DIR/$DATE_FORECAST"
   echo "Making $DATE_DIR for forecast date $DATE_FORECAST"
-  mkdir -p $DATE_DIR
+  for SUB_DIR in "geotiff" "images" "videos"; do
+      mkdir -p "$DATE_DIR/$SUB_DIR"
+  done
+
+  OUT_TIFF_DIR="$DATE_DIR/geotiff"
+  OUT_IMG_DIR="$DATE_DIR/images"
+  OUT_VID_DIR="$DATE_DIR/videos"
+  OUT_MET_DIR="$DATE_DIR/metrics"
 
   echo "Producing single output file for date forecast"
   python -c 'import xarray; xarray.open_dataset("'$FORECAST_FILE'").sel(time=slice("'$DATE_FORECAST'", "'$DATE_FORECAST'")).to_netcdf("'$DATE_DIR'/'$DATE_FORECAST'.nc")'
 
   echo "Producing geotiffs from that file"
-  icenet_output_geotiff -o $DATE_DIR $FORECAST_FILE $DATE_FORECAST 1..${MAX_LEADTIME}
-  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.tiff'
+  icenet_output_geotiff -o $OUT_TIFF_DIR $FORECAST_FILE $DATE_FORECAST 1..${MAX_LEADTIME}
+  rename_gfx $OUT_TIFF_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.tiff'
 
   echo "Producing movie file of raw video"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
-  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $OUT_VID_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $OUT_VID_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.mp4'
 
   echo "Producing stills for manual composition (with coastlines)"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $DATE_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
-  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -o $OUT_IMG_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $OUT_IMG_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.png'
 
   echo "Producing movie and stills of ensemble standard deviation in predictions"
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
-  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $OUT_VID_DIR -l 1..${MAX_LEADTIME} -f mp4 $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $OUT_VID_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.mp4'
 
-  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $DATE_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
-  rename_gfx $DATE_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
+  icenet_plot_forecast $REGION $SCRIPT_ARGS -s -o $OUT_IMG_DIR -l 1..${MAX_LEADTIME} $HEMI $FORECAST_FILE $DATE_FORECAST
+  rename_gfx $OUT_IMG_DIR "${FORECAST_NAME}.${DATE_FORECAST}." '*.stddev.png'
 
   produce_docs $DATE_DIR
-
 
   if [[ "$SKIP_METRICS" = true ]]; then
     continue
@@ -183,23 +189,24 @@ for DATE_FORECAST in $( cat ${FORECAST_NAME}.csv ); do
 
   if [[ `date --date="$SIC_LATEST" +%s` -gt `date --date="$DATE_FORECAST + 1 day" +%s` ]]; then
     echo "We have necessary SIC data ($SIC_LATEST) for forecast date $DATE_FORECAST"
+    mkdir -p $OUT_MET_DIR
 
     for THRESHOLD in 0.15 0.5 0.8 0.9; do
       icenet_plot_bin_accuracy $REGION -e -b -t $THRESHOLD \
-        -o ${DATE_DIR}/bin_accuracy.${THRESHOLD}.png \
+        -o ${OUT_MET_DIR}/bin_accuracy.${THRESHOLD}.png \
         $HEMI $FORECAST_FILE $DATE_FORECAST
     done
 
     icenet_plot_metrics $REGION -e -b -s \
-      -o ${DATE_DIR}/ \
+      -o ${OUT_MET_DIR}/ \
       $HEMI $FORECAST_FILE $DATE_FORECAST
 
     icenet_plot_sic_error $REGION \
-      -o ${DATE_DIR}/${DATE_FORECAST}.sic_error.mp4 \
+      -o ${OUT_MET_DIR}/${DATE_FORECAST}.sic_error.mp4 \
       $HEMI $FORECAST_FILE $DATE_FORECAST
 
     icenet_plot_sie_error $REGION -e -b \
-      -o ${DATE_DIR}/${DATE_FORECAST}.sie_error.25.png \
+      -o ${OUT_MET_DIR}/${DATE_FORECAST}.sie_error.25.png \
       $HEMI $FORECAST_FILE $DATE_FORECAST
   else
     echo "We do not have observational SIC data ($SIC_LATEST) for plotting \
