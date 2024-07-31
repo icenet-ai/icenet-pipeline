@@ -8,14 +8,15 @@ display_help() {
   echo
   echo "Positional arguments:"
   echo "  name			Name of the prediction netCDF file, with hemisphere postfix ('_south'), e.g. 'forecastfile_south'."
-  echo "  region		Region to clip. If prefixed with 'l', will use lat/lon, else, pixel bounds."
-  echo "			Specify via 'x_min,y_min,x_max,y_max' if using pixel bounds."
-  echo "			Specify via 'llat_min,lon_min,lat_max,lon_max' if using lat/lon bounds (Notice the prefix 'l', see example below)."
+  echo "                        This file is found under 'results/predict/'"
+  echo "  region		Region to clip. If prefixed with 'l', will use lon/lat, else, pixel bounds."
+  echo "			* Specify via 'x_min,y_min,x_max,y_max' if using pixel bounds."
+  echo "			* Specify via 'llon_min,lat_min,lon_max,lat_max' if using lon/lat bounds (Notice the prefix 'l', see example below)."
   echo "Optional arguments:"
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo "  -h    Show this help message and exit."
   echo "  -l    Integer defining max leadtime to generate outputs for."
-  echo "  -n    To not clip data when specifying lat/lon region with -c, else, depending on CRS, may plot may have missing regions."
+  echo "  -n    To not clip data when specifying lon/lat region with -c, else, depending on CRS, may plot may have missing regions."
   echo "  -v    Enable verbose mode - debugging print of commands."
   echo
   echo "Examples:"
@@ -28,12 +29,13 @@ display_help() {
   echo
   echo "  3) $0 fc.2024-05-21_north l-100,55,-70,75"
   echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
-  echo "    and crop to lat/lon region of lat_min=55, lon_min=-100, lat_max=75, lon_max=-70."
+  echo "    and crop to lon/lat region of lon_min=-100, lat_min=55, lon_max=-70, lat_max=75"
   echo
   echo "  4) $0 -n fc.2024-05-21_north l-100,55,-70,75"
-  echo "    Same as 4), but outputs north-facing plots instead of polar equal area."
+  echo "    Same as 3), but not clipping source data to lon/lat bounds, instead, just"
+  echo "    changing the plot extents to the defined lon/lat region."
   echo
-  echo "  5) $0 -c Mercator.GOOGLE fc.2024-05-21_north l-100,55,-70,75"
+  echo "  5) $0 -n -c Mercator.GOOGLE fc.2024-05-21_north l-100,55,-70,75"
   echo "    Same as 4), but outputs using Web Mercator for plots instead of polar equal area."
   echo
 
@@ -96,7 +98,7 @@ if [ -n "$REGION" ]; then
     if [[ "$REGION" == l* ]]; then
         SKIP_METRICS=true
         REGION="-z=${REGION:1}"
-        printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lat/lon based region bounds!\033[0m'
+        printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lon/lat based region bounds!\033[0m'
         echo
     else
         REGION="-r $REGION"
