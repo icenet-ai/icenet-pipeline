@@ -45,9 +45,9 @@ start=$(date +%s)
 
 set -e -o pipefail
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+if [ $# -lt 2 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   display_help
-  exit 0
+  exit 1
 fi
 
 echo "ARGS: $@"
@@ -70,11 +70,6 @@ done
 shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
-
-if [ $# -lt 1 ]; then
-  display_help
-  exit 1
-fi
 
 [ -n "$VERBOSE" ] && SCRIPT_ARGS="${SCRIPT_ARGS}-v"
 
