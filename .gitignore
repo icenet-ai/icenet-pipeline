@@ -34,6 +34,7 @@ tmp.*
 *test*
 *.png
 
+!ENVS
 !ENVS.example
 ENVS.*
 
