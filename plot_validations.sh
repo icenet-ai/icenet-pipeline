@@ -16,7 +16,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo -e "\nThe script will generate several plots which can be used to validate the forecast (and also to compare with ECMWF)"
     echo "The plots to analyse the performance of the forecasts will be saved to <output_dir>"
     echo "and the plots to compare performance with ECMWF will be saved to <output_dir>/ECMWF_comp"
-    echo "Run \"run_forecast_plots.sh -h\" for more details of what the plots generated are"
+    echo "Run \"plot_forecast.sh -h\" for more details of what the plots generated are"
     exit 1
 fi
 
@@ -74,20 +74,20 @@ for element in "${METRICS[@]}"
     do
     if [ "${element}" == "binacc" ]; then
         for THRESH in ${THRESHOLDS[@]}; do
-            ./run_forecast_plots.sh -m ${element} $REGION -v -l -t $THRESH \
+            ./plot_forecast.sh -m ${element} $REGION -v -l -t $THRESH \
                 -o $OUTPUT_DIR $FORECAST $HEMI
-            ./run_forecast_plots.sh -m ${element} $REGION -e -v -l -t $THRESH \
+            ./plot_forecast.sh -m ${element} $REGION -e -v -l -t $THRESH \
                 -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
         done
     elif [ "${element}" == "sie" ]; then
         for THRESH in ${THRESHOLDS[@]}; do
-            ./run_forecast_plots.sh -m ${element} $REGION -v -l -t $THRESH $GRID_AREA_SIZE \
+            ./plot_forecast.sh -m ${element} $REGION -v -l -t $THRESH $GRID_AREA_SIZE \
                 -o $OUTPUT_DIR $FORECAST $HEMI
-            ./run_forecast_plots.sh -m ${element} $REGION -e -v -l -t $THRESH $GRID_AREA_SIZE \
+            ./plot_forecast.sh -m ${element} $REGION -e -v -l -t $THRESH $GRID_AREA_SIZE \
                 -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
         done
     elif [ "${element}" == "sic" ]; then
-        ./run_forecast_plots.sh -m ${element} $REGION -v \
+        ./plot_forecast.sh -m ${element} $REGION -v \
             -o $OUTPUT_DIR $FORECAST $HEMI
     else
         if [ "${element}" == "mae" ]; then
@@ -97,9 +97,9 @@ for element in "${METRICS[@]}"
         elif [ "${element}" == "rmse" ]; then
             LOGFILE="${RMSE_LOG}"
         fi
-        ./run_forecast_plots.sh -m ${element} $REGION -v -l \
+        ./plot_forecast.sh -m ${element} $REGION -v -l \
             -o $OUTPUT_DIR $FORECAST $HEMI
-        ./run_forecast_plots.sh -m ${element} $REGION -e -v -l \
+        ./plot_forecast.sh -m ${element} $REGION -e -v -l \
             -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
     fi
 done
