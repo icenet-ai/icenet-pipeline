@@ -29,6 +29,7 @@ while getopts ":b:c:de:f:g:j:l:m:n:p:q:r:s:t:" opt; do
     l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_preload=$OPTARG ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     n)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodelist=$OPTARG ";;
+    o)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodes=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
     q)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_queue=$OPTARG ";;
     r)  ENSEMBLE_RUNS=$OPTARG ;; # Ensemble member run seed values

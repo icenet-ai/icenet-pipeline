@@ -15,10 +15,13 @@ ensemble:
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
+    cluster:      long
+    email:        someone@example.com
     gpus:         1
+    length:       4-00:00:00
     mem:          128gb
-    cluster:      pvc
     nodes:        1
+    ntasks:       NTASKS
 
   pre_process:
     - name:   execute
@@ -31,10 +34,7 @@ ensemble:
     templatedir:  ../template
     templates:
     - icenet_train.sh.j2
-    email:        someone@example.com
     job_file:     icenet_train.sh
-    ntasks:       NTASKS
-    length:       4-00:00:00
     maxruns:      5
     maxjobs:      MAXJOBS
 

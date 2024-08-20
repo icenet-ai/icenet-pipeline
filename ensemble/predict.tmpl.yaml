@@ -13,8 +13,12 @@ ensemble:
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
-    mem:          224gb
-    cluster:      pvc
+    cluster:      short
+    email:        someone@example.com
+    length:       00:30:00
+    mem:          128gb
+    nodes:        1
+    ntasks:       2
 
   pre_process:          []
   post_process:         []
@@ -23,11 +27,7 @@ ensemble:
     templatedir:  ../template
     templates:
     - icenet_predict.sh.j2
-    email:        someone@example.com
     job_file:     icenet_predict.sh
-    nodes:        1
-    ntasks:       8
-    length:       00:30:00
     maxruns:      100
     maxjobs:      10
 

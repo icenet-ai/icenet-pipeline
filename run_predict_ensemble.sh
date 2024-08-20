@@ -19,6 +19,7 @@ ENSEMBLE_SEEDS_DEFAULT=42,46,45
 while getopts ":b:df:i:lm:p:r:x" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
+    c)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}cluster=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
     f)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_filter_factor=$OPTARG ";;
     i)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_ident=$OPTARG ";;
