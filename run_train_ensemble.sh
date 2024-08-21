@@ -17,7 +17,7 @@ ENSEMBLE_JOBS=1
 ENSEMBLE_NTASKS=4
 ENSEMBLE_SEEDS_DEFAULT=42,46,45,17,24,84,83,16,5,3
 
-while getopts ":b:c:de:f:g:j:l:m:n:p:q:r:s:t:" opt; do
+while getopts ":b:c:de:f:g:j:l:m:n:o:p:q:r:s:t:" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     c)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}cluster=$OPTARG ";;
@@ -29,6 +29,7 @@ while getopts ":b:c:de:f:g:j:l:m:n:p:q:r:s:t:" opt; do
     l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_preload=$OPTARG ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     n)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodelist=$OPTARG ";;
+    o)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}nodes=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
     q)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_queue=$OPTARG ";;
     r)  ENSEMBLE_RUNS=$OPTARG ;; # Ensemble member run seed values
