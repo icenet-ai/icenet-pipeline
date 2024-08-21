@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -l
+{% if run.cluster != "test" %}
 #SBATCH --output={{ run.dir }}/train.%j.%N.{{ run.seed }}.out
 #SBATCH --error={{ run.dir }}/train.%j.%N.{{ run.seed }}.err
 #SBATCH --chdir={{ run.dir }}
@@ -15,6 +16,7 @@
 #SBATCH --cpus-per-task={{ run.ntasks }}
 #SBATCH --mem={{ run.mem }}
 {% if run.nodelist %}#SBATCH --nodelist={{ run.nodelist }}{% endif %}
+{% endif %}
 
 cd {{ run.dir }}
 
@@ -36,8 +38,24 @@ echo "START `date +%F\ %T`"
 source $PREP_SCRIPT
 conda activate $ICENET_CONDA
 
-# TODO: run.arg_filter_factor comes from ENVS now
-COMMAND="icenet_train -v {{ run.arg_dataset }} {{ run.name }} {{ run.seed }} $TRAIN_STATIC_ARGS -b {{ run.arg_batch }} -e {{ run.arg_epochs }} -m -qs {{ run.arg_queue }} -w {{ run.ntasks }} -s {{ run.arg_strategy }} {% if run.arg_preload %} -p results/networks/{{ run.name }}/{{ run.name }}.network_{{ run.arg_preload }}.{{ run.seed }}.h5 {% endif %}{% if run.arg_filter_factor %} -n {{ run.arg_filter_factor }}{% endif %}"
+PRELOAD=""
+FINAL_WEIGHTS="results/networks/{{ run.name }}/{{ run.name }}.network_{{ run.preload }}.{{ run.seed }}.h5"
+CHECKPOINT_WEIGHTS="`ls results/networks/{{ run.name }}/checkpoint.{{ run.name }}.network_{{ run.preload }}.{{ run.seed }}.*.keras 2>/dev/null`"
+
+# TODO: do we have keras / h5 weight multi-handling in place in library?
+if [ -f $FINAL_WEIGHTS ]; then
+    echo "Preloading from previously trained network $FINAL_WEIGHTS"
+    PRELOAD="-p $FINAL_WEIGHTS"
+elif [ ! -z "$CHECKPOINT_WEIGHTS" ]; then
+    CHECKPOINT_FILE=`echo "$CHECKPOINT_WEIGHTS" | sort | head -n 1`
+    echo "Preloading from checkpoint file $CHECKPOINT_FILE"
+    PRELOAD="-p $CHECKPOINT_FILE"
+fi
+
+COMMAND="icenet_train_tensorflow -v \
+    $TRAIN_STATIC_ARGS \
+    -b {{ run.batch }} -e {{ run.epochs }} -n $FILTER_FACTOR -s {{ run.strategy }} \
+    $PRELOAD {{ run.dataset }} {{ run.name }} {{ run.seed }} "
 
 echo "Running $COMMAND"
 eval $COMMAND
