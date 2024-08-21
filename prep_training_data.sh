@@ -105,7 +105,3 @@ icenet_plot_input --weights -v dataset_config.${DATASET_NAME}.json 1985-04-30 ./
 
 icenet_dataset_create -v -p -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
   # TODO: FIXME in here to override the creation of nan containing sets due to earlier issues
-
-
-# icenet_train_tensorflow -b 1 -e 5 -f 1 -n 0.2 -nw -v dataset_config.${DATASET_NAME}.json test_network 42
-# run_train_ensemble

@@ -8,7 +8,7 @@ ensemble:
     epochs:         100
     filter_factor:  1
     gpus:           1
-    length:         1-00:00:00
+    length:         "1-00:00:00"
     mem:            128gb
     nodes:          1
     ntasks:         2
@@ -18,7 +18,7 @@ ensemble:
       - ../../../data
       - ../../../ENVS*
       - ../../../LOADER
-      - ../../../DATASET
+      - ../../../dataset_config.DATASET.json
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
