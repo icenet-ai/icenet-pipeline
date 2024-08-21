@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/bash -l
 
 source ENVS
-
 conda activate $ICENET_CONDA
 
 set -o pipefail
@@ -9,18 +8,19 @@ set -eu
 
 if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
     echo "Usage $0 <hemisphere> [download=0|1]"
+    exit 1
 fi
 
 HEMI="$1"
-DOWNLOAD=$2
+DOWNLOAD=${2:-0}
 
 # download-toolbox integration
 # This updates our source
 if [ $DOWNLOAD -eq 1 ]; then
-  download_amsr2 $DATA_ARGS $HEMI $AMSR2_DATES $AMSR2_VAR_ARGS
+  # download_amsr2 $DATA_ARGS $HEMI $AMSR2_DATES $AMSR2_VAR_ARGS
   download_osisaf $DATA_ARGS $HEMI $OSISAF_DATES $OSISAF_VAR_ARGS
   download_era5 $DATA_ARGS $HEMI $ERA5_DATES $ERA5_VAR_ARGS
-  download_cmip --source MRI-ESM2-0 --member r1i1p1f1 $DATA_ARGS $HEMI $CMIP6_DATES $CMIP6_VAR_ARGS
+  # download_cmip --source MRI-ESM2-0 --member r1i1p1f1 $DATA_ARGS $HEMI $CMIP6_DATES $CMIP6_VAR_ARGS
 fi 2>&1 | tee logs/download.log
 
 DATASET_CONFIG_NAME="dataset_config.${DATA_FREQUENCY}.hemi.${HEMI}.json"
@@ -31,8 +31,8 @@ OSISAF_DATASET="${SOURCE_DATA_STORE}/osisaf/${DATASET_CONFIG_NAME}"
 ERA5_DATASET="${SOURCE_DATA_STORE}/era5/${DATASET_CONFIG_NAME}"
 
 # Create links to the central data store datasets for easier "mapping"
-[ [ ! -e data/osisaf ] && [ -d ${SOURCE_DATA_STORE}/osisaf ] ] && ln -s ${SOURCE_DATA_STORE}/osisaf ./data/osisaf
-[ [ ! -e data/era5 ] && [ -d ${SOURCE_DATA_STORE}/era5 ] ] && ln -s ${SOURCE_DATA_STORE}/era5 ./data/era5
+[ ! -e data/osisaf ] && [ -d ${SOURCE_DATA_STORE}/osisaf ] && ln -s ${SOURCE_DATA_STORE}/osisaf ./data/osisaf
+[ ! -e data/era5 ] && [ -d ${SOURCE_DATA_STORE}/era5 ] && ln -s ${SOURCE_DATA_STORE}/era5 ./data/era5
 # TODO: AMSR
 # TODO: CMIP
 
@@ -96,10 +96,12 @@ preprocess_add_channel -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC sin "icene
 preprocess_add_channel -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC cos "icenet.data.meta:CosProcessor"
 preprocess_add_channel -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC land_map "icenet.data.masks.osisaf:Masks"
 
+icenet_dataset_create -v -c -p -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
+
 # TODO: select a random date from the training set, plot and log so user can double check outputs
-icenet_plot_input -p -v dataset_config.test_net_ds.json 2021-04-30 ./plot/input.png
-icenet_plot_input --outputs -v dataset_config.test_net_ds.json 2021-04-30 ./plot/outputs.png
-icenet_plot_input --weights -v dataset_config.test_net_ds.json 2021-04-30 ./plot/weights.png
+icenet_plot_input -p -v dataset_config.${DATASET_NAME}.json 1985-04-30 ./plot/input.png
+icenet_plot_input --outputs -v dataset_config.${DATASET_NAME}.json 1985-04-30 ./plot/outputs.png
+icenet_plot_input --weights -v dataset_config.${DATASET_NAME}.json 1985-04-30 ./plot/weights.png
 
 icenet_dataset_create -v -p -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
   # TODO: FIXME in here to override the creation of nan containing sets due to earlier issues
