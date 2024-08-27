@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --output={{ run.dir }}/predict.%j.%N.{{ run.seed }}.out
 #SBATCH --error={{ run.dir }}/predict.%j.%N.{{ run.seed }}.err
 #SBATCH --chdir={{ run.dir }}
