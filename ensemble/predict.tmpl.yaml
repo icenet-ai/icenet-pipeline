@@ -38,6 +38,15 @@ ensemble:
         - name:   execute
           args: 
               cmd:  /usr/bin/ln -s ../../data
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../processed
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../ref.osisaf.north.nc
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../ref.osisaf.south.nc
       pre_run:    []
       runs:
         - seed:   SEEDS
