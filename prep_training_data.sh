@@ -40,8 +40,8 @@ GROUND_TRUTH_SIC="osi_sic.$TRAIN_DATA_NAME"
 ATMOS_PROC="era5_osi.$TRAIN_DATA_NAME"
 
 # Our processed dataset configurations, we localise data when regridding and reprojecting
-GROUND_TRUTH_SIC_DSC="data/${GROUND_TRUTH_SIC}/${DATASET_CONFIG_NAME}"
-ATMOS_PROC_DSC="data/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
+GROUND_TRUTH_SIC_DSC="${PROCESSED_DATA_STORE}/${GROUND_TRUTH_SIC}/${DATASET_CONFIG_NAME}"
+ATMOS_PROC_DSC="${PROCESSED_DATA_STORE}/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
 
 PROCESSED_DATASET="${TRAIN_DATA_NAME}.${HEMI}"
 LOADER_CONFIGURATION="loader.${PROCESSED_DATASET}.json"
@@ -50,11 +50,12 @@ DATASET_NAME="tfdata_${HEMI}"
 ## Workflow
 preprocess_loader_init -v $PROCESSED_DATASET
 
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET land "icenet.data.masks.osisaf:Masks"
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET polarhole "icenet.data.masks.osisaf:Masks"
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET active_grid_cell "icenet.data.masks.osisaf:Masks"
-
 preprocess_missing_time -n siconca -v $OSISAF_DATASET $GROUND_TRUTH_SIC
+
+preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC land "icenet.data.masks.osisaf:Masks"
+preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC polarhole "icenet.data.masks.osisaf:Masks"
+preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC active_grid_cell "icenet.data.masks.osisaf:Masks"
+
 preprocess_missing_spatial -m processed.masks.${HEMI}.json -mp land,active_grid_cell,polarhole -n siconca -v $GROUND_TRUTH_SIC_DSC
 
 preprocess_dataset $PROC_ARGS_SIC -v \
@@ -65,23 +66,17 @@ preprocess_dataset $PROC_ARGS_SIC -v \
 
 HEMI_SHORT="nh"
 [ $HEMI == "south" ] && HEMI_SHORT="sh"
-# TODO: we should be able to preserve data during download-toolbox processing for this, but
-#  alas this needs some investigation to achieve, so this will work for the moment
+
 icenet_generate_ref_osisaf -v data/masks/ice_conc_${HEMI_SHORT}_ease2-250_cdr-v2p0_200001021200.nc
 
 preprocess_regrid -v $ERA5_DATASET ref.osisaf.${HEMI}.nc $ATMOS_PROC
-  # TODO: get the batcher back in place for multiprocessing this
-  # TODO: this should regrid ALL files in the dataset, for some reason 2024.nc did not get wrapped in
 preprocess_rotate -n uas,vas -v $ATMOS_PROC_DSC ref.osisaf.${HEMI}.nc
-  # TODO: get the batcher back in place for multiprocessing this
 
 preprocess_dataset $PROC_ARGS_ERA5 -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
   -sh $LAG -st $FORECAST_LENGTH \
   $ATMOS_PROC_DSC ${PROCESSED_DATASET}_era5
-  # TODO: naive copy of "./data/era5_osi/month/hemi.north/uas/2024.nc" earlier is not regridded?
-  # TODO: dask multiprocessing cluster with task batcher across multiple variables would be sensible
 
 preprocess_add_processed -v $LOADER_CONFIGURATION processed.${PROCESSED_DATASET}_osisaf.json processed.${PROCESSED_DATASET}_era5.json
 
