@@ -60,6 +60,7 @@ preprocess_missing_spatial -m processed.masks.${HEMI}.json -mp land,active_grid_
 preprocess_dataset $PROC_ARGS_SIC -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
   -i "icenet.data.processors.osisaf:SICPreProcessor" \
+  -sh $LAG -st $FORECAST_LENGTH \
   $GROUND_TRUTH_SIC_DSC ${PROCESSED_DATASET}_osisaf
 
 HEMI_SHORT="nh"
@@ -77,6 +78,7 @@ preprocess_rotate -n uas,vas -v $ATMOS_PROC_DSC ref.osisaf.${HEMI}.nc
 preprocess_dataset $PROC_ARGS_ERA5 -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
+  -sh $LAG -st $FORECAST_LENGTH \
   $ATMOS_PROC_DSC ${PROCESSED_DATASET}_era5
   # TODO: naive copy of "./data/era5_osi/month/hemi.north/uas/2024.nc" earlier is not regridded?
   # TODO: dask multiprocessing cluster with task batcher across multiple variables would be sensible
