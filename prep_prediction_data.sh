@@ -58,7 +58,6 @@ PRED_DATA_START=`date --date "$PREDICTION_START - $LAG ${DATA_FREQUENCY}s" +%Y-%
   # download_cmip --source MRI-ESM2-0 --member r1i1p1f1 $DATA_ARGS $HEMI $CMIP6_DATES $CMIP6_VAR_ARGS
 
   # TODO: this overwrites the ./data/osisaf/dataset_config.month.hemi.north.json files, which is unacceptable - localise
-  # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 ) 2>&1 | tee logs/download.${PREDICTION_DATASET}.log
 
 DATASET_CONFIG_NAME="dataset_config.${DATA_FREQUENCY}.hemi.${HEMI}.json"
@@ -88,6 +87,7 @@ preprocess_dataset $PROC_ARGS_SIC -v \
   -r processed/${DATA_PROC}_osisaf/ \
   -i "icenet.data.processors.osisaf:SICPreProcessor" \
   $OSISAF_DATASET ${PREDICTION_DATASET}_osisaf
+  # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
 if [ ! -f ref.osisaf.${HEMI}.nc ]; then
   echo "Reference OSISAF for regrid should still be available, bailing for the mo"
@@ -102,6 +102,7 @@ preprocess_dataset $PROC_ARGS_ERA5 -v \
   -r processed/${DATA_PROC}_era5/ \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
   $ATMOS_PROC_DSC ${PREDICTION_DATASET}_era5
+  # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
 preprocess_add_processed -v $LOADER_CONFIGURATION processed.${PREDICTION_DATASET}_osisaf.json processed.${PREDICTION_DATASET}_era5.json
 preprocess_add_channel -v $LOADER_CONFIGURATION $OSISAF_DATASET sin "icenet.data.meta:SinProcessor"
