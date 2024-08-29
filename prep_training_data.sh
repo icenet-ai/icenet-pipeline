@@ -67,7 +67,7 @@ preprocess_dataset $PROC_ARGS_SIC -v \
 HEMI_SHORT="nh"
 [ $HEMI == "south" ] && HEMI_SHORT="sh"
 
-icenet_generate_ref_osisaf -v data/masks/ice_conc_${HEMI_SHORT}_ease2-250_cdr-v2p0_200001021200.nc
+icenet_generate_ref_osisaf -v ${PROCESSED_DATA_STORE}/masks/ice_conc_${HEMI_SHORT}_ease2-250_cdr-v2p0_200001021200.nc
 
 preprocess_regrid -v $ERA5_DATASET ref.osisaf.${HEMI}.nc $ATMOS_PROC
 preprocess_rotate -n uas,vas -v $ATMOS_PROC_DSC ref.osisaf.${HEMI}.nc
