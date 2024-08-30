@@ -15,20 +15,10 @@ if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
     exit 1
 fi
 
-# obtaining any arguments that should be passed onto run_forecast_plots.sh
-OPTIND=1
-while getopts "" opt; do
-    case "$opt" in
-    esac
-done
-
-shift $((OPTIND-1))
-
-echo "Leftovers from getopt: $@"
-
 PREDICTION_NAME="prediction.$1"
 MODEL="$2"
 HEMI="$3"
+EXTRA_ARGS="${4:-""}"
 
 # This assumes you're not retraining using the same model name, eek
 if [ -d results/networks/${MODEL}.${HEMI} ]; then
@@ -46,5 +36,5 @@ jq -c '.sources[].splits["prediction"][]' $LOADER_NAME | sort | uniq | sed -r \
     -e 's/"//g' \
     -e 's/([0-9]{4})_([0-9]{2})_([0-9]{2})/\1-\2-\3/' >${PREDICTION_NAME}.${HEMI}.csv
 
-./run_predict_ensemble.sh -d -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
+./run_predict_ensemble.sh $EXTRA_ARGS -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
     ${MODEL}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI}.csv
