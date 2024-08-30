@@ -78,7 +78,7 @@ LOADER_CONFIGURATION="loader.${PREDICTION_DATASET}.json"
 TRAIN_LOADER_CONFIGURATION="loader.${TRAIN_DATA_NAME}.${HEMI}.json"
 
 preprocess_loader_init -v $PREDICTION_DATASET
-preprocess_loader_copy $TRAIN_LOADER_CONFIGURATION $PREDICTION_DATASET masks channels
+preprocess_loader_copy $TRAIN_LOADER_CONFIGURATION loader.${PREDICTION_DATASET}.json masks channels
 
 preprocess_dataset $PROC_ARGS_SIC -v \
   -sn "prediction" -ss "$PREDICTION_START" -se "$PREDICTION_END" \
