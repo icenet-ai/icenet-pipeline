@@ -31,8 +31,8 @@ MODEL="$2"
 HEMI="$3"
 
 # This assumes you're not retraining using the same model name, eek
-if [ -d results/networks/${MODEL}_${HEMI} ]; then
-    SAVEFILE=`ls results/networks/${MODEL}_${HEMI}/${MODEL}_${HEMI}.*.h5 | head -n 1`
+if [ -d results/networks/${MODEL}.${HEMI} ]; then
+    SAVEFILE=`ls results/networks/${MODEL}.${HEMI}/${MODEL}.${HEMI}.*.h5 | head -n 1`
     DATASET=`echo $SAVEFILE | perl -lpe's/.+\.network_(.+)\.[0-9]+\.h5/$1/'`
     echo "First model file: $SAVEFILE"
     echo "Dataset model was trained on: $DATASET"
