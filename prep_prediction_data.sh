@@ -56,8 +56,6 @@ PRED_DATA_START=`date --date "$PREDICTION_START - $LAG ${DATA_FREQUENCY}s" +%Y-%
   download_osisaf $DATA_ARGS $HEMI $PRED_DATA_START $PREDICTION_END $OSISAF_VAR_ARGS
   download_era5 $DATA_ARGS $HEMI $PRED_DATA_START $PREDICTION_END $ERA5_VAR_ARGS
   # download_cmip --source MRI-ESM2-0 --member r1i1p1f1 $DATA_ARGS $HEMI $CMIP6_DATES $CMIP6_VAR_ARGS
-
-  # TODO: this overwrites the ./data/osisaf/dataset_config.month.hemi.north.json files, which is unacceptable - localise
 ) 2>&1 | tee logs/download.${PREDICTION_DATASET}.log
 
 DATASET_CONFIG_NAME="dataset_config.${DATA_FREQUENCY}.hemi.${HEMI}.json"
@@ -66,8 +64,9 @@ DATASET_CONFIG_NAME="dataset_config.${DATA_FREQUENCY}.hemi.${HEMI}.json"
 # Persistent datasets from the source data store, wherever that is
 OSISAF_DATASET="${SOURCE_DATA_STORE}/osisaf/${DATASET_CONFIG_NAME}"
 ERA5_DATASET="${SOURCE_DATA_STORE}/era5/${DATASET_CONFIG_NAME}"
+
 ATMOS_PROC="era5_osi.$PREDICTION_DATASET"
-ATMOS_PROC_DSC="data/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
+ATMOS_PROC_DSC="${PROCESSED_DATA_STORE}/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
 
 # Create links to the central data store datasets for easier "mapping"
 [ ! -e data/osisaf ] && [ -d ${SOURCE_DATA_STORE}/osisaf ] && ln -s ${SOURCE_DATA_STORE}/osisaf ./data/osisaf
@@ -76,16 +75,16 @@ ATMOS_PROC_DSC="data/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
 # TODO: CMIP
 
 LOADER_CONFIGURATION="loader.${PREDICTION_DATASET}.json"
+TRAIN_LOADER_CONFIGURATION="loader.${TRAIN_DATA_NAME}.${HEMI}.json"
 
 preprocess_loader_init -v $PREDICTION_DATASET
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET land "icenet.data.masks.osisaf:Masks"
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET polarhole "icenet.data.masks.osisaf:Masks"
-preprocess_add_mask -v $LOADER_CONFIGURATION $OSISAF_DATASET active_grid_cell "icenet.data.masks.osisaf:Masks"
+preprocess_loader_copy $TRAIN_LOADER_CONFIGURATION $PREDICTION_DATASET masks channels
 
 preprocess_dataset $PROC_ARGS_SIC -v \
   -sn "prediction" -ss "$PREDICTION_START" -se "$PREDICTION_END" \
   -r processed/${DATA_PROC}_osisaf/ \
   -i "icenet.data.processors.osisaf:SICPreProcessor" \
+  -sh $LAG -st $FORECAST_LENGTH \
   $OSISAF_DATASET ${PREDICTION_DATASET}_osisaf
   # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
@@ -94,20 +93,22 @@ if [ ! -f ref.osisaf.${HEMI}.nc ]; then
   exit 1
 fi
 
-preprocess_regrid -v $ERA5_DATASET ref.osisaf.${HEMI}.nc $ATMOS_PROC
-preprocess_rotate -n uas,vas -v $ATMOS_PROC_DSC ref.osisaf.${HEMI}.nc
+preprocess_regrid -v \
+  -sn "prediction" -ss "$PREDICTION_START" -se "$PREDICTION_END" \
+  -sh $LAG -st $FORECAST_LENGTH \
+  $ERA5_DATASET ref.osisaf.${HEMI}.nc $ATMOS_PROC
+preprocess_rotate -v \
+  -n uas,vas $ATMOS_PROC_DSC ref.osisaf.${HEMI}.nc
 
 preprocess_dataset $PROC_ARGS_ERA5 -v \
   -sn "prediction" -ss "$PREDICTION_START" -se "$PREDICTION_END" \
   -r processed/${DATA_PROC}_era5/ \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
+  -sh $LAG -st $FORECAST_LENGTH \
   $ATMOS_PROC_DSC ${PREDICTION_DATASET}_era5
   # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
 preprocess_add_processed -v $LOADER_CONFIGURATION processed.${PREDICTION_DATASET}_osisaf.json processed.${PREDICTION_DATASET}_era5.json
-preprocess_add_channel -v $LOADER_CONFIGURATION $OSISAF_DATASET sin "icenet.data.meta:SinProcessor"
-preprocess_add_channel -v $LOADER_CONFIGURATION $OSISAF_DATASET cos "icenet.data.meta:CosProcessor"
-preprocess_add_channel -v $LOADER_CONFIGURATION $OSISAF_DATASET land_map "icenet.data.masks.osisaf:Masks"
 
 icenet_dataset_create -v -c -p -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $PREDICTION_DATASET
 
