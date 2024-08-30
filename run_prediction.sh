@@ -47,4 +47,4 @@ jq -c '.sources[].splits["prediction"][]' $LOADER_NAME | sort | uniq | sed -r \
     -e 's/([0-9]{4})_([0-9]{2})_([0-9]{2})/\1-\2-\3/' >${PREDICTION_NAME}.${HEMI}.csv
 
 ./run_predict_ensemble.sh -d -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
-    ${MODEL}_${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI}.csv
+    ${MODEL}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI}.csv
