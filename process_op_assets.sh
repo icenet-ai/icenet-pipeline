@@ -10,7 +10,7 @@ LOG_DIR="log/forecasts/$FORECAST_NAME"
 
 FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
 FORECAST_LENGTH=`python -c 'import xarray as xr; print(int(xr.open_dataset("'$FORECAST_FILE'").leadtime.max()))'`
-HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
+HEMI=`echo $FORECAST_NAME | sed -r 's/^.+\.(north|south)$/\1/'`
 
 if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
   echo "$0 <forecast name w/hemi> [region]"
