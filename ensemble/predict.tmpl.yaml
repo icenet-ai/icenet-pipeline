@@ -43,6 +43,9 @@ ensemble:
               cmd:  /usr/bin/ln -s ../../processed
         - name:   execute
           args:
+              cmd:  /usr/bin/ln -s ../../processed_data
+        - name:   execute
+          args:
               cmd:  /usr/bin/ln -s ../../ref.osisaf.north.nc
         - name:   execute
           args:
