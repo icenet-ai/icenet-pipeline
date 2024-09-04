@@ -2,11 +2,10 @@
 
 source ENVS
 
-if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
+if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
     echo -e "\nUsage $0 <forecast_name> <hemisphere>"
     echo -e "\nArguments"
     echo "<forecast_name>     name of forecast"
-    echo "<hemisphere>        hemisphere to use"
     echo -e "\nOptions"
     echo "-m <metrics>        string of metrics separated by commas, by default \"binacc,sie,mae,rmse,sic\""
     echo "-r <region>         region arguments, by default uses full hemisphere"
@@ -27,6 +26,7 @@ THRESHOLDS=(0.15, 0.8)
 GRID_AREA_SIZE="-g 25"
 REQUESTED_OUTPUT_DIR=""
 OPTIND=1
+
 while getopts "m:r:t:g:o:" opt; do
     case "$opt" in
         m)  METRICS=${OPTARG} ;;
@@ -56,9 +56,7 @@ shift $((OPTIND-1))
 
 # echo "Leftovers from getopt: $@"
 
-FORECAST="$1"
-HEMI="$2"
-FORECAST_NAME=${FORECAST}_${HEMI}
+FORECAST_NAME=${1}
 
 if [ "${REQUESTED_OUTPUT_DIR}" == "" ]; then
     OUTPUT_DIR="plot/validation/${FORECAST_NAME}"
@@ -75,20 +73,20 @@ for element in "${METRICS[@]}"
     if [ "${element}" == "binacc" ]; then
         for THRESH in ${THRESHOLDS[@]}; do
             ./plot_forecast.sh -m ${element} $REGION -v -l -t $THRESH \
-                -o $OUTPUT_DIR $FORECAST $HEMI
+                -o $OUTPUT_DIR $FORECAST_NAME
             ./plot_forecast.sh -m ${element} $REGION -e -v -l -t $THRESH \
-                -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
+                -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST_NAME
         done
     elif [ "${element}" == "sie" ]; then
         for THRESH in ${THRESHOLDS[@]}; do
             ./plot_forecast.sh -m ${element} $REGION -v -l -t $THRESH $GRID_AREA_SIZE \
-                -o $OUTPUT_DIR $FORECAST $HEMI
+                -o $OUTPUT_DIR $FORECAST_NAME
             ./plot_forecast.sh -m ${element} $REGION -e -v -l -t $THRESH $GRID_AREA_SIZE \
-                -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
+                -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST_NAME
         done
     elif [ "${element}" == "sic" ]; then
         ./plot_forecast.sh -m ${element} $REGION -v \
-            -o $OUTPUT_DIR $FORECAST $HEMI
+            -o $OUTPUT_DIR $FORECAST_NAME
     else
         if [ "${element}" == "mae" ]; then
             LOGFILE="${MAE_LOG}"
@@ -98,8 +96,8 @@ for element in "${METRICS[@]}"
             LOGFILE="${RMSE_LOG}"
         fi
         ./plot_forecast.sh -m ${element} $REGION -v -l \
-            -o $OUTPUT_DIR $FORECAST $HEMI
+            -o $OUTPUT_DIR $FORECAST_NAME
         ./plot_forecast.sh -m ${element} $REGION -e -v -l \
-            -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST $HEMI
+            -o "${OUTPUT_DIR}/ECMWF_comp" $FORECAST_NAME
     fi
 done
