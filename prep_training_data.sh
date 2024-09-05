@@ -56,7 +56,7 @@ preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC land "icenet.
 preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC polarhole "icenet.data.masks.osisaf:Masks"
 preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC active_grid_cell "icenet.data.masks.osisaf:Masks"
 
-preprocess_missing_spatial -m processed.masks.${HEMI}.json -mp land,active_grid_cell,polarhole -n siconca -v $GROUND_TRUTH_SIC_DSC
+preprocess_missing_spatial -m processed.masks.${HEMI}.json -mp land,inactive_grid_cell,polarhole -n siconca -v $GROUND_TRUTH_SIC_DSC
 
 preprocess_dataset $PROC_ARGS_SIC -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
