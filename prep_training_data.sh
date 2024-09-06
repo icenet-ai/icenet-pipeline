@@ -33,8 +33,6 @@ ERA5_DATASET="${SOURCE_DATA_STORE}/era5/${DATASET_CONFIG_NAME}"
 # Create links to the central data store datasets for easier "mapping"
 [ ! -e data/osisaf ] && [ -d ${SOURCE_DATA_STORE}/osisaf ] && ln -s ${SOURCE_DATA_STORE}/osisaf ./data/osisaf
 [ ! -e data/era5 ] && [ -d ${SOURCE_DATA_STORE}/era5 ] && ln -s ${SOURCE_DATA_STORE}/era5 ./data/era5
-# TODO: AMSR
-# TODO: CMIP
 
 GROUND_TRUTH_SIC="osi_sic.$TRAIN_DATA_NAME"
 ATMOS_PROC="era5_osi.$TRAIN_DATA_NAME"
@@ -50,13 +48,20 @@ DATASET_NAME="tfdata_${HEMI}"
 ## Workflow
 preprocess_loader_init -v $PROCESSED_DATASET
 
-preprocess_missing_time -n siconca -v $OSISAF_DATASET $GROUND_TRUTH_SIC
+# We CAN supply splits and lead / lag to prevent unnecessarily large copies of datasets
+# or interpolation of time across huge spans
+# TODO: temporal interpolation limiting
+preprocess_missing_time \
+#  -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
+#  -sh $LAG -st $FORECAST_LENGTH \
+  -n siconca -v $OSISAF_DATASET $GROUND_TRUTH_SIC
 
 preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC land "icenet.data.masks.osisaf:Masks"
 preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC polarhole "icenet.data.masks.osisaf:Masks"
 preprocess_add_mask -v $LOADER_CONFIGURATION $GROUND_TRUTH_SIC_DSC active_grid_cell "icenet.data.masks.osisaf:Masks"
 
-preprocess_missing_spatial -m processed.masks.${HEMI}.json -mp land,inactive_grid_cell,polarhole -n siconca -v $GROUND_TRUTH_SIC_DSC
+preprocess_missing_spatial \
+  -m processed.masks.${HEMI}.json -mp land,inactive_grid_cell,polarhole -n siconca -v $GROUND_TRUTH_SIC_DSC
 
 preprocess_dataset $PROC_ARGS_SIC -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \

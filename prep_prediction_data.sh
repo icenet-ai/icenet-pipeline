@@ -52,6 +52,7 @@ LOADER_CONFIGURATION="loader.${PREDICTION_DATASET}.json"
 PRED_DATA_START=`date --date "$PREDICTION_START - $LAG ${DATA_FREQUENCY}s" +%Y-%m-%d`
 # download-toolbox integration
 (
+  # We don't do AMSR2 and CMIP as part of this, but everything is similar if you want to ;)
   # download_amsr2 $DATA_ARGS $HEMI $AMSR2_DATES $AMSR2_VAR_ARGS
   download_osisaf $DATA_ARGS $HEMI $PRED_DATA_START $PREDICTION_END $OSISAF_VAR_ARGS
   download_era5 $DATA_ARGS $HEMI $PRED_DATA_START $PREDICTION_END $ERA5_VAR_ARGS
@@ -71,8 +72,6 @@ ATMOS_PROC_DSC="${PROCESSED_DATA_STORE}/${ATMOS_PROC}/${DATASET_CONFIG_NAME}"
 # Create links to the central data store datasets for easier "mapping"
 [ ! -e data/osisaf ] && [ -d ${SOURCE_DATA_STORE}/osisaf ] && ln -s ${SOURCE_DATA_STORE}/osisaf ./data/osisaf
 [ ! -e data/era5 ] && [ -d ${SOURCE_DATA_STORE}/era5 ] && ln -s ${SOURCE_DATA_STORE}/era5 ./data/era5
-# TODO: AMSR
-# TODO: CMIP
 
 LOADER_CONFIGURATION="loader.${PREDICTION_DATASET}.json"
 TRAIN_LOADER_CONFIGURATION="loader.${TRAIN_DATA_NAME}.${HEMI}.json"
@@ -86,7 +85,6 @@ preprocess_dataset $PROC_ARGS_SIC -v \
   -i "icenet.data.processors.osisaf:SICPreProcessor" \
   -sh $LAG -st $FORECAST_LENGTH \
   $OSISAF_DATASET ${PREDICTION_DATASET}_osisaf
-  # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
 if [ ! -f ref.osisaf.${HEMI}.nc ]; then
   echo "Reference OSISAF for regrid should still be available, bailing for the mo"
@@ -106,7 +104,6 @@ preprocess_dataset $PROC_ARGS_ERA5 -v \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
   -sh $LAG -st $FORECAST_LENGTH \
   $ATMOS_PROC_DSC ${PREDICTION_DATASET}_era5
-  # TODO: we inadvertently clone existing datasets which is also unacceptable for predictions - filter data accordingly
 
 preprocess_add_processed -v $LOADER_CONFIGURATION processed.${PREDICTION_DATASET}_osisaf.json processed.${PREDICTION_DATASET}_era5.json
 
