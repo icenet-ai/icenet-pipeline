@@ -16,7 +16,7 @@ display_help() {
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo "  -h    Show this help message and exit."
   echo "  -l    Integer defining max leadtime to generate outputs for."
-  echo "  -n    To not clip data when specifying lon/lat region with -c, else, depending on CRS, may plot may have missing regions."
+  echo "  -n    To actually clip forecast plot bounds by lon/lat region specified with -c, else, depending on CRS, may plot may have missing pixels across edges."
   echo "  -v    Enable verbose mode - debugging print of commands."
   echo
   echo "Examples:"
@@ -30,10 +30,13 @@ display_help() {
   echo "  3) $0 fc.2024-05-21_north l-100,55,-70,75"
   echo "    Produce outputs from './results/predict/fc.2024-05-21_north.nc'"
   echo "    and crop to lon/lat region of lon_min=-100, lat_min=55, lon_max=-70, lat_max=75"
+  echo "    and changing the plot extents to the defined lon/lat region."
   echo
   echo "  4) $0 -n fc.2024-05-21_north l-100,55,-70,75"
-  echo "    Same as 3), but not clipping source data to lon/lat bounds, instead, just"
-  echo "    changing the plot extents to the defined lon/lat region."
+  echo "    Same as 3), but clipping source data to lon/lat bounds."
+  echo "    Clips data to lon/lat region of lon_min=-100, lat_min=55, lon_max=-70, lat_max=75"
+  echo "    before plotting."
+  echo "    Can have missing pixels by boundaries depending on projection selected."
   echo
   echo "  5) $0 -n -c Mercator.GOOGLE fc.2024-05-21_north l-100,55,-70,75"
   echo "    Same as 4), but outputs using Web Mercator for plots instead of polar equal area."
@@ -58,11 +61,12 @@ MAX_LEADTIME="93"
 VERBOSE=""
 SKIP_METRICS=false
 
-while getopts "c:l:nv" opt; do
+while getopts "c:gl:nv" opt; do
   case "$opt" in
     c) SCRIPT_ARGS="${SCRIPT_ARGS}--crs ${OPTARG} ";;
+    g) SCRIPT_ARGS="${SCRIPT_ARGS}--gridlines ";;
     l) MAX_LEADTIME="${OPTARG}";;
-    n) SCRIPT_ARGS="${SCRIPT_ARGS}--no-clip-region ";;
+    n) SCRIPT_ARGS="${SCRIPT_ARGS}--clip-region ";;
     v) VERBOSE="-v";;
   esac
 done
@@ -93,7 +97,7 @@ if [ -n "$REGION" ]; then
     if [[ "$REGION" == l* ]]; then
         SKIP_METRICS=true
         REGION="-z=${REGION:1}"
-        printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error do not currently support lon/lat based region bounds!\033[0m'
+        printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error are untested for lon/lat based region bounds!\033[0m'
         echo
     else
         REGION="-r $REGION"
