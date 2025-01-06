@@ -48,7 +48,7 @@ start=$(date +%s)
 
 set -e -o pipefail
 
-if [ $# -lt 2 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+if [ $# -lt 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   display_help
   exit 1
 fi
