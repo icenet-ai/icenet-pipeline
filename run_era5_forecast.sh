@@ -19,7 +19,17 @@ for HEMI in south north; do
 
 #   ERA5 tracks behind the SIC, there was an issue causing the need to use SIC
 #    FORECAST_INIT=`python -c 'import xarray as xr; print(str(xr.open_dataset("data/osisaf/'$HEMI'/siconca/'${DATE_RANGE:0:4}'.nc").time.values.max())[0:10])'`
-    FORECAST_INIT=`python -c 'import xarray as xr; print(str(xr.open_dataset("data/era5/'$HEMI'/tas/'${DATE_RANGE:0:4}'.nc").time.values.max())[0:10])'`
+
+    # If ERA5 `tas` variable netCDF file does not exist for this year, likely because we've just hit first week of new year where there is no ERA5 data
+    # available yet due to ~5 day lag in data availability.
+    if [ ! -f "data/era5/'$HEMI'/tas/'${DATE_RANGE:0:4}'.nc" ]; then
+        # Use latest day data has been downloaded for in the previous year
+        YEAR=`date +%Y --date='last year'`
+        FORECAST_INIT=`python -c 'import xarray as xr; print(str(xr.open_dataset("data/era5/'$HEMI'/tas/'${YEAR}'.nc").time.values.max())[0:10])'`
+    else
+        YEAR=${DATE_RANGE:0:4}
+        FORECAST_INIT=`python -c 'import xarray as xr; print(str(xr.open_dataset("data/era5/'$HEMI'/tas/'${YEAR}'.nc").time.values.max())[0:10])'`
+    fi
 
     export FORECAST_START="$FORECAST_INIT"
     export FORECAST_END="$FORECAST_INIT"
