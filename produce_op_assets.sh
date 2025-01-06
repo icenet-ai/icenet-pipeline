@@ -16,7 +16,7 @@ display_help() {
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo "  -h    Show this help message and exit."
   echo "  -l    Integer defining max leadtime to generate outputs for."
-  echo "  -n    To actually clip forecast plot bounds by lon/lat region specified with -c, else, depending on CRS, may plot may have missing pixels across edges."
+  echo "  -n    Clip the data to the region specified by lon/lat, will cause empty pixels across image edges due to lon/lat curvature."
   echo "  -v    Enable verbose mode - debugging print of commands."
   echo
   echo "Examples:"
