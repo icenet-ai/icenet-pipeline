@@ -87,13 +87,10 @@ fi
 FORECAST_NAME="$1"
 REGION="$2"
 
-OUTPUT_DIR="results/forecasts/$FORECAST_NAME"
-LOG_DIR="log/forecasts/$FORECAST_NAME"
-
-FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
-HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
+OUTPUT_DIR_NAME=${FORECAST_NAME}
 
 if [ -n "$REGION" ]; then
+    OUTPUT_DIR_NAME=${OUTPUT_DIR_NAME}_region=$(echo ${REGION} | tr ',' '_')
     if [[ "$REGION" == l* ]]; then
         SKIP_METRICS=true
         REGION="-z=${REGION:1}"
@@ -103,6 +100,13 @@ if [ -n "$REGION" ]; then
         REGION="-r $REGION"
     fi
 fi
+
+
+OUTPUT_DIR="results/forecasts/$OUTPUT_DIR_NAME"
+LOG_DIR="log/forecasts/$OUTPUT_DIR_NAME"
+
+FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
+HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
 
 if ! [[ $HEMI =~ ^(north|south)$ ]]; then
   echo "Hemisphere from $FORECAST_NAME not available, raise an issue"
