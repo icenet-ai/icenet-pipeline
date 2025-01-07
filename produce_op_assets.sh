@@ -90,7 +90,7 @@ REGION="$2"
 OUTPUT_DIR_NAME=${FORECAST_NAME}
 
 if [ -n "$REGION" ]; then
-    OUTPUT_DIR_NAME=${OUTPUT_DIR_NAME}_region=$(echo ${REGION} | tr ',' '_')
+    OUTPUT_DIR_NAME=${OUTPUT_DIR_NAME}_region_$(echo ${REGION} | tr ',' '_')
     if [[ "$REGION" == l* ]]; then
         SKIP_METRICS=true
         REGION="-z=${REGION:1}"
