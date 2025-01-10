@@ -1,6 +1,8 @@
 HEMI="$1"
 DOWNLOAD=${2:-0}
 
+source ENVS
+
 # download-toolbox integration
 # This updates our source
 if [ $DOWNLOAD -eq 1 ]; then
