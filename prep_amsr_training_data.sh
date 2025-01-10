@@ -64,9 +64,11 @@ preprocess_dataset $PROC_ARGS_SIC -v \
   $AMSR2_DATASET ${PROCESSED_DATASET}_amsr
 
 # IS THIS NEEDED? icenet_generate_ref_amsr -v ${PROCESSED_DATA_STORE}/masks/ice_conc_${HEMI_SHORT}_ease2-250_cdr-v2p0_200001021200.nc
-# ln -s data/amsr2_6250/siconca/2014/asi-AMSR2-s6250-20140630-v5.4.nc ref.amsr.${HEMI}.nc
+[ ! -f ref.amsr.${HEMI}.nc ] && ln -s data/amsr2_6250/siconca/2014/asi-AMSR2-s6250-20140630-v5.4.nc ref.amsr.${HEMI}.nc
 
-preprocess_regrid -v $ERA5_DATASET ref.amsr.${HEMI}.nc $ATMOS_PROC
+preprocess_regrid -v \
+  -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
+  $ERA5_DATASET ref.amsr.${HEMI}.nc $ATMOS_PROC
 
 preprocess_dataset $PROC_ARGS_ERA5 -v \
   -ps "train" -sn "train,val,test" -ss "$TRAIN_START,$VAL_START,$TEST_START" -se "$TRAIN_END,$VAL_END,$TEST_END" \
