@@ -3,6 +3,10 @@ DOWNLOAD=${2:-0}
 
 source ENVS
 
+##
+# TODO: Usable as is for training, but for prediction we need to restrict this to relevant activities and dates
+#   ./run_prediction.sh amsr_fc.09_12.2024 amsr_6k_6m_120125.south south
+
 # download-toolbox integration
 # This updates our source
 if [ $DOWNLOAD -eq 1 ]; then
@@ -11,8 +15,6 @@ if [ $DOWNLOAD -eq 1 ]; then
   download_era5 $DATA_ARGS $HEMI $ERA5_DATES $ERA5_VAR_ARGS
   download_cmip --source MRI-ESM2-0 --member r1i1p1f1 $DATA_ARGS $HEMI $CMIP6_DATES $CMIP6_VAR_ARGS
 fi 2>&1 | tee logs/download.training.log
-
-### TODO:
 
 DATASET_CONFIG_NAME="dataset_config.${DATA_FREQUENCY}.hemi.${HEMI}.json"
 
