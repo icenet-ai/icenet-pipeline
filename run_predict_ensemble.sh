@@ -14,8 +14,9 @@ ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
 TRAIN_IDENT=""
+ENSEMBLE_SEEDS_DEFAULT=42,46,45
 
-while getopts ":b:df:i:lm:p:x" opt; do
+while getopts ":b:df:i:lm:p:r:x" opt; do
   case "$opt" in
     b)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_batch=$OPTARG ";;
     d)  ENSEMBLE_TARGET="dummy";;
@@ -24,6 +25,7 @@ while getopts ":b:df:i:lm:p:x" opt; do
     l)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_testset=false ";;
     m)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}mem=$OPTARG ";;
     p)  ENSEMBLE_ARGS="${ENSEMBLE_ARGS}arg_prep=$OPTARG ";;
+    r)  ENSEMBLE_RUNS=$OPTARG ;; # Ensemble member run seed values
     x)  DO_NOT_EXECUTE=1
   esac
 done
@@ -52,11 +54,43 @@ ln -s `realpath ${DATEFILE}` ensemble/${NAME}/predict_dates.csv
 
 PREDICT_CONFIG=`mktemp -p . --suffix ".predict"`
 
+##
+# Dynamically generate seeds for ensemble run.
+#
+
+IFS="," read -ra SEEDS <<< "$ENSEMBLE_RUNS"
+
+# Check if seeds defined as CLI args (e.g. `-r 42,46`)
+if [ ${#SEEDS[@]} -eq 0 ]; then
+    IFS="," read -ra SEEDS <<< "$ENSEMBLE_PREDICT_SEEDS"
+    # Check if seeds defined in ENVS exported variables (else use defaults)
+    if [ ${#SEEDS[@]} -eq 0 ]; then
+        IFS="," read -ra SEEDS <<< "$ENSEMBLE_SEEDS_DEFAULT"
+    fi
+fi
+
+# Generate seed lines for yaml output
+ENSEMBLE_SEEDS=""
+COUNTER=0
+for seed in ${SEEDS[@]}
+do
+    ENSEMBLE_SEEDS+="        - seed:   "$seed
+    if [ $COUNTER -lt $((${#SEEDS[@]}-1)) ]; then
+        ENSEMBLE_SEEDS+="\n"
+    fi
+    ((COUNTER++))
+done
+
+echo "No. of ensemble members: " "${#SEEDS[@]}"
+printf -v joined '%s,' "${SEEDS[@]}"
+echo "Ensemble members: " "${joined%,}"
+
 sed -r \
     -e "s/NETWORK/${NETWORK}/g" \
     -e "s/DATASET/${DATASET}/g" \
     -e "s/LOADER/${LOADER}/g" \
     -e "s/NAME/${NAME}/g" \
+    -e "/\bSEEDS$/s/.*/${ENSEMBLE_SEEDS}/g" \
  ensemble/predict.tmpl.yaml >$PREDICT_CONFIG
 
 COMMAND="model_ensemble $PREDICT_CONFIG $ENSEMBLE_TARGET $ENSEMBLE_SWITCH $ENSEMBLE_ARGS"

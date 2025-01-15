@@ -1,22 +1,27 @@
 ---
 ensemble:
   vars:
-    arg_batch:          4
-    arg_dataset:        DATASET
-    arg_epochs:         100
-    arg_filter_factor:  1
-    arg_queue:          2
-    arg_strategy:       default
+    batch:          4
+    cluster:        dummy
+    dataset:        DATASET
+    email:          someone@example.com
+    epochs:         100
+    filter_factor:  1
+    gpus:           1
+    length:         "1-00:00:00"
+    mem:            128gb
+    nodes:          1
+    ntasks:         2
+    preload:        DATASET
+    strategy:       default
     symlinks:
       - ../../../data
       - ../../../ENVS*
-      - ../../../loader.LOADER.json
+      - ../../../LOADER
       - ../../../dataset_config.DATASET.json
       - ../../../network_datasets
       - ../../../processed
       - ../../../results
-    gpus:         1
-    mem:          128gb
 
   pre_process:
     - name:   execute
@@ -29,13 +34,8 @@ ensemble:
     templatedir:  ../template
     templates:
     - icenet_train.sh.j2
-    email:        someone@example.com
     job_file:     icenet_train.sh
-    cluster:      gpu
-    nodes:        1
-    ntasks:       NTASKS
-    length:       4-00:00:00
-    maxruns:      5
+    maxruns:      MAXJOBS
     maxjobs:      MAXJOBS
 
   batches:
@@ -44,16 +44,7 @@ ensemble:
       pre_batch:  []
       pre_run:    []
       runs:
-        - seed:   42
-        - seed:   46
-        - seed:   45
-        - seed:   17
-        - seed:   24
-        - seed:   84
-        - seed:   83
-        - seed:   16
-        - seed:   5
-        - seed:   3
+        - seed:   SEEDS
       post_run:   []
       post_batch:
         - name:   execute

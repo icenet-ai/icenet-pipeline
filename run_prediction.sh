@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -l
 
 set -e -o pipefail
 
@@ -7,36 +7,22 @@ set -e -o pipefail
 conda activate $ICENET_CONDA
 
 if [ $# -lt 3 ] || [ "$1" == "-h" ]; then
-    echo "Usage $0 <forecast name> <model> <hemisphere> [date_vars] [train_data_name]"
-    echo "<forecast_name>   name of forecast"
+    echo "Usage $0 <prediction_name> <model> <hemisphere> [date_vars] [train_data_name]"
+    echo "<prediction_name> name of prediction]"
     echo "<model>           model name"
     echo "<hemisphere>      hemisphere to use"
-    echo "[date_vars]       variables for defining start and end dates to forecast"
-    echo "[train_data_name] name of data used to train the model"
     echo "Options: none"
     exit 1
 fi
 
-# obtaining any arguments that should be passed onto run_forecast_plots.sh
-OPTIND=1
-while getopts "" opt; do
-    case "$opt" in
-    esac
-done
-
-shift $((OPTIND-1))
-
-echo "Leftovers from getopt: $@"
-
-FORECAST="$1"
+PREDICTION_NAME="prediction.$1"
 MODEL="$2"
 HEMI="$3"
-DATE_VARS="${4:-$FORECAST}"
-DATA_PROC="${5:-${TRAIN_DATA_NAME}}_${HEMI}"
+EXTRA_ARGS="${4:-""}"
 
 # This assumes you're not retraining using the same model name, eek
-if [ -d results/networks/$MODEL ]; then
-    SAVEFILE=`ls results/networks/${MODEL}/${MODEL}.*.h5 | head -n 1`
+if [ -d results/networks/${MODEL}.${HEMI} ]; then
+    SAVEFILE=`ls results/networks/${MODEL}.${HEMI}/${MODEL}.${HEMI}.*.h5 | head -n 1`
     DATASET=`echo $SAVEFILE | perl -lpe's/.+\.network_(.+)\.[0-9]+\.h5/$1/'`
     echo "First model file: $SAVEFILE"
     echo "Dataset model was trained on: $DATASET"
@@ -45,38 +31,10 @@ else
     exit 1
 fi
 
-NAME_START="${DATE_VARS^^}_START"
-NAME_END="${DATE_VARS^^}_END"
-echo "Dates from ENVS: $NAME_START and $NAME_END"
-PREDICTION_START=${!NAME_START}
-PREDICTION_END=${!NAME_END}
+LOADER_NAME="loader.${PREDICTION_NAME}.${HEMI}.json"
+jq -c '.sources[].splits["prediction"][]' $LOADER_NAME | sort | uniq | sed -r \
+    -e 's/"//g' \
+    -e 's/([0-9]{4})_([0-9]{2})_([0-9]{2})/\1-\2-\3/' >${PREDICTION_NAME}.${HEMI}.csv
 
-if [ -z $PREDICTION_START ] || [ -z $PREDICTION_END ]; then
-    echo "Prediction date args not set correctly: \"$PREDICTION_START\" to \"$PREDICTION_END\""
-    exit 1
-else
-    echo "Prediction start arg: $PREDICTION_START"
-    echo "Prediction end arg: $PREDICTION_END"
-fi
-
-[ ! -z "$PROC_ARGS_ERA5" ] && \
-    icenet_process_era5 -r processed/$DATA_PROC/era5/$HEMI \
-        $PROC_ARGS_ERA5 \
-        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
-
-[ ! -z "$PROC_ARGS_ORAS5" ] && \
-    icenet_process_oras5 -r processed/$DATA_PROC/oras5/$HEMI \
-        $PROC_ARGS_ORAS5 \
-        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
-
-[ ! -z "$PROC_ARGS_SIC" ] && \
-    icenet_process_sic  -r processed/$DATA_PROC/osisaf/$HEMI \
-        $PROC_ARGS_SIC \
-        -v -l $LAG -ts $PREDICTION_START -te $PREDICTION_END ${FORECAST}_${HEMI} $HEMI
-
-icenet_process_metadata ${FORECAST}_${HEMI} $HEMI
-icenet_dataset_create -l $LAG -c ${FORECAST}_${HEMI} $HEMI
-./loader_test_dates.sh ${FORECAST}_${HEMI} >${FORECAST}_${HEMI}.csv
-
-./run_predict_ensemble.sh -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
-    $MODEL ${FORECAST}_${HEMI} ${FORECAST}_${HEMI} ${FORECAST}_${HEMI}.csv
+./run_predict_ensemble.sh $EXTRA_ARGS -i $DATASET -f $FILTER_FACTOR -p $PREP_SCRIPT \
+    ${MODEL}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI} ${PREDICTION_NAME}.${HEMI}.csv

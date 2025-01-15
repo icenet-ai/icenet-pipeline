@@ -1,0 +1,19 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from icenet.data.masks.osisaf import Masks
+from download_toolbox.interface import get_dataset_config_implementation
+dsc = get_dataset_config_implementation("data/osi_sic/dataset_config.month.hemi.north.json")
+m = Masks(dsc)
+m.polarhole_filename
+
+for i in range(1,13):
+    plt.contourf(m.active_grid_cell(pd.Timestamp("2020-{}-1".format(i))))
+    plt.savefig("agcm{}.png".format(i))
+
+
+plt.contourf(m.land())
+plt.savefig("land.png")
+for i in range(1975, 2026, 10):
+    plt.contourf(m.polarhole(pd.Timestamp("{}-1-1".format(i))))
+    plt.savefig("polarhole.{}.png".format(i))
+ 

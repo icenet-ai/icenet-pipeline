@@ -2,11 +2,10 @@
 
 source ENVS
 
-if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
-    echo -e "\nUsage $0 <forecast_name> <hemisphere>"
+if [ $# -lt 1 ] || [ "$1" == "-h" ]; then
+    echo -e "\nUsage $0 <forecast_name>"
     echo -e "\nArguments"
     echo "<forecast_name>     name of forecast"
-    echo "<hemisphere>        hemisphere to use"
     echo -e "\nOptions"
     echo "-m <metrics>        string of metrics separated by commas, by default \"binacc,sie,mae,rmse,sic\". Options: \"binacc\", \"sie\", \"mae\", \"mse\", \"rmse\", \"sic\""
     echo "-r <region>         region arguments, by default uses full hemisphere"
@@ -17,7 +16,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "-g <grid_area_size> grid area resolution to use - i.e. the length of the sides in km, by default 25 (i.e. 25km^2)"
     echo "-o <output_dir>     output directory path to store plots, by default \"plot/<forecast_name>\""
     echo -e "\nList of outputs generated"
-    echo "* If \"binacc\" is included in the requested metrics, will generate all binary accuracy plots for dates in <forecast_name>_<hemisphere>.csv"
+    echo "* If \"binacc\" is included in the requested metrics, will generate all binary accuracy plots for dates in <forecast_name>.csv"
     echo "- these will be saved in the format \"<output_dir>/binacc.t_<threshold>.<date>.png\""
     echo "If \"-l\" is passed, leadtime averaged plots for binary accuracy will be generated too:"
     echo "    - averaging over all: \"<output_dir>/binacc.t_<threshold>_leadtime_avg_all.png\""
@@ -26,7 +25,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "    - averaging by month and for target date: \"<output_dir>/binacc.t_<threshold>_leadtime_avg_target_month.png\""
     echo "    - averaging by day and for target date: \"<output_dir>/binacc.t_<threshold>_leadtime_avg_target_day.png\""
     echo "If \"-v\" is passed, a video will be produced to stitch all these plots together and saved in \"<output_dir>/binacc.t_<threshold>.mp4\""
-    echo "* If \"sie\" is included in the requested metrics, will generate all SIE error plots for dates in <forecast_name>_<hemisphere>.csv"
+    echo "* If \"sie\" is included in the requested metrics, will generate all SIE error plots for dates in <forecast_name>.csv"
     echo "(these will be saved in the format \"<output_dir>/sie.t_<threshold>.g_<grid_area_size>.<date>.png\")"
     echo "If \"-l\" is passed, leadtime averaged plots for SIE error will be generated too:"
     echo "    - averaging over all: \"<output_dir>/sie.t_<threshold>.g_<grid_area_size>_leadtime_avg_all.png\""
@@ -35,7 +34,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "    - averaging by month and for target date: \"<output_dir>/sie.t_<threshold>.g_<grid_area_size>_leadtime_avg_target_month.png\""
     echo "    - averaging by day and for target date: \"<output_dir>/sie.t_<threshold>.g_<grid_area_size>_leadtime_avg_target_day.png\""
     echo "If \"-v\" is passed, a video will be produced to stitch all these plots together and saved in \"<output_dir>/sie.t_<threshold>.g_<grid_area_size>.mp4\""
-    echo "* If \"mae\", \"mse\", or \"rmse\" is included in the requested metrics, will generate all MAE, MSE, or RMSE plots for dates in <forecast_name>_<hemisphere>.csv"
+    echo "* If \"mae\", \"mse\", or \"rmse\" is included in the requested metrics, will generate all MAE, MSE, or RMSE plots for dates in <forecast_name>.csv"
     echo "the names for the plots follow a similar convention as above but without the threshold or grid-area-size being saved in the name..."
     echo "for instance, for a given <metric>, these will be saved in the format \"<output_dir>/<metric>.<date>.png\""
     echo "If \"-l\" is passed, leadtime averaged plots for <metric> will be generated too:"
@@ -47,7 +46,7 @@ if [ $# -lt 2 ] || [ "$1" == "-h" ]; then
     echo "Note that if $\"-e\" is passed, all of these will have \"_comp\" after \"avg\""
     echo "The plot of the standard deviation of the metric for each forecast will also be generated"
     echo "If \"-v\" is passed, a video will be produced to stitch all these plots together and saved in \"<output_dir>/<metric>.mp4\""
-    echo "* If \"sic\" is included in the requested metrics, will generate all SIC error videos for dates in <forecast_name>_<hemisphere>.csv"
+    echo "* If \"sic\" is included in the requested metrics, will generate all SIC error videos for dates in <forecast_name>.csv"
     echo "(these will be saved in the format \"<output_dir>/sic.<date>.mp4\")"
     exit 1
 fi
@@ -106,18 +105,17 @@ shift $((OPTIND-1))
 
 # echo "Leftovers from getopt: $@"
 
-FORECAST="$1"
-HEMI="$2"
-
-FORECAST_NAME=${FORECAST}_${HEMI}
+FORECAST_NAME="$1"
 FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
 LOG_PREFIX="logs/${FORECAST_NAME}"
-BINACC_LOG="${LOG_PREFIX}_binacc.log"
-SIE_LOG="${LOG_PREFIX}_sie.log"
-MAE_LOG="${LOG_PREFIX}_mae.log"
-MSE_LOG="${LOG_PREFIX}_mse.log"
-RMSE_LOG="${LOG_PREFIX}_rmse.log"
-SICERR_LOG="${LOG_PREFIX}_sic.log"
+BINACC_LOG="${LOG_PREFIX}.binacc.log"
+SIE_LOG="${LOG_PREFIX}.sie.log"
+MAE_LOG="${LOG_PREFIX}.mae.log"
+MSE_LOG="${LOG_PREFIX}.mse.log"
+RMSE_LOG="${LOG_PREFIX}.rmse.log"
+SICERR_LOG="${LOG_PREFIX}.sic.log"
+
+GROUND_TRUTH_DS=`jq -r 'first(.sources[]).dataset_config' loader.${FORECAST_NAME}.json`
 
 if [ "${REQUESTED_OUTPUT_DIR}" == "" ]; then
     OUTPUT_DIR="plot/${FORECAST_NAME}"
@@ -143,29 +141,29 @@ cat ${FORECAST_NAME}.csv | while read -r FORECAST_DATE; do
             OUTPUT="${OUTPUT_DIR}/${element}.t_${THRESHOLD:3}.${FORECAST_DATE}.png"
             echo "Producing binary accuracy plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_bin_accuracy -b $E_FLAG -v $REGION -o $OUTPUT $THRESHOLD \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $BINACC_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $BINACC_LOG 2>&1
         elif [ "${element}" == "sie" ]; then
             OUTPUT="${OUTPUT_DIR}/${element}.t_${THRESHOLD:3}.ga_${GRID_AREA_SIZE:4}.${FORECAST_DATE}.png"
             echo "Producing sea ice extent error plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_sie_error -b $E_FLAG -v $REGION -o $OUTPUT $THRESHOLD $GRID_AREA_SIZE \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $SIE_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $SIE_LOG 2>&1
         elif [ "${element}" == "mae" ]; then
             echo "Producing MAE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v $REGION -m $element -o $OUTPUT \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $MAE_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $MAE_LOG 2>&1
         elif [ "${element}" == "mse" ]; then
             echo "Producing MSE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v $REGION -m $element -o $OUTPUT \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $MSE_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $MSE_LOG 2>&1
         elif [ "${element}" == "rmse" ]; then
             echo "Producing RMSE plot for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_metrics -b $E_FLAG -v $REGION -m $element -o $OUTPUT \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $RMSE_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $RMSE_LOG 2>&1
         elif [ "${element}" == "sic" ]; then
             OUTPUT="${OUTPUT_DIR}/${element}.${FORECAST_DATE}.mp4"
             echo "Producing SIC error video for $FORECAST_DATE (${OUTPUT})"
             icenet_plot_sic_error -v $REGION -o $OUTPUT \
-                $HEMI $FORECAST_FILE $FORECAST_DATE >> $SICERR_LOG 2>&1
+                $GROUND_TRUTH_DS $FORECAST_FILE $FORECAST_DATE >> $SICERR_LOG 2>&1
         fi
     done
 done
@@ -208,33 +206,33 @@ if [[ "${LEADTIME_AVG}" == true ]]; then
         echo "Plots produced:"
         # averaging over all
         OUTPUT="${OUTPUT_PATH_START}_all.png"
-        icenet_plot_leadtime_avg $HEMI $FORECAST_FILE $REGION \
+        icenet_plot_leadtime_avg $GROUND_TRUTH_DS $FORECAST_FILE $REGION \
             -m $element -ao "all" -s -sm 1 $E_FLAG $THRESHOLD $GRID_AREA_SIZE \
             -dp $DATA_PATH -o $OUTPUT >> $LOGFILE 2>&1
         echo "* ${OUTPUT}"
         ##### initialisation day
         # averaging over monthly
         OUTPUT="${OUTPUT_PATH_START}_init_month.png"
-        icenet_plot_leadtime_avg $HEMI $FORECAST_FILE $REGION \
+        icenet_plot_leadtime_avg $GROUND_TRUTH_DS $FORECAST_FILE $REGION \
             -m $element -ao "month" -s $E_FLAG $THRESHOLD $GRID_AREA_SIZE \
             -dp $DATA_PATH -o $OUTPUT >> $LOGFILE 2>&1
         echo "* ${OUTPUT}"
         # averaging over daily
         OUTPUT="${OUTPUT_PATH_START}_init_day.png"
-        icenet_plot_leadtime_avg $HEMI $FORECAST_FILE $REGION \
+        icenet_plot_leadtime_avg $GROUND_TRUTH_DS $FORECAST_FILE $REGION \
             -m $element -ao "day" -s $E_FLAG $THRESHOLD $GRID_AREA_SIZE \
             -dp $DATA_PATH -o $OUTPUT >> $LOGFILE 2>&1
         echo "* ${OUTPUT}"
         ##### target day
         # averaging over monthly
         OUTPUT="${OUTPUT_PATH_START}_target_month.png"
-        icenet_plot_leadtime_avg $HEMI $FORECAST_FILE $REGION \
+        icenet_plot_leadtime_avg $GROUND_TRUTH_DS $FORECAST_FILE $REGION \
             -m $element -ao "month" -s -td $E_FLAG $THRESHOLD $GRID_AREA_SIZE \
             -dp $DATA_PATH -o $OUTPUT >> $LOGFILE 2>&1
         echo "* ${OUTPUT}"
         # averaging over daily
         OUTPUT="${OUTPUT_PATH_START}_target_day.png"
-        icenet_plot_leadtime_avg $HEMI $FORECAST_FILE $REGION \
+        icenet_plot_leadtime_avg $GROUND_TRUTH_DS $FORECAST_FILE $REGION \
             -m $element -ao "day" -s -td $E_FLAG $THRESHOLD $GRID_AREA_SIZE \
             -dp $DATA_PATH -o $OUTPUT >> $LOGFILE 2>&1
         echo "* ${OUTPUT}"

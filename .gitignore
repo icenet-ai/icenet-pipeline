@@ -21,6 +21,7 @@ __pycache__/
 /wandb/
 *test*.json
 dataset_config.*.json
+processed.*.json
 loader.*.json
 *.csv
 *.err
@@ -29,9 +30,11 @@ loader.*.json
 *.npy
 *.out
 tmp.*
+*.swp
 *test*
 *.png
 
+ENVS
 !ENVS.example
 ENVS.*
 

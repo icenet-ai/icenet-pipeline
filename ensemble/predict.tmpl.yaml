@@ -14,6 +14,7 @@ ensemble:
       - ../../../processed
       - ../../../results
     mem:          224gb
+    cluster:      pvc
 
   pre_process:          []
   post_process:         []
@@ -24,7 +25,6 @@ ensemble:
     - icenet_predict.sh.j2
     email:        someone@example.com
     job_file:     icenet_predict.sh
-    cluster:      short
     nodes:        1
     ntasks:       8
     length:       00:30:00
@@ -38,11 +38,21 @@ ensemble:
         - name:   execute
           args: 
               cmd:  /usr/bin/ln -s ../../data
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../processed
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../processed_data
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../ref.osisaf.north.nc
+        - name:   execute
+          args:
+              cmd:  /usr/bin/ln -s ../../ref.osisaf.south.nc
       pre_run:    []
       runs:
-        - seed:   42
-        - seed:   46
-        - seed:   45
+        - seed:   SEEDS
       post_run:     []
       post_batch:
         - name:   execute
