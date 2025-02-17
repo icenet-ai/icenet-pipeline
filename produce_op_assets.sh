@@ -92,7 +92,7 @@ OUTPUT_DIR_NAME=${FORECAST_NAME}
 if [ -n "$REGION" ]; then
     OUTPUT_DIR_NAME=${OUTPUT_DIR_NAME}_region_$(echo ${REGION} | tr ',' '_')
     if [[ "$REGION" == l* ]]; then
-        SKIP_METRICS=true
+        #SKIP_METRICS=true
         REGION="-z=${REGION:1}"
         printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error are untested for lon/lat based region bounds!\033[0m'
         echo
