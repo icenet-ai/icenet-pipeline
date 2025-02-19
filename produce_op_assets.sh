@@ -16,7 +16,7 @@ display_help() {
   echo "  -c	Cartopy CRS to use for plotting forecasts (e.g. Mercator)."
   echo "  -h    Show this help message and exit."
   echo "  -l    Integer defining max leadtime to generate outputs for."
-  echo "  -n    To actually clip forecast plot bounds by lon/lat region specified with -c, else, depending on CRS, may plot may have missing pixels across edges."
+  echo "  -n    Clip the data to the region specified by lon/lat, will cause empty pixels across image edges due to lon/lat curvature."
   echo "  -v    Enable verbose mode - debugging print of commands."
   echo
   echo "Examples:"
@@ -48,7 +48,7 @@ start=$(date +%s)
 
 set -e -o pipefail
 
-if [ $# -lt 2 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+if [ $# -lt 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   display_help
   exit 1
 fi
@@ -87,15 +87,12 @@ fi
 FORECAST_NAME="$1"
 REGION="$2"
 
-OUTPUT_DIR="results/forecasts/$FORECAST_NAME"
-LOG_DIR="log/forecasts/$FORECAST_NAME"
-
-FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
-HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
+OUTPUT_DIR_NAME=${FORECAST_NAME}
 
 if [ -n "$REGION" ]; then
+    OUTPUT_DIR_NAME=${OUTPUT_DIR_NAME}_region_$(echo ${REGION} | tr ',' '_')
     if [[ "$REGION" == l* ]]; then
-        SKIP_METRICS=true
+        #SKIP_METRICS=true
         REGION="-z=${REGION:1}"
         printf '\033[0;31mNote: The metrics such as binary accuracy, sic and sie error are untested for lon/lat based region bounds!\033[0m'
         echo
@@ -103,6 +100,13 @@ if [ -n "$REGION" ]; then
         REGION="-r $REGION"
     fi
 fi
+
+
+OUTPUT_DIR="results/forecasts/$OUTPUT_DIR_NAME"
+LOG_DIR="log/forecasts/$OUTPUT_DIR_NAME"
+
+FORECAST_FILE="results/predict/${FORECAST_NAME}.nc"
+HEMI=`echo $FORECAST_NAME | sed -r 's/^.+_(north|south)$/\1/'`
 
 if ! [[ $HEMI =~ ^(north|south)$ ]]; then
   echo "Hemisphere from $FORECAST_NAME not available, raise an issue"
