@@ -147,34 +147,35 @@ $ cd anewenv
 $ conda activate icenet
 
 # We identify a pipeline we want to link to
-$ ls -d /data/hpcdata/users/jambyr/icenet/blue
-/data/hpcdata/users/jambyr/icenet/blue
+$ ls -d /data/hpcdata/users/jambyr/icenet/pipeline
+/data/hpcdata/users/jambyr/icenet/pipeline
 
 # Copy the environment variable file that was used for training
-$ cp -v /data/hpcdata/users/jambyr/icenet/blue/ENVS.jambyr.bas ./ENVS.dh23
-‘/data/hpcdata/users/jambyr/icenet/blue/ENVS.jambyr.bas’ -> ‘./ENVS.dh23’
+$ cp -v /data/hpcdata/users/jambyr/icenet/pipeline/ENVS.bas.exp23 .
+‘/data/hpcdata/users/jambyr/icenet/pipeline/ENVS.bas.exp23’ -> ‘./ENVS.bas.exp23’
 
 # Repoint your ENVS to the training ENVS file you want to predict against
-$ ln -sf ENVS.dh23 ENVS
+$ unlink ENVS
+$ ln -sf ENVS.bas.exp23 ENVS
 $ ls -l ENVS
-lrwxrwxrwx 1 [[REDACTED]] [[REDACTED]] 9 Feb 10 11:48 ENVS -> ENVS.dh23
+lrwxrwxrwx 1 [[REDACTED]] [[REDACTED]] 9 Feb 10 11:48 ENVS -> ENVS.bas.exp23
 
 # These can also be modified in ENVS 
 $ export ICENET_CONDA=$CONDA_PREFIX
 $ export ICENET_HOME=`realpath .`
 
 # Links to my source data store
-ln -s /data/hpcdata/users/jambyr/icenet/blue/data
+ln -s /data/hpcdata/users/jambyr/icenet/pipeline/data
 
 # Ensures we have a data loader store directory for the pipeline 
 mkdir processed
 # Links to the training data loader store from the other pipeline
-ln -s /data/hpcdata/users/jambyr/icenet/blue/processed/current_north processed/
+ln -s /data/hpcdata/users/jambyr/icenet/pipeline/processed/exp23_south processed/
 
 # Make sure the networks directory exists
 mkdir -p results/networks
 # Links to the network trained in the other pipeline
-ln -s /data/hpcdata/users/jambyr/icenet/blue/results/networks/dh23 results/networks/
+ln -s /data/hpcdata/users/jambyr/icenet/pipeline/results/networks/atmos23_south results/networks/
 ```
 
 [And now you can look at running prediction commands against somebody elses networks][4]
@@ -233,6 +234,13 @@ ERA5 and ORAS5 datasets for the predictions you want to make. Use
 `icenet_data_sic`, `icenet_data_era5` and `icenet_data_oras5` respectively. 
 This workflow is also easily adapted to other datasets, wink wink nudge nudge.
 
+If you haven't already installed it, install the `model-ensembler` package
+which will work out the generation of ensemble models:
+
+```bash
+pip install model-ensembler
+```
+
 The process for running predictions is then basically: 
 
 ```bash
@@ -244,6 +252,18 @@ export DEMO_TEST_END="$DEMO_TEST_START"
 
 # Optionally, stick it into azure too, provided you're set up for it
 icenet_upload_azure -v -o results/predict/demo_test.nc $DEMO_TEST_START
+```
+
+as an example, to generate a training run based on the atmos23_south trained
+model shown above (assuming you have already seeded your data store using
+icenet_data_* commands):
+
+```bash
+export DEMO_TEST_START="2024-01-01"
+
+export DEMO_TEST_END=$DEMO_TEST_START
+
+./run_prediction.sh demo_forecast atmos23_south south demo_test
 ```
 
 ## Implementing and changing environments
