@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+title: icenet-pipeline
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: James
+    family-names: Byrne
+    email: jambyr@bas.ac.uk
+    affiliation: British Antarctic Survey
+    orcid: "https://orcid.org/0000-0003-3731-2377"
+  - given-names: Bryn Noel
+    family-names: Ubald
+    email: bryald@bas.ac.uk
+    affiliation: British Antarctic Survey
+    orcid: "https://orcid.org/0000-0002-0206-7140"
+  - given-names: Ryan
+    family-names: Chan
+    email: rchan@turing.ac.uk
+    affiliation: The Alan Turing Institute
+repository-code: "https://github.com/icenet-ai/icenet-pipeline"
+url: "https://icenet.ai/"
+repository: "https://github.com/icenet-ai/icenet"
+abstract: >-
+  icenet-pipeline is a repository containing tools that
+  enables operational execution of the IceNet probabilistic
+  deep-learning library for sea-ice forecasting via a
+  Command Line Interface (CLI). It is an end-to-end pipeline
+  that enables the generation of forecast outputs.
+keywords:
+  - sea-ice
+  - pipeline
+  - forecast
+  - machine learning
+  - cryosphere
+  - antarctic
+  - arctic
+  - ice
+  - deep learning
+license: MIT
+version: "v0.2.9"
