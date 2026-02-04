@@ -58,22 +58,22 @@ fi
 pipeline_run preprocess_regrid -v \
   -c proc.prediction.era5.${CONFIG_SUFFIX} \
   -sn "prediction" -ss $INPUT_START_DATE -se $INPUT_END_DATE -sh `expr $LAG + 1` \
-  data.prediction.era5.${CONFIG_SUFFIX} ref.osisaf.${HEMI}.nc ${FORECAST_NAME}_era5
+  data.prediction.era5.${CONFIG_SUFFIX} ref.osisaf.${HEMI}.nc ${FORECAST_NAME}.${HEMI}_era5
 pipeline_run preprocess_rotate -n uas,vas -v proc.prediction.era5.${CONFIG_SUFFIX} ref.osisaf.${HEMI}.nc
 
 pipeline_run preprocess_dataset $PROC_ARGS_ERA5 -v \
   -r processed/${TRAIN_DATA_NAME}.${DATA_FREQUENCY}.${HEMI}_era5 \
   -sn "prediction" -ss "$FORECAST_START" -se "$FORECAST_END" -sh `expr $LAG + 1` \
   -i "icenet.data.processors.cds:ERA5PreProcessor" \
-  proc.prediction.era5.${CONFIG_SUFFIX} ${FORECAST_NAME}_era5
+  proc.prediction.era5.${CONFIG_SUFFIX} ${FORECAST_NAME}.${HEMI}_era5
 
 pipeline_run preprocess_dataset $PROC_ARGS_SIC -v \
   -r processed/${TRAIN_DATA_NAME}.${DATA_FREQUENCY}.${HEMI}_osisaf \
   -sn "prediction" -ss "$FORECAST_START" -se "$FORECAST_END" -sh `expr $LAG + 1` \
   -i "icenet.data.processors.osisaf:SICPreProcessor" \
-  data.prediction.osisaf.${CONFIG_SUFFIX} ${FORECAST_NAME}_osisaf
+  data.prediction.osisaf.${CONFIG_SUFFIX} ${FORECAST_NAME}.${HEMI}_osisaf
 
-pipeline_run preprocess_add_processed -v $FORECAST_DATASET processed.${FORECAST_NAME}_osisaf.json processed.${FORECAST_NAME}_era5.json
+pipeline_run preprocess_add_processed -v $FORECAST_DATASET processed.${FORECAST_NAME}.${HEMI}_osisaf.json processed.${FORECAST_NAME}.${HEMI}_era5.json
 
 pipeline_run preprocess_add_channel -v $FORECAST_DATASET data.prediction.osisaf.${CONFIG_SUFFIX} sin "icenet.data.meta:SinProcessor"
 pipeline_run preprocess_add_channel -v $FORECAST_DATASET data.prediction.osisaf.${CONFIG_SUFFIX} cos "icenet.data.meta:CosProcessor"
