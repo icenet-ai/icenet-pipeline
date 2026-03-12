@@ -118,7 +118,7 @@ for SOURCE in ${!CMIP6_SOURCES[@]}; do
     pipeline_run icenet_plot_input --weights -v dataset_config.${DATASET_NAME}.json $LAG_DATE ./plots/weights.${CMIP_ID}.${HEMI}.${LAG_DATE}.png
 
     echo -n "To CACHE the dataset, please run: "
-    echo icenet_dataset_create -v -p -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
+    echo icenet_dataset_create -v -p -l $LAG -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
   done
 done
 
