@@ -133,7 +133,7 @@ pipeline_run icenet_plot_input --outputs -v dataset_config.${DATASET_NAME}.json 
 pipeline_run icenet_plot_input --weights -v dataset_config.${DATASET_NAME}.json $LAG_DATE ./plots/weights.pretrain.${HEMI}.${LAG_DATE}.png
 
 echo -n "To CACHE the dataset, please run: "
-echo icenet_dataset_create -v -p -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
+echo icenet_dataset_create -v -p -l $LAG -ob $BATCH_SIZE -w $WORKERS -fl $FORECAST_LENGTH $LOADER_CONFIGURATION $DATASET_NAME
 
 # TODO: here is where we nick the val and test splits from the ground truth
 #  datasets prepared in the alternative script. icenet_train can then be used
