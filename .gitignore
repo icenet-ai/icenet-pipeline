@@ -36,3 +36,5 @@ tmp.*
 !ENVS.example
 ENVS.*
 
+# STAC env files
+.env.*
