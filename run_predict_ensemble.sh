@@ -7,13 +7,12 @@ fi
 
 . ENVS
 
-echo "ARGS: $@"
+echo "ARGS: $*"
 
 DO_NOT_EXECUTE=0
 ENSEMBLE_TARGET="slurm"
 ENSEMBLE_SWITCH=""
 ENSEMBLE_ARGS=""
-TRAIN_IDENT=""
 ENSEMBLE_SEEDS_DEFAULT=42,46,45,17,24,84,83,16,5,3
 
 while getopts ":b:df:i:lm:p:r:x" opt; do
@@ -35,7 +34,7 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-echo "ARGS = $ENSEMBLE_SWITCH $ENSEMBLE_ARGS, Leftovers: $@"
+echo "ARGS = $ENSEMBLE_SWITCH $ENSEMBLE_ARGS, Leftovers: $*"
 
 NETWORK="$1"
 DATASET="$2"

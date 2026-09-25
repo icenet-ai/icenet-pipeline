@@ -91,10 +91,10 @@ done
 
 # determine whether or not to compare with ECMWF
 if [[ "${ECMWF}" == true ]]; then
-    echo "Generating (${METRICS[@]}) plots for forecast (with comparison with ECMWF)"
+    echo "Generating (${METRICS[*]}) plots for forecast (with comparison with ECMWF)"
     E_FLAG="-e"
 else
-    echo "Generating (${METRICS[@]}) plots for forecast (without comparison with ECMWF)"
+    echo "Generating (${METRICS[*]}) plots for forecast (without comparison with ECMWF)"
     E_FLAG=""
 fi
 

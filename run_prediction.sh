@@ -26,7 +26,7 @@ done
 
 shift $((OPTIND-1))
 
-echo "Leftovers from getopt: $@"
+echo "Leftovers from getopt: $*"
 
 FORECAST="$1"
 MODEL="$2"
