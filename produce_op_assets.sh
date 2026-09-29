@@ -53,7 +53,7 @@ if [ $# -lt 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   exit 1
 fi
 
-echo "ARGS: $@"
+echo "ARGS: $*"
 
 # Defaults if not specified
 SCRIPT_ARGS=""
@@ -77,7 +77,7 @@ shift $((OPTIND-1))
 
 [ -n "$VERBOSE" ] && SCRIPT_ARGS="${SCRIPT_ARGS}-v"
 
-echo "ARGS = $SCRIPT_ARGS, Leftovers: $@"
+echo "ARGS = $SCRIPT_ARGS, Leftovers: $*"
 
 if [ -n "$VERBOSE" ]; then
   echo "~~Verbosity enabled~~"
