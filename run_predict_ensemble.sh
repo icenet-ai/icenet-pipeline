@@ -7,6 +7,8 @@ fi
 
 . ENVS
 
+conda activate $ICENET_CONDA
+
 echo "ARGS: $*"
 
 DO_NOT_EXECUTE=0
