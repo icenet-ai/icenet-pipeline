@@ -23,7 +23,7 @@ fi
 # default values
 METRICS="binacc,sie,mae,rmse,sic"
 REGION=""
-THRESHOLDS=(0.15, 0.8)
+THRESHOLDS=(0.15 0.8)
 GRID_AREA_SIZE="-g 25"
 REQUESTED_OUTPUT_DIR=""
 OPTIND=1
