@@ -24,7 +24,7 @@ ensemble:
     - icenet_predict.sh.j2
     email:        someone@example.com
     job_file:     icenet_predict.sh
-    cluster:      short
+    cluster:      rocky
     nodes:        1
     ntasks:       8
     length:       00:30:00
@@ -45,5 +45,5 @@ ensemble:
       post_batch:
         - name:   execute
           args:
-              cmd:  icenet_output -m --nan -r ../.. -o ../../results/predict NAME DATASET predict_dates.csv
+              cmd:  icenet_output -m --compress --nan -r ../.. -o ../../results/predict NAME DATASET predict_dates.csv
 

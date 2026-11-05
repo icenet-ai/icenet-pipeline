@@ -36,7 +36,7 @@ shift $((OPTIND-1))
 
 COPY="${1:-}"
 
-echo "Leftovers from getopt: $@"
+echo "Leftovers from getopt: $*"
 
 if [[ "$END_DATE" != "yesterday" ]] \
     && ! [[ "$END_DATE" =~ ^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$ ]]; then
