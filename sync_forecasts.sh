@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Group icenet forecast outputs nearly by year for
+# Group icenet forecast outputs neatly by year for
 # delivery by the Polar Data Centre.
 
 # Get the absolute path for this script
