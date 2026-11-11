@@ -27,4 +27,4 @@ rsync -av --exclude .env* ${dir} ${SYNC_PATH}
 # Ingest into postgreSQL database
 # There must be a `.env.*` config file here based on above github repo README.md
 # e.g. `./.env.production`
-envstacgen ingest --env-file ../../.env.prod ${dir}data/stac/catalog.json #-o
+envstacgen ingest --env-file ../../.env.prod ${dir}data/stac/catalog.json
