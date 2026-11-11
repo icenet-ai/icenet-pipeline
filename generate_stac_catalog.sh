@@ -19,7 +19,7 @@ conda activate environmental_stac_generator
 dir=${ICENET_2_PIPELINE}/results/stac-catalog/
 mkdir -p ${dir}
 cd ${dir}
-envstacgen preprocess -w 12 ../predict/*_north.nc -n icenet_${MODEL_NAME}_north #-o
+envstacgen preprocess -w 12 ../predict/*_north.nc -n icenet_${MODEL_NAME}_north
 envstacgen preprocess -w 12 ../predict/*_south.nc -n icenet_${MODEL_NAME}_south #-o
 
 rsync -av --exclude .env* ${dir} ${SYNC_PATH}
