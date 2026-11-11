@@ -7,7 +7,7 @@ fi
 
 . ENVS
 
-echo "ARGS: $@"
+echo "ARGS: $*"
 
 # Defaults if not specified
 ENSEMBLE_TARGET="slurm"
@@ -42,7 +42,7 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-echo "ARGS = $ENSEMBLE_SWITCH $ENSEMBLE_ARGS, Leftovers: $@"
+echo "ARGS = $ENSEMBLE_SWITCH $ENSEMBLE_ARGS, Leftovers: $*"
 
 LOADER="$1"
 DATASET="$2"

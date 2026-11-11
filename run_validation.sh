@@ -23,7 +23,7 @@ fi
 # default values
 METRICS="binacc,sie,mae,rmse,sic"
 REGION=""
-THRESHOLDS=(0.15, 0.8)
+THRESHOLDS="0.15,0.8"
 GRID_AREA_SIZE="-g 25"
 REQUESTED_OUTPUT_DIR=""
 OPTIND=1
@@ -68,7 +68,7 @@ fi
 
 mkdir -p $OUTPUT_DIR
 
-echo "Producing validation assets (${METRICS[@]} metrics) in ${OUTPUT_DIR} and ${OUTPUT_DIR}/ECMWF_comp"
+echo "Producing validation assets (${METRICS[*]} metrics) in ${OUTPUT_DIR} and ${OUTPUT_DIR}/ECMWF_comp"
 
 for element in "${METRICS[@]}"
     do
@@ -90,13 +90,6 @@ for element in "${METRICS[@]}"
         ./run_forecast_plots.sh -m ${element} $REGION -v \
             -o $OUTPUT_DIR $FORECAST $HEMI
     else
-        if [ "${element}" == "mae" ]; then
-            LOGFILE="${MAE_LOG}"
-        elif [ "${element}" == "mse" ]; then
-            LOGFILE="${MSE_LOG}"
-        elif [ "${element}" == "rmse" ]; then
-            LOGFILE="${RMSE_LOG}"
-        fi
         ./run_forecast_plots.sh -m ${element} $REGION -v -l \
             -o $OUTPUT_DIR $FORECAST $HEMI
         ./run_forecast_plots.sh -m ${element} $REGION -e -v -l \

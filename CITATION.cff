@@ -5,13 +5,13 @@ type: software
 authors:
   - given-names: James
     family-names: Byrne
-    email: jambyr@bas.ac.uk
-    affiliation: British Antarctic Survey
+    email: J.S.Byrne@exeter.ac.uk
+    affiliation: University of Exeter
     orcid: "https://orcid.org/0000-0003-3731-2377"
   - given-names: Bryn Noel
     family-names: Ubald
-    email: bryald@bas.ac.uk
-    affiliation: British Antarctic Survey
+    email: bryn.ubald@ecmwf.int
+    affiliation: European Centre for Medium-Range Weather Forecasts (ECMWF)
     orcid: "https://orcid.org/0000-0002-0206-7140"
   - given-names: Ryan
     family-names: Chan
@@ -37,4 +37,4 @@ keywords:
   - ice
   - deep learning
 license: MIT
-version: "v0.2.9"
+version: "v0.2.10"
