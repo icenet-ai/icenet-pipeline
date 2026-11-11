@@ -17,8 +17,8 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate environmental_stac_generator
 set -eo pipefail
 dir=${ICENET_2_PIPELINE}/results/stac-catalog/
-mkdir -p ${dir}
-cd ${dir}
+mkdir -p "${dir}"
+cd "${dir}"
 envstacgen preprocess -w 12 ../predict/*_north.nc -n icenet_${MODEL_NAME}_north
 envstacgen preprocess -w 12 ../predict/*_south.nc -n icenet_${MODEL_NAME}_south
 
