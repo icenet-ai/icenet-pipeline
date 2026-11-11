@@ -15,7 +15,7 @@ MODEL_NAME=${3:-"exp23"}
 
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate environmental_stac_generator
-
+set -eo pipefail
 dir=${ICENET_2_PIPELINE}/results/stac-catalog/
 mkdir -p ${dir}
 cd ${dir}
